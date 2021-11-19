@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="widgetContainer">
     <!--로고-->
     <div class="logoBox">
       <img class="logoBox__img1" :src="img_logo1" alt="logo">
@@ -12,7 +12,8 @@
       <button>
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-search"
              viewBox="0 0 15 15">
-          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+          <path
+              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
         </svg>
       </button>
     </div>
@@ -23,22 +24,22 @@
         <h4>Seoul,KR</h4>
       </div>
       <div class="weatherBox__icon">
-        <img class="weatherImg">
+        <img :src="weatherImgsrc" alt="logo">
       </div>
-      <div class="weatherText" class="weatherBox__text">
-        <!--날씨 설명 들어가는 란-->
+      <div class="weatherBox__text">
+        {{ weatherDesc }}
       </div>
-      <div class="weatherTmp" class="weatherBox__tmp">
-        <i class="wi wi-thermometer"></i>
-        <!--기온 들어가는 란-->
+      <div id="weatherTmp" class="weatherBox__tmp">
+        <i id="wi wi-thermometer"></i>
+        {{ weatherTmp }} ℃
       </div>
     </div>
   </div>
 </template>
 
 <script>
-
-import {inject} from "vue";
+import {inject, ref} from "vue";
+import {axios} from "@bundled-es-modules/axios";
 
 export default {
   name: "DoldolseoHeaderWidget",
@@ -46,10 +47,39 @@ export default {
     const imgPath = inject('contextPath') + '_image/header/logo/'
     const img_logo1 = imgPath + 'header_widget_logo1.png'
     const img_logo2 = imgPath + 'header_widget_logo2.png'
+    const weatherDesc = ref('')
+    const weatherTmp = ref(0)
+    const weatherImgsrc = ref('')
+
+    const URL = 'http://api.openweathermap.org/data/2.5/weather?q=Seoul,kr&appid=876eb9965cb5694a2644df701fa197dd'
+    axios.get(URL).then((resp) => {
+      console.log(URL + "요청 성공 status : " + resp.status)
+      weatherDesc.value = resp.data.weather[0].description
+      weatherTmp.value = Math.floor(resp.data.main.temp - 273.15);
+      weatherImgsrc.value = "http://openweathermap.org/img/wn/" + resp.data.weather[0].icon + "@2x.png";
+
+      /* 날씨 위젯 테스트 코드 */
+      // console.log(resp.data);
+      // console.log("현재온도 : " + (resp.data.main.temp - 273.15));
+      // console.log("현재습도 : " + resp.data.main.humidity);
+      // console.log("날씨 : " + resp.data.weather[0].main);
+      // console.log("상세날씨설명 : " + resp.data.weather[0].description);
+      // console.log("날씨 이미지 : " + resp.data.weather[0].icon);
+      // console.log("바람   : " + resp.data.wind.speed);
+      // console.log("나라   : " + resp.data.sys.country);
+      // console.log("도시이름  : " + resp.data.name);
+      // console.log("구름  : " + (resp.data.clouds.all) + "%");
+
+    }).catch(() => {
+      console.log(URL + "요청 실패")
+    })
 
     return {
       img_logo1,
       img_logo2,
+      weatherDesc,
+      weatherTmp,
+      weatherImgsrc,
     }
   }
 }
@@ -58,8 +88,7 @@ export default {
 <link href="src/_css/weather-icons-wind.css" type="text/css" rel="stylesheet">
 <link href="src/_css/weather-icons-wind.min.css" type="text/css" rel="stylesheet">
 <style scoped>
-
-.container {
+.widgetContainer {
   font-size: 0;
   width: 100%;
   text-align: center;
@@ -78,13 +107,14 @@ export default {
   left: 20px;
   /*border: 1px solid;*/
 }
-.logoBox__img1{
+
+.logoBox__img1 {
   width: 50px;
   height: 40px;
   margin: 4px 0 9px 0;
 }
 
-.logoBox__img2{
+.logoBox__img2 {
   width: 70px;
   height: 40px;
 }
@@ -134,10 +164,11 @@ export default {
 .weatherBox__icon {
   display: inline-block;
   vertical-align: top;
-  height: 50px;
-  width: 80px;
+  height: 40px;
+  width: 70px;
   overflow: hidden;
-  padding-top: 4px;
+  padding-top: 5px;
+  text-align: center;
   /*border: 1px solid;*/
 }
 
@@ -145,30 +176,33 @@ export default {
   width: inherit;
   height: inherit;
   object-fit: cover;
+  /*border: 1px solid;*/
 }
 
 
 .weatherBox__text {
-  height: 30px;
+  height: 60px;
   width: 80px;
   display: inline-block;
   font-family: 'Jua', sans-serif;
   color: #1b3067;
   vertical-align: top;
-  padding-top: 16px;
+  padding-top: 5px;
+  text-align: center;
+  line-height: 45px;
   /*border: 1px solid;*/
 }
 
 .weatherBox__tmp {
   height: 30px;
   width: 70px;
-  padding-top: 18px;
+  padding-top: 17px;
+  font-family: 'Jua', sans-serif;
   display: inline-block;
-  vertical-align: top;
   color: #B40404;
   font-size: 18px;
+  text-align: center;
   /*border: 1px solid;*/
 }
-
 
 </style>

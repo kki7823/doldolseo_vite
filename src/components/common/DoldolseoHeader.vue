@@ -1,4 +1,5 @@
 <template>
+  <doldolseo-header-widget/>
   <div class="container">
     <div class="imgbox_logo1">
       <img :src="img_logo1" alt="logo">
@@ -43,7 +44,7 @@
     </div>
 
     <!--미니프로필 -->
-    <!--    <jsp:include page="mypage/mypageIntro.jsp"/>-->
+    <doldolseo-header-profile />
 
     <div class='navbar__area'
          v-show="isMouseover"
@@ -64,9 +65,12 @@
 
 <script>
 import {inject, ref} from "vue";
+import DoldolseoHeaderProfile from "./DoldolseoHeaderProfile.vue";
+import DoldolseoHeaderWidget from "./DoldolseoHeaderWidget.vue";
 
 export default {
   name: "DoldolseoHeader",
+  components: {DoldolseoHeaderWidget,DoldolseoHeaderProfile},
 
   setup() {
     const imgPath = inject('contextPath') + '_image/header/logo/'
@@ -91,7 +95,6 @@ export default {
 </script>
 
 <style scoped>
-/* 웹 폰트 */
 
 .container {
   width: 100%;
