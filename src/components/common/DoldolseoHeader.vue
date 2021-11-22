@@ -6,9 +6,9 @@
     </div>
 
     <div class="imgbox_logo2">
-      <a href="${pageContext.request.contextPath}/main">
+      <router-link to="/">
         <img :src="img_logo2" alt="logo">
-      </a>
+      </router-link>
     </div>
 
     <div class="navbar">
@@ -23,13 +23,13 @@
           </a>
         </li>
         <li>
-          <a href="${pageContext.request.contextPath}/review">
+          <router-link to="/review">
             <span @mouseover="textColorReview = '#F4B7B4'"
                   @mouseleave="textColorReview = 'white'"
                   :style="{color: textColorReview}">
               REVIEW
             </span>
-          </a>
+          </router-link>
         </li>
         <li>
           <a href="${pageContext.request.contextPath}/crewL">
@@ -50,6 +50,7 @@
          v-show="isMouseover"
          @mouseleave="isMouseover = false">
       <ul>
+<!--        <li><router-link to="/area">테스트</router-link></li>-->
         <li><a href="${pageContext.request.contextPath}/areaL?sigungu=1">강남</a></li>
         <li><a href="${pageContext.request.contextPath}/areaL?sigungu=2">강북</a></li>
         <li><a href="${pageContext.request.contextPath}/areaL?sigungu=3">광화문</a></li>

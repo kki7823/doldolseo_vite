@@ -1,10 +1,10 @@
 <template>
-
+  <p>돌돌서 후기 게시판</p>
 </template>
 
 <script>
 export default {
-  name: "ReviewApp"
+  name: "DoldolseoReviewList"
 }
 </script>
 

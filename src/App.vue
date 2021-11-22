@@ -1,20 +1,21 @@
 <template>
   <doldolseo-header/>
-  <doldolseo-main/>
+  <router-view/>
   <doldolseo-footer/>
 </template>
 
 <script>
 import DoldolseoHeader from "./components/common/DoldolseoHeader.vue";
-import {provide} from "vue";
 import DoldolseoMain from "./components/main/DoldolseoMain.vue";
 import DoldolseoFooter from "./components/common/DoldolseoFooter.vue";
+import {provide} from "vue";
 
 export default {
   name : 'App',
   components: {DoldolseoFooter, DoldolseoMain, DoldolseoHeader},
   setup(){
     provide('contextPath','src/')
+    provide('doldolseoArea','127.0.0.1:8080/doldolseo/area')
   }
 }
 </script>
