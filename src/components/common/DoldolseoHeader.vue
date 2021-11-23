@@ -44,21 +44,15 @@
     </div>
 
     <!--미니프로필 -->
-    <doldolseo-header-profile />
+    <doldolseo-header-profile/>
 
     <div class='navbar__area'
          v-show="isMouseover"
          @mouseleave="isMouseover = false">
       <ul>
-<!--        <li><router-link to="/area">테스트</router-link></li>-->
-        <li><a href="${pageContext.request.contextPath}/areaL?sigungu=1">강남</a></li>
-        <li><a href="${pageContext.request.contextPath}/areaL?sigungu=2">강북</a></li>
-        <li><a href="${pageContext.request.contextPath}/areaL?sigungu=3">광화문</a></li>
-        <li><a href="${pageContext.request.contextPath}/areaL?sigungu=4">명동</a></li>
-        <li><a href="${pageContext.request.contextPath}/areaL?sigungu=5">여의도</a></li>
-        <li><a href="${pageContext.request.contextPath}/areaL?sigungu=6">잠실</a></li>
-        <li><a href="${pageContext.request.contextPath}/areaL?sigungu=7">홍대</a></li>
-        <li><a href="${pageContext.request.contextPath}/areaL?sigungu=0">etc</a></li>
+        <li v-for="(areaName, sigungu) in areaMenu">
+          <router-link :to="{name: 'areaList', query:{sigungu: sigungu}}">{{ areaName }}</router-link>
+        </li>
       </ul>
     </div>
   </div>
@@ -71,10 +65,11 @@ import DoldolseoHeaderWidget from "./DoldolseoHeaderWidget.vue";
 
 export default {
   name: "DoldolseoHeader",
-  components: {DoldolseoHeaderWidget,DoldolseoHeaderProfile},
+  components: {DoldolseoHeaderWidget, DoldolseoHeaderProfile},
 
   setup() {
     const imgPath = inject('contextPath') + '_image/header/logo/'
+    const areaMenu = inject('areaMenu')
     const img_logo1 = imgPath + 'header_logo1.png'
     const img_logo2 = imgPath + 'header_logo2.png'
 
@@ -84,6 +79,7 @@ export default {
     const isMouseover = ref(false)
 
     return {
+      areaMenu,
       img_logo1,
       img_logo2,
       textColorArea,

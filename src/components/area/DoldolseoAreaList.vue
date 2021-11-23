@@ -1,19 +1,17 @@
 <template>
   <section class="areaList-container">
+
     <!-- 지역별 배경사진 -->
     <div class="areaList-img">
-      <img :src="imgPath+ '/areaBanner/areaImage_1.png'" alt="img"/>
+      <img :src="imgPath+ '/areaBanner/'+areaImages[sigungu]" alt="img"/>
     </div>
 
     <!-- 게시판 드릴 다운 메뉴 -->
     <div class="areaL-drilldownBox">
             <span class="drilldownbox">
-                        <a href="${pageContext.request.contextPath}/areaL?sigungu=1}" style="color: #5882FA">지역게시판</a>
-                <span> > </span>
-                        <a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}"
-                           style="color: #0080c0">#드릴다운#</a>
-                <span> > </span>
-                        <a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=${contentType}">#드릴다운#</a>
+              <span style="color: #5882FA">지역게시판</span> &gt;
+              <span style="color: #0080c0" @click="">{{ areaMenu[sigungu] }}</span> &gt;
+              <span>{{ contentMenu[contentIdx].name }}</span>
             </span>
     </div>
 
@@ -22,133 +20,148 @@
       <!--네비_카테고리-->
       <div class="areaList-nav__cat">
         <ul>
-          <li><a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}">전체</a></li>
-          <li><a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=1">축제&행사</a>
+          <li v-for="(item, idx) in contentMenu"
+              @click="contentType = item.contentType; contentIdx=idx">
+            {{ item.name }}
           </li>
-          <li><a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=2">음식</a></li>
-          <li><a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=3">쇼핑</a></li>
-          <li><a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=4">문화&관광</a>
-          </li>
-          <li><a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=0">기타</a></li>
         </ul>
       </div>
 
-      <!--네비_검색창-->
+      <!--네비_검색창 -->
       <div class="areaList-nav__search">
-        <form :action="areaRestPath" method="get">
-          <input type="hidden" name="sigungu" value="${sigungu}">
-          <input class="areaList-nav__search__input" name="searchKeyword" type="text"/>
-          <button class="areaList-nav__search__btn" type="submit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="18" fill="white" class="bi bi-search"
-                 viewBox="0 0 16 16">
-              <path
-                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
-            </svg>
-          </button>
-        </form>
+        <p>{{ searchKeywordText }}</p>
+        <input class="areaList-nav__search__input"
+               type="text"
+               v-model="searchKeywordText"
+        />
+
+        <button class="areaList-nav__search__btn"
+                type="button"
+                @click="searchKeyword = searchKeywordText">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               viewBox="0 0 16 16">
+            <path
+                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+          </svg>
+        </button>
       </div>
     </div>
 
-    <!-- 지역 게시글 목록 -->
-    <!--    <div class="areaList-dataContainer">-->
-    <!--      <div class="areaList-dataBox">-->
+    <!--     지역 게시글 목록 -->
+    <div class="areaList-dataContainer">
+      <div class="areaList-dataBox">
+        <!-- 항목 -->
+        <div v-for="area in areaList" class="areaList-data">
+          <div class="areaList-dataImg">
+            <!-- 상세보기로 이동 -->
+            <router-link :to="{name: 'areaDetail', params:{name: encodeURIComponent(area.name) }}">
+              <img v-if="area.image1 == null"
+                   :src="imgPath+'/areaListData/default.png'"
+                   alt="area_image"
+              />
+              <img v-else
+                   :src="area.image1"
+                   alt="image1"
+              />
+            </router-link>
+          </div>
 
-    <!--        <c:forEach items="${areaList.content}" var="areaList" varStatus="status">-->
-    <!--          &lt;!&ndash; 항목 &ndash;&gt;-->
-    <!--          <div class="areaList-data">-->
-    <!--            <div class="areaList-dataImg" style="display: inline-block;margin: 20px;">-->
+          <div class="areaList-dataName" style="margin: 0 auto;">
+            <b>{{ area.name }}</b>
+          </div>
+        </div>
+        <div class="clear-both"></div>
+      </div>
 
-    <!--              &lt;!&ndash; 상세보기로 이동 &ndash;&gt;-->
-    <!--              <a href="javascript:encodeAndLink('${areaList.name}');">-->
-
-    <!--                &lt;!&ndash; url 예약문자 처리  &ndash;&gt;-->
-    <!--                <script>-->
-    <!--                  function encodeAndLink(name) {-->
-    <!--                    name = encodeURIComponent(name);-->
-    <!--                    location.href = '${pageContext.request.contextPath}/areaD?name=' + name;-->
-    <!--                  }-->
-    <!--                </script>-->
-
-    <!--                &lt;!&ndash; 이미지 default 처리 &ndash;&gt;-->
-    <!--                <c:choose>-->
-    <!--                  <c:when test="${areaList.image1 ne null}">-->
-    <!--                    <img src="${areaList.image1}" width="250" height="250" alt="area image">-->
-    <!--                  </c:when>-->
-    <!--                  <c:otherwise>-->
-    <!--                    <img src="${pageContext.request.contextPath}/_image/area/areaListData/default.png" width="250" height="250"-->
-    <!--                         alt="area image">-->
-    <!--                  </c:otherwise>-->
-    <!--                </c:choose>-->
-
-    <!--              </a>-->
-    <!--            </div>-->
-
-    <!--            <div class="areaList-dataName" style="margin: 0 auto;">-->
-    <!--              <b>${areaList.name}</b>-->
-    <!--            </div>-->
-    <!--          </div>-->
-    <!--        </c:forEach>-->
-    <!--        <div class="clear-both"></div>-->
-    <!--      </div>-->
-
-    <!-- 페이징 처리 -->
-    <!--      <div class="areaList-dataPage">-->
-    <!--        <table class="pagination">-->
-    <!--          <tr>-->
-    <!--            &lt;!&ndash; 첫 페이지로 이동 &ndash;&gt;-->
-    <!--            <td>-->
-    <!--              <a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=${contentType}&page=0">-->
-    <!--                << </a>-->
-    <!--            </td>-->
-
-    <!--            &lt;!&ndash; 이전 페이지로 이동 : 첫 페이지 제외 &ndash;&gt;-->
-    <!--            <c:if test="${startBlockPage ne 1}">-->
-    <!--              <td>-->
-    <!--                <a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=${contentType}&page=${startBlockPage-2}">-->
-    <!--                  < </a>-->
-    <!--              </td>-->
-    <!--            </c:if>-->
-
-    <!--            &lt;!&ndash; 페이징 블록 1 ~ 10 &ndash;&gt;-->
-    <!--            <c:forEach begin="${startBlockPage}" end="${endBlockPage}" var="idx">-->
-    <!--              <td>-->
-    <!--                <a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=${contentType}&page=${idx-1}">${idx}</a>-->
-    <!--                &lt;!&ndash; 이거 현재 URL 로 반영되게 바꿀것 &ndash;&gt;-->
-    <!--              </td>-->
-    <!--            </c:forEach>-->
-
-    <!--            &lt;!&ndash; 다음 페이지로 이동 : 마지막 페이지 제외 &ndash;&gt;-->
-    <!--            <c:if test="${endBlockPage ne areaList.totalPages}">-->
-    <!--              <td>-->
-    <!--                <a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=${contentType}&page=${endBlockPage}">-->
-    <!--                  > </a>-->
-    <!--              </td>-->
-    <!--            </c:if>-->
-
-    <!--            &lt;!&ndash; 마지막 페이지로 이동 &ndash;&gt;-->
-    <!--            <td>-->
-    <!--              <a href="${pageContext.request.contextPath}/areaL?sigungu=${sigungu}&contentType=${contentType}&page=${areaList.totalPages-1}">-->
-    <!--                >> </a>-->
-    <!--            </td>-->
-    <!--          </tr>-->
-    <!--        </table>-->
-    <!--      </div>-->
-    <!--    </div>-->
+      <!-- 페이징 처리 -->
+      <div class="areaList-dataPage">
+        <table class="pagination">
+          <tr>
+            <td @click="page=0"> &lt;&lt;</td>
+            <td v-if="startBlockPage === 1" @click="page = startBlockPage-2"> &lt;</td>
+            <td v-for="idx in endBlockPage-startBlockPage+1" @click="page = idx-1">{{ idx }}</td>
+            <td v-if="endBlockPage !== totalPages" @click="page = endBlockPage"> &gt;</td>
+            <td @click="page=totalPages-1"> &gt;&gt;</td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </section>
 </template>
 
 <script>
-import {inject} from "vue";
+import {inject, ref, watch, watchEffect} from "vue";
+import {axios} from "@bundled-es-modules/axios";
+import {useRoute} from "vue-router";
 
 export default {
   name: "DoldolseoAreaList",
   setup() {
+    const route = useRoute()
     const imgPath = inject('contextPath') + '_image/area'
-    const areaRestPath = inject('doldolseoArea')
+    const areaImages = {
+      1: 'areaImage_gangnam.png',
+      2: 'areaImage_gangbuk.png',
+      3: 'areaImage_gwanghwamun.png',
+      4: 'areaImage_myeongdong.png',
+      5: 'areaImage_yeouido.png',
+      6: 'areaImage_jamsil.png',
+      7: 'areaImage_hongdae.png',
+      99: 'areaImage_etc.png',
+    }
+    const contentMenu = inject('contentMenu')
+    const areaMenu = inject('areaMenu')
+
+    const areaList = ref([])
+    const page = ref(0)
+    const startBlockPage = ref(0)
+    const endBlockPage = ref(0)
+    const totalPages = ref(0)
+
+    const URL = inject('doldolseoArea')
+    const sigungu = ref(route.query.sigungu)
+    const contentType = ref('')
+    const contentIdx = ref(0)
+    const searchKeywordText = ref('')
+    const searchKeyword = ref(null)
+
+    watchEffect(() => {
+      axios.get(URL, {
+        params: {
+          sigungu: sigungu.value,
+          contentType: contentType.value,
+          searchKeyword: searchKeyword.value,
+          page: page.value,
+        }
+      }).then((resp) => {
+        console.log(URL + "요청 성공 status : " + resp.status)
+
+        areaList.value = resp.data.areaList
+        startBlockPage.value = resp.data.startBlockPage
+        endBlockPage.value = resp.data.endBlockPage
+        totalPages.value = resp.data.totalPages
+      }).catch(() => {
+        console.log(URL + "요청 실패")
+      })
+
+      searchKeyword.value = null
+    })
 
     return {
       imgPath,
-      areaRestPath,
+      areaMenu,
+      areaImages,
+      contentMenu,
+      areaList,
+      page,
+      startBlockPage,
+      endBlockPage,
+      totalPages,
+      contentIdx,
+      sigungu,
+      contentType,
+      searchKeywordText,
+      searchKeyword,
     }
   }
 }
@@ -170,7 +183,7 @@ export default {
 
 .areaList-img img {
   width: 1300px;
-  height: 550px;
+  height: 400px;
 }
 
 .areaL-drilldownBox {
@@ -206,15 +219,13 @@ export default {
   box-shadow: 1px 2px 5px #CDCECF;
 }
 
-.areaList-nav__cat ul li {
+.areaList-nav__cat li {
   list-style: none;
   float: left;
   font-family: 'jua', sans-serif;
   font-size: 20px;
   margin-left: 28px;
-}
-
-.areaList-nav__cat a {
+  cursor: pointer;
   color: #647C97;
 }
 
@@ -246,11 +257,18 @@ export default {
   height: 31px;
   border: 2px solid #00addd;
   background-color: #00addd;
+  cursor: pointer;
+}
+
+.areaList-nav__search__btn svg {
+  width: 20px;
+  height: 18px;
+  fill: white;
 }
 
 .areaList-dataContainer {
   border-radius: 20px;
-  width: 1500px;
+  width: 100%;
   height: 1285px;
   border: 1px solid #E0EEFF;
   background-color: #E0EEFF;
@@ -282,6 +300,13 @@ export default {
 .areaList-dataImg {
   width: 250px;
   height: 250px;
+  display: inline-block;
+  margin: 20px;
+}
+
+.areaList-dataImg img {
+  width: 250px;
+  height: 250px;
 }
 
 .areaList-dataName {
@@ -294,7 +319,6 @@ export default {
 
 }
 
-
 .areaList-dataPage {
   padding-top: 10px;
   color: #2a5470;
@@ -302,4 +326,18 @@ export default {
   font-size: 20px;
   text-align: center;
 }
+
+.pagination {
+  display: inline-block;
+}
+
+.pagination td {
+  border: 1px #CDCECF solid;
+  font-family: 'Nanum Gothic Coding', sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 4px 14px 4px 14px;
+  cursor: pointer;
+}
+
 </style>

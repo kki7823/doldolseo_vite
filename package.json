@@ -15,5 +15,10 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.9.3",
     "vite": "^2.6.4"
+  },
+  "eslintConfig": {
+    "globals": {
+      "kakao": false
+    }
   }
 }

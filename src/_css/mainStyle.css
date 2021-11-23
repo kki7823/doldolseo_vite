@@ -38,100 +38,7 @@
 /**areaList**/
 
 /**areaDetail**/
-#areaDetail-container {
-    background-color: white;
-    width: 1500px;
-    margin: 0 auto;
-    /*border: 1px solid;*/
-}
 
-#areaD-topContainer {
-    width: 1500px;
-    height: 100px;
-    margin-top: 40px;
-    /*border: 1px solid;*/
-}
-
-
-#areaDetail-name {
-    width: 1200px;
-    /*border-bottom: none;*/
-    text-align: center;
-    margin: 0 auto;
-    font-family: "Jua", sans-serif;
-    /*border: 3px solid #CDCECF;*/
-}
-
-#areaDetail-content {
-    width: 1500px;
-    font-family: "Jua", sans-serif;
-    text-align: center;
-    margin-top: 0;
-    /*border-radius: 20px;*/
-    border: 1px solid #CDCECF;
-}
-
-#areaDetail-name h3 {
-    color: #5882FA;
-    font-family: 'Nanum Gothic Coding', sans-serif;
-    font-weight: bold;
-    font-size: 20px;
-    margin: 30px 0 10px 0;
-    /*border: 1px solid;*/
-}
-
-#areaDetail-name p {
-    margin-top: 5px;
-    color: #647C97;
-    font-size: 40px;
-    /*border: 1px solid;*/
-}
-
-#areaDetail-img {
-    margin-top: 50px;
-}
-
-#areaDetail-info {
-    margin: 40px auto;
-    text-align: left;
-    height: auto;
-    width: 900px;
-    /*border: 1px solid;*/
-    font-family: "Nanum Gothic", sans-serif;
-    font-weight: bold;
-    font-size: 15px;
-    color: black;
-    padding: 20px;
-}
-
-#areaDetail-map {
-    width: 1200px;
-    margin: 40px auto;
-    /*border: 1px solid;*/
-}
-
-#map {
-    width: 700px;
-    height: 500px;
-    margin: 0 auto;
-    border: 1px solid #CDCECF;
-}
-
-#areaDetail-info__table {
-    width: 640px;
-    text-align: center;
-    margin: 0 auto 40px;
-    background-color: #647C97;
-    font-family: nanumB, sans-serif;
-    font-size: 18px;
-    border-color: #647C97;
-    border-radius: 10px;
-    padding: 10px 30px 10px 30px;
-}
-
-#areaDetail-info__table th, td {
-    /*border: 1px solid;*/
-}
 
 /* by 김경일 */
 /* 공통 */
@@ -222,17 +129,6 @@ table {
 }
 
 /* 페이지 네이션 */
-.pagination {
-    display: inline-block;
-}
-
-.pagination td {
-    border: 1px #CDCECF solid;
-    font-family: 'Nanum Gothic Coding', sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    padding: 4px 14px 4px 14px;
-}
 
 /* 캔버스 */
 #canvas {

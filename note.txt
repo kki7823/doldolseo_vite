@@ -1,0 +1,11 @@
+ /* 날씨 위젯 테스트 코드  */
+   console.log(resp.data);
+   console.log("현재온도 : " + (resp.data.main.temp - 273.15));
+   console.log("현재습도 : " + resp.data.main.humidity);
+   console.log("날씨 : " + resp.data.weather[0].main);
+   console.log("상세날씨설명 : " + resp.data.weather[0].description);
+   console.log("날씨 이미지 : " + resp.data.weather[0].icon);
+   console.log("바람   : " + resp.data.wind.speed);
+   console.log("나라   : " + resp.data.sys.country);
+   console.log("도시이름  : " + resp.data.name);
+   console.log("구름  : " + (resp.data.clouds.all) + "%");

@@ -10,10 +10,11 @@
     <div class="searchBox">
       <input type="text">
       <button>
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-search"
+        <svg xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 15 15">
           <path
-              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z">
+          </path>
         </svg>
       </button>
     </div>
@@ -57,18 +58,6 @@ export default {
       weatherDesc.value = resp.data.weather[0].description
       weatherTmp.value = Math.floor(resp.data.main.temp - 273.15);
       weatherImgsrc.value = "http://openweathermap.org/img/wn/" + resp.data.weather[0].icon + "@2x.png";
-
-      /* 날씨 위젯 테스트 코드 */
-      // console.log(resp.data);
-      // console.log("현재온도 : " + (resp.data.main.temp - 273.15));
-      // console.log("현재습도 : " + resp.data.main.humidity);
-      // console.log("날씨 : " + resp.data.weather[0].main);
-      // console.log("상세날씨설명 : " + resp.data.weather[0].description);
-      // console.log("날씨 이미지 : " + resp.data.weather[0].icon);
-      // console.log("바람   : " + resp.data.wind.speed);
-      // console.log("나라   : " + resp.data.sys.country);
-      // console.log("도시이름  : " + resp.data.name);
-      // console.log("구름  : " + (resp.data.clouds.all) + "%");
 
     }).catch(() => {
       console.log(URL + "요청 실패")
@@ -140,6 +129,12 @@ export default {
   vertical-align: bottom;
 }
 
+.searchBox svg{
+  width: 18px;
+  height: 18px;
+  fill:white;
+}
+
 .weatherBox {
   display: inline-block;
   font-size: 20px;
@@ -187,9 +182,9 @@ export default {
   font-family: 'Jua', sans-serif;
   color: #1b3067;
   vertical-align: top;
-  padding-top: 5px;
+  padding-top: 11px;
   text-align: center;
-  line-height: 45px;
+  line-height: 15px;
   /*border: 1px solid;*/
 }
 
