@@ -187,7 +187,7 @@ hr {
 .main_container {
   width: 100%;
   background-color: white;
-  margin: 0 auto;
+  margin: 0 auto 40px;
   /*border: 1px solid;*/
 }
 

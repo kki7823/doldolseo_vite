@@ -2,8 +2,14 @@
   <div class="miniprofile">
     <!-- Before Login -->
     <div class="miniprofileBox__guest">
-      <button class="button1" type="button" onclick="location.href='${pageContext.request.contextPath}/memberL'">LOGIN</button>
-      <button class="button2" type="button" onclick="location.href='${pageContext.request.contextPath}/memberJ'">JOIN</button>
+      <button class="button1"
+              type="button"
+              @click="router.push({name: 'memberLogin'})">LOGIN
+      </button>
+      <button class="button2"
+              type="button"
+              @click="router.push({name: 'memberJoin'})">JOIN
+      </button>
     </div>
   </div>
 
@@ -11,8 +17,17 @@
 </template>
 
 <script>
+import {useRouter} from "vue-router";
+
 export default {
-  name: "DoldolseoHeaderProfile"
+  name: "DoldolseoHeaderProfile",
+  setup(){
+    const router = useRouter()
+
+    return{
+      router
+    }
+  }
 }
 </script>
 

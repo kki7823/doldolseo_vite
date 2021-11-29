@@ -21,7 +21,6 @@ export default {
 <style scoped>
 .footer_container {
   background-color: #495c75;
-  margin-top: 40px;
   width: 100%;
 }
 

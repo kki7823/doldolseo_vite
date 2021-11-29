@@ -16,6 +16,7 @@ export default {
   setup() {
     provide('contextPath', 'src/')
     provide('doldolseoArea', '/doldolseo/area')
+    provide('doldolseoMember', '/doldolseo/member')
 
     const areaMenu = {
       1: '강남',
