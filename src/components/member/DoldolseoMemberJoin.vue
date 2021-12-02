@@ -1,9 +1,4 @@
 <template>
-  <!--  <form :action="URL"-->
-  <!--        method="post"-->
-  <!--        enctype="multipart/form-data"-->
-  <!--        name="joinFrm">-->
-
   <div class="memberJ-container">
     <div class="memberJ--logobox">
       <img id="logoImg"
@@ -19,7 +14,8 @@
              maxlength="20"
              ref="focusId"
              v-model="id"
-             @focusout="validateId(id)"
+             @focusin="validateId(id)"
+             @input="validateId(id)"
       />
       <p class="msg" :style="{color: idMsgColor}">
         {{ idValidateMsg }}
@@ -31,7 +27,8 @@
              ref="focusPw"
              :style="{backgroundImage: pwdLockImgUrl}"
              v-model="password"
-             @focusout="validatePwd(password)"
+             @focusin="validatePwd(password)"
+             @input="validatePwd(password)"
              @keyup="confirmPwd(password, passwordConfirm)"
       />
       <p class="msg">
@@ -41,8 +38,10 @@
       <input type="password"
              class="memberJ-container--praram"
              maxlength="30"
+             ref="focusPwConfirm"
              :style="{backgroundImage: pwdConfirmLockImgUrl}"
              v-model="passwordConfirm"
+             @focusin="confirmPwd(password, passwordConfirm)"
              @keyup="confirmPwd(password, passwordConfirm)"
       />
       <p class="msg">
@@ -56,8 +55,10 @@
       <input type="text"
              class="memberJ-container--praram"
              maxlength="20"
+             ref="focusName"
              v-model="name"
-             @focusout="validateName(name)"
+             @focusin="validateName(name)"
+             @input="validateName(name)"
       />
       <p class="msg">
         {{ nameValidateMsg }}
@@ -66,8 +67,10 @@
       <input type="text"
              class="memberJ-container--praram"
              v-model="nickname"
+             ref="focusNickname"
              maxlength="20"
-             @focusout="validateNickname(nickname)"
+             @focusin="validateNickname(nickname)"
+             @input="validateNickname(nickname)"
       />
       <p class="msg">
         {{ nicknameValidateMsg }}
@@ -78,7 +81,9 @@
                class="memberJ-namecontainer__input--blue"
                v-model="year"
                maxlength="4"
+               ref="focusYear"
                placeholder="년"
+               @focusin="validatebirth(year, month, day)"
                @focusout="validatebirth(year, month, day)"
         />
         <select class="memberJ-namecontainer__birth--blue"
@@ -96,7 +101,7 @@
                v-model="day"
                maxlength="2"
                placeholder="일"
-               @focusout="validatebirth(year, month, day)"
+               @input="validatebirth(year, month, day)"
         />
       </div>
       <p class="msg">
@@ -104,9 +109,10 @@
       </p>
       <!-- 성별 입력 -->
       <h4>성별</h4>
-      <select class="memberJ-namecontainer__gender--blue" v-model="gender">
-        <option value="" selected="selected">성별</option>
-        <option value="M">남자</option>
+      <select class="memberJ-namecontainer__gender--blue"
+              v-model="gender"
+              ref="focusGender">
+        <option value="M" selected="selected">남자</option>
         <option value="F">여자</option>
       </select>
     </div>
@@ -145,7 +151,9 @@
              class="memberJ-container--praram"
              v-model="email"
              maxlength="50"
-             @focusout="validateEmail(email)"
+             ref="focusEmail"
+             @focusin="validateEmail(email)"
+             @input="validateEmail(email)"
       />
       <p class="msg">
         {{ emailValidateMsg }}
@@ -156,7 +164,8 @@
              class="memberJ-container--praram"
              v-model="phone"
              maxlength="30"
-             @focusout="validatephone(phone)"
+             @focusin="validatephone(phone)"
+             @keyup="validatephone(phone)"
       />
       <p class="msg">
         {{ phoneValidateMsg }}
@@ -175,9 +184,17 @@
       </button>
       <br/>
       <label class="memberJ-rulecontainer__label--move">
-        <input type="checkbox" class="memberJ-container__input--focus" name="check_rule"> 이용약관 체크 여부
-        <div class="msg" id="validate_check_rule"></div>
+        <input type="checkbox"
+               class="memberJ-container__input--focus"
+               v-model="agreeTerm"
+               ref="focusAgreeTerms"
+               @change="agreeTermMsg = ''"
+        />
+        이용약관 체크 여부
       </label>
+      <p class="msg">
+        {{ agreeTermMsg }}
+      </p>
     </div>
     <!-- // 이용약관 체크 여부 -->
 
@@ -187,10 +204,8 @@
              value="회원가입"
              @click="sendData(this)"
       />
-      <input type="hidden" name="crleader" value="n">
     </div>
   </div>
-  <!--  </form>-->
 </template>
 
 <script>
@@ -201,7 +216,15 @@ export default {
   name: "DoldolseoMemberJoin",
   setup() {
     const imgPath = inject('contextPath') + '_image/member'
-
+    let checkValues = {
+      id: false,
+      password: false,
+      passwordConfirm: false,
+      name: false,
+      nickname: false,
+      birth: false,
+      agreeTerms: false,
+    }
     const id = ref('')
     const idMsgColor = ref('')
     const idValidateMsg = ref('')
@@ -213,6 +236,7 @@ export default {
       } else if (pattern.test(id) === false) {
         idValidateMsg.value = "ID는 4~20자의 영문, 숫자만 허용 됩니다."
       } else {
+        checkValues.id = true
         idValidateMsg.value = "사용 가능한 ID 입니다"
         idMsgColor.value = 'green'
       }
@@ -231,6 +255,7 @@ export default {
       const pattern2 = /[a-zA-Z]/
       const pattern3 = /[~!@\#$%<>^&*]/
       if (pattern1.test(pwd) && pattern2.test(pwd) && pattern3.test(pwd) && pwd.length > 7 && pwd.length <= 20) {
+        checkValues.password = true
         pwdValidateMsg.value = ''
         pwdLockImgUrl.value = 'url(' + imgPath + lockImg[2] + ')'
       } else {
@@ -244,6 +269,7 @@ export default {
     const pwdConfirmLockImgUrl = ref('url(' + imgPath + lockImg[1] + ')')
     const confirmPwd = (pwd, pwdConfirm) => {
       if (pwd === pwdConfirm) {
+        checkValues.passwordConfirm = true
         pwdConfirmValidateMsg.value = ''
         pwdConfirmLockImgUrl.value = 'url(' + imgPath + lockImg[2] + ')'
       } else {
@@ -256,6 +282,7 @@ export default {
     const nameValidateMsg = ref('')
     const validateName = (name) => {
       if (name.length >= 2) {
+        checkValues.name = true
         nameValidateMsg.value = ''
       } else {
         nameValidateMsg.value = "이름을 입력해 주세요."
@@ -266,6 +293,7 @@ export default {
     const nicknameValidateMsg = ref('')
     const validateNickname = (nickname) => {
       if (nickname.length >= 2) {
+        checkValues.nickname = true
         nicknameValidateMsg.value = ''
       } else {
         nicknameValidateMsg.value = "닉네임을 입력해 주세요."
@@ -281,8 +309,8 @@ export default {
       const pattern1 = /([0-9])/
       const pattern2 = /([1-9])/
       if (year.length === 4 && year >= 1950 && year <= 2013 && month.length !== 0 && day.length !== 0 && pattern1.test(year) && pattern2.test(month) && pattern2.test(day) && day <= 31) {
+        checkValues.birth = true
         birthValidateMsg.value = ''
-        console.log('????' + month.length)
         birth = year + '-' + (month.length === 1 ? '0' + month : month) + '-' + (day.length === 1 ? '0' + day : day)
       } else {
         birthValidateMsg.value = "올바른 형식의 날짜를 입력해 주세요."
@@ -292,10 +320,10 @@ export default {
     const gender = ref('')
 
     const memberImgUrl = ref(null)
-    let memberImg = null
+    let memberImgFile = null
     const setMemberImg = (e) => {
-      memberImg = e.target.files[0]
-      memberImgUrl.value = URL.createObjectURL(memberImg)
+      memberImgFile = e.target.files[0]
+      memberImgUrl.value = URL.createObjectURL(memberImgFile)
     }
 
     const email = ref('')
@@ -319,33 +347,62 @@ export default {
       }
     }
 
+    const agreeTerm = ref(false)
+    const agreeTermMsg = ref('')
+
     const URL_MEMBER = inject('doldolseoMember')
     const sendData = (template) => {
-
+      if (!validParams(template)) return
 
       const formData = new FormData()
       formData.append('id', id.value)
       formData.append('password', password.value)
       formData.append('name', name.value)
       formData.append('nickname', nickname.value)
+      console.log("뭐라"+birth)
       formData.append('birth', birth)
-      formData.append('memberImg', memberImg)
+      formData.append('memberImgFile', memberImgFile)
       formData.append('gender', gender.value)
       formData.append('email', email.value)
       formData.append('phone', phone.value)
 
       axios.post(URL_MEMBER, formData).then((resp) => {
-        console.log(URL_MEMBER + "요청 성공 status : " + resp.status)
+        console.log(URL_MEMBER + " 요청 성공 status : " + resp.status)
         console.log(resp.data)
       }).catch(() => {
-        console.log(URL_MEMBER + "요청 실패")
+        console.log(URL_MEMBER + " 요청 실패")
       })
     }
 
     const validParams = (template) => {
-      if(id.value.length === 0){
+      if (id.value.length === 0 || checkValues.id === false) {
         template.$refs.focusId.focus()
+        return false;
+      } else if (password.value.length === 0 || checkValues.password === false) {
+        template.$refs.focusPw.focus()
+        return false;
+      } else if (passwordConfirm.value.length === 0 || checkValues.passwordConfirm === false) {
+        template.$refs.focusPwConfirm.focus()
+        return false;
+      } else if (name.value.length === 0) {
+        template.$refs.focusName.focus()
+        return false;
+      } else if (nickname.value.length === 0 || checkValues.nickname === false) {
+        template.$refs.focusNickname.focus()
+        return false;
+      } else if (year.value.length === 0 || month.value.length === 0 || day.value.length === 0 || checkValues.birth === false) {
+        template.$refs.focusYear.focus()
+        return false;
+      } else if (email.value.length === 0) {
+        template.$refs.focusEmail.focus()
+        return false;
+      } else if (agreeTerm.value === false) {
+        template.$refs.focusAgreeTerms.focus()
+        agreeTermMsg.value = '이용약관에 동의하여 주세요.'
+        return false;
       }
+      console.log("all parameters are valid")
+      return true
     }
 
     return {
@@ -382,7 +439,9 @@ export default {
       phone,
       phoneValidateMsg,
       validatephone,
-      URL,
+      agreeTerm,
+      agreeTermMsg,
+      URL_MEMBER,
       sendData,
     }
   }
@@ -539,6 +598,7 @@ export default {
   height: 120px;
   width: 500px;
   margin-top: 20px;
+  margin-bottom: 20px;
   /*border: 1px solid;*/
 }
 
@@ -556,7 +616,11 @@ export default {
 }
 
 .memberJ-rulecontainer__label--move {
-  margin-left: -290px;
+  display: block;
+  margin: 0 auto;
+  text-align: left;
+  width: 460px;
+  /*border: 1px solid;*/
 }
 
 .memberJ-buttoncontainer {
