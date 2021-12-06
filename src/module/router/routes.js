@@ -1,9 +1,9 @@
-import Main from "../components/main/DoldolseoMain.vue";
-import AreaList from "../components/area/DoldolseoAreaList.vue";
-import AreaDetail from "../components/area/DoldolseoAreaDetail.vue";
-import ReviewList from "../components/review/DoldolseoReviewList.vue";
-import MemberLogin from "../components/member/DoldolseoMemberLogin.vue";
-import MemberJoin from "../components/member/DoldolseoMemberJoin.vue";
+import Main from "../../components/main/DoldolseoMain.vue";
+import AreaList from "../../components/area/DoldolseoAreaList.vue";
+import AreaDetail from "../../components/area/DoldolseoAreaDetail.vue";
+import ReviewList from "../../components/review/DoldolseoReviewList.vue";
+import MemberLogin from "../../components/member/DoldolseoMemberLogin.vue";
+import MemberJoin from "../../components/member/DoldolseoMemberJoin.vue";
 import {defineComponent} from "vue";
 
 const NotFound = defineComponent({

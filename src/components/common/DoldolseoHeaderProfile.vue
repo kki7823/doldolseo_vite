@@ -1,7 +1,8 @@
 <template>
   <div class="miniprofile">
     <!-- Before Login -->
-    <div class="miniprofileBox__guest">
+    <div v-if="loginSucess === false"
+         class="miniprofileBox__guest">
       <button class="button1"
               type="button"
               @click="router.push({name: 'memberLogin'})">LOGIN
@@ -11,6 +12,17 @@
               @click="router.push({name: 'memberJoin'})">JOIN
       </button>
     </div>
+    <div v-else
+         class="miniprofileBox__guest">
+      <button class="button1"
+              type="button"
+              @click="router.push({name: 'memberLogin'})">FUCK
+      </button>
+      <button class="button2"
+              type="button"
+              @click="router.push({name: 'memberJoin'})">YOU
+      </button>
+    </div>
   </div>
 
 
@@ -18,14 +30,17 @@
 
 <script>
 import {useRouter} from "vue-router";
+import loginStore from "../../module/strore-login"
 
 export default {
   name: "DoldolseoHeaderProfile",
-  setup(){
+  setup() {
     const router = useRouter()
+    const loginSucess = loginStore.loginSuccess
 
-    return{
-      router
+    return {
+      router,
+      loginSucess
     }
   }
 }

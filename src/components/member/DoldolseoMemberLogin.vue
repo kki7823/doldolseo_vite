@@ -3,38 +3,140 @@
     <img class="memberL-container__image--small"
          :src="imgPath+'/logo.png'"
          alt="logo"/>
+    <div>
+      <input class="memberL-container__input--big"
+             type="text"
+             maxlength="20"
+             ref="focusId"
+             v-model="id"
+             placeholder="아이디"
+             @click="loginMsg=''"
+      />
+      <br/>
+      <input class="memberL-container__input--big"
+             type="password"
+             ref="focusPw"
+             v-model="password"
+             maxlength="30"
+             placeholder="비밀번호"
+             @click="loginMsg=''"
+      />
+      <br/>
+    </div>
 
-    <form action="${pageContext.request.contextPath}/login" method="post" name="loginForm"
-          onsubmit="return loginCheck()">
-      <div>
-        <input id="login_id" class="memberL-container__input--big" type="text" name="id" size="30"
-               placeholder="아이디"> <br/>
-        <input id="login_pw" class="memberL-container__input--big" type="password" name="password" size="40"
-               placeholder="비밀번호"> <br/>
-      </div>
-
-      <label class="memberL-container__label--move">
-        <input id="remember_id" type="checkbox" name="remember_id" value="y"> 아이디 기억하기
-      </label>
-
-      <div class="memberL-btncontainer">
-        <input type="submit" value="로그인">
-        <input type="button" value="회원가입" onclick="location.href='${pageContext.request.contextPath}/memberJ'">
-      </div>
-    </form>
+    <div class="memberL-container--checkbox">
+      <input id="remember_id"
+             type="checkbox"
+             name="remember_id"
+             value="y"
+      />아이디 기억하기
+    </div>
+    <div class="memberL-msgbox">
+      <p class="msg">
+        {{ loginMsg }}
+      </p>
+    </div>
+    <div class="memberL-btncontainer">
+      <input type="button"
+             value="로그인"
+             @click="sendLoginData(this)"
+      />
+      <input type="button" value="회원가입" onclick="location.href='${pageContext.request.contextPath}/memberJ'">
+      <input type="button" value="테스트버튼" @click="testMethod()">
+    </div>
   </div>
 </template>
 
 <script>
-import {inject} from "vue";
+import {inject, ref} from "vue";
+import {axios} from "@bundled-es-modules/axios";
+import loginStore from '../../module/strore-login'
 
 export default {
   name: "DoldolseoMemberLogin",
   setup() {
+    const cookie = document.cookie
     const imgPath = inject('contextPath') + '_image/member'
+    const URL_MEMBER_LOGIN = inject('doldolseoMember') + '/login'
+    const loginSuccess = loginStore.loginSuccess
+    const loginError = loginStore.loginError
+
+    const id = ref('')
+    const password = ref('')
+    const loginMsg = ref('')
+
+    const sendLoginData = (template) => {
+      if (!validateParams(template)) return
+
+      axios({
+        method: 'post',
+        url: URL_MEMBER_LOGIN,
+        data: {
+          id: id.value,
+          password: password.value,
+        }
+      }).then((resp) => {
+        console.log(URL_MEMBER_LOGIN + " 요청 성공 status : " + resp.status)
+        loginSuccess.value = true
+        console.log('로그인 성공')
+        //리다이렉트 to Main -> profileBox 변경
+      }).catch(() => {
+        console.log(URL_MEMBER_LOGIN + " 요청 실패")
+        loginError.value = true
+        loginMsg.value = "로그인에 실패 하였습니다. 아이디 또는 비밀번호를 확인해 주세요. "
+      })
+    }
+
+    const validateParams = (template) => {
+      if (id.value.length === 0) {
+        template.$refs.focusId.focus()
+        loginMsg.value = "아이디를 입력해 주세요"
+        return false
+      } else if (password.value.length === 0) {
+        template.$refs.focusPw.focus()
+        loginMsg.value = "비밀번호를 입력해 주세요"
+        return false
+      }
+      return true
+    }
+
+    const getCookie = (key) => {
+      const value = document.cookie
+          .split(';')
+          .find((i) => i.trim().startsWith(key + '='))
+      if (!!value) {
+        return value.trim().substring(key.length + 1)
+      }
+      return null
+    }
+
+    const testMethod = () => {
+      axios({
+        method: 'get',
+        url: '/doldolseo/testtest',
+        params: {
+          id: id.value,
+        },
+        headers: {
+          Authorization: 'Bearer ' + getCookie('token')
+        },
+      }).then((resp) => {
+        console.log("테스트 메소드 요청 성공 status : " + resp.status)
+        console.log(resp.data)
+      }).catch(() => {
+        console.log("테스트 메소드 요청 실패")
+      })
+    }
+
 
     return {
       imgPath,
+      id,
+      password,
+      loginMsg,
+      sendLoginData,
+      testMethod,
+      cookie,
     }
   }
 }
@@ -76,8 +178,22 @@ export default {
   box-shadow: 1px 1px 1px gray;
 }
 
-.memberL-container__label--move {
-  margin-right: 335px;
+.memberL-container--checkbox {
+  width: 480px;
+  height: 20px;
+  text-align: left;
+}
+
+.memberL-msgbox {
+  width: 475px;
+  height: 50px;
+  text-align: left;
+}
+
+.msg {
+  text-align: left;
+  font-size: 16px;
+  color: red;
 }
 
 .memberL-btncontainer {
@@ -97,5 +213,6 @@ export default {
   border-radius: 5px;
   font-family: 'Jua', sans-serif;
 }
+
 
 </style>

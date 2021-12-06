@@ -202,7 +202,7 @@
       <input type="submit"
              class="memberJ-buttoncontainer__input--blue"
              value="회원가입"
-             @click="sendData(this)"
+             @click="sendJoinData(this)"
       />
     </div>
   </div>
@@ -228,6 +228,7 @@ export default {
     const id = ref('')
     const idMsgColor = ref('')
     const idValidateMsg = ref('')
+
     const validateId = (id) => {
       idMsgColor.value = 'red'
       const pattern = /^([a-z0-9]){4,20}$/
@@ -250,6 +251,7 @@ export default {
     const password = ref('')
     const pwdValidateMsg = ref('')
     const pwdLockImgUrl = ref('url(' + imgPath + lockImg[1] + ')')
+
     const validatePwd = (pwd) => {
       const pattern1 = /[0-9]/
       const pattern2 = /[a-zA-Z]/
@@ -267,6 +269,7 @@ export default {
     const passwordConfirm = ref('')
     const pwdConfirmValidateMsg = ref('')
     const pwdConfirmLockImgUrl = ref('url(' + imgPath + lockImg[1] + ')')
+
     const confirmPwd = (pwd, pwdConfirm) => {
       if (pwd === pwdConfirm) {
         checkValues.passwordConfirm = true
@@ -280,6 +283,7 @@ export default {
 
     const name = ref('')
     const nameValidateMsg = ref('')
+
     const validateName = (name) => {
       if (name.length >= 2) {
         checkValues.name = true
@@ -291,6 +295,7 @@ export default {
 
     const nickname = ref('')
     const nicknameValidateMsg = ref('')
+
     const validateNickname = (nickname) => {
       if (nickname.length >= 2) {
         checkValues.nickname = true
@@ -304,6 +309,7 @@ export default {
     const month = ref('')
     const day = ref('')
     let birth = ''
+
     const birthValidateMsg = ref('')
     const validatebirth = (year, month, day) => {
       const pattern1 = /([0-9])/
@@ -321,6 +327,7 @@ export default {
 
     const memberImgUrl = ref(null)
     let memberImgFile = null
+
     const setMemberImg = (e) => {
       memberImgFile = e.target.files[0]
       memberImgUrl.value = URL.createObjectURL(memberImgFile)
@@ -328,6 +335,7 @@ export default {
 
     const email = ref('')
     const emailValidateMsg = ref('')
+
     const validateEmail = (email) => {
       if (email !== '') {
         emailValidateMsg.value = ''
@@ -338,6 +346,7 @@ export default {
 
     const phone = ref('')
     const phoneValidateMsg = ref('')
+
     const validatephone = (phone) => {
       const pattern = /[0-9]{11}/
       if (pattern.test(phone)) {
@@ -351,7 +360,8 @@ export default {
     const agreeTermMsg = ref('')
 
     const URL_MEMBER = inject('doldolseoMember')
-    const sendData = (template) => {
+
+    const sendJoinData = (template) => {
       if (!validParams(template)) return
 
       const formData = new FormData()
@@ -359,7 +369,6 @@ export default {
       formData.append('password', password.value)
       formData.append('name', name.value)
       formData.append('nickname', nickname.value)
-      console.log("뭐라"+birth)
       formData.append('birth', birth)
       formData.append('memberImgFile', memberImgFile)
       formData.append('gender', gender.value)
@@ -442,7 +451,7 @@ export default {
       agreeTerm,
       agreeTermMsg,
       URL_MEMBER,
-      sendData,
+      sendJoinData,
     }
   }
 }
