@@ -1,7 +1,33 @@
 <template>
   <div class="miniprofile">
+    <!-- After Login -->
+    <div v-if="cookies.get('token') != null && loginState === 'login'"
+         class="miniprofileBox">
+      <div class="miniprofile__photo">
+        <img v-if="memberImg == null"
+             src="${pageContext.request.contextPath}/_image/profile/${member.member_img}"
+             alt="profile1">
+        <img v-else
+             :src="URL_MEMBER_IMAGES+memberImg"
+             alt="profile2">
+      </div>
+      <div class="miniprofile__info">
+        <span style="color:#37FFEB;"
+              id="header-miniprofile__span--nickname">{{ memberNickname }}</span>
+        <span id="header-miniprofile__span--white"> 님</span>
+        <br/>
+        안녕하세요
+      </div>
+
+      <div class="miniprofile__button">
+        <button type="button" @click="logout">LOGOUT</button>
+        <button type="button" onclick="location.href='${pageContext.request.contextPath}/mypageD?id=${member.id}'">
+          MYPAGE
+        </button>
+      </div>
+    </div>
     <!-- Before Login -->
-    <div v-if="loginSucess === false"
+    <div v-else
          class="miniprofileBox__guest">
       <button class="button1"
               type="button"
@@ -12,35 +38,39 @@
               @click="router.push({name: 'memberJoin'})">JOIN
       </button>
     </div>
-    <div v-else
-         class="miniprofileBox__guest">
-      <button class="button1"
-              type="button"
-              @click="router.push({name: 'memberLogin'})">FUCK
-      </button>
-      <button class="button2"
-              type="button"
-              @click="router.push({name: 'memberJoin'})">YOU
-      </button>
-    </div>
   </div>
-
-
 </template>
 
 <script>
 import {useRouter} from "vue-router";
-import loginStore from "../../module/strore-login"
+import {useCookies} from "vue3-cookies";
+import {inject, ref} from "vue";
+import login from "../../module/login";
+
 
 export default {
   name: "DoldolseoHeaderProfile",
+
   setup() {
+    const {cookies} = useCookies()
     const router = useRouter()
-    const loginSucess = loginStore.loginSuccess
+    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
+    const loginState = ref(localStorage.getItem('loginState'))
+    const memberNickname = localStorage.getItem('nickname')
+    const memberImg = localStorage.getItem('memberImg')
+    const logout = () => {
+      login.doLogout()
+      this.$forceUpdate()
+    }
 
     return {
       router,
-      loginSucess
+      cookies,
+      loginState,
+      memberNickname,
+      memberImg,
+      URL_MEMBER_IMAGES,
+      logout,
     }
   }
 }

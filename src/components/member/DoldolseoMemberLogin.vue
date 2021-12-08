@@ -42,7 +42,7 @@
              @click="sendLoginData(this)"
       />
       <input type="button" value="회원가입" onclick="location.href='${pageContext.request.contextPath}/memberJ'">
-      <input type="button" value="테스트버튼" @click="testMethod()">
+      <input type="button" value="테스트버튼" @click="testMethod()">{{ loginSuccess }}
     </div>
   </div>
 </template>
@@ -50,16 +50,15 @@
 <script>
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
-import loginStore from '../../module/strore-login'
+import {useCookies} from "vue3-cookies"
+import login from "../../module/login";
 
 export default {
   name: "DoldolseoMemberLogin",
   setup() {
-    const cookie = document.cookie
+    const {cookies} = useCookies()
     const imgPath = inject('contextPath') + '_image/member'
     const URL_MEMBER_LOGIN = inject('doldolseoMember') + '/login'
-    const loginSuccess = loginStore.loginSuccess
-    const loginError = loginStore.loginError
 
     const id = ref('')
     const password = ref('')
@@ -67,24 +66,8 @@ export default {
 
     const sendLoginData = (template) => {
       if (!validateParams(template)) return
-
-      axios({
-        method: 'post',
-        url: URL_MEMBER_LOGIN,
-        data: {
-          id: id.value,
-          password: password.value,
-        }
-      }).then((resp) => {
-        console.log(URL_MEMBER_LOGIN + " 요청 성공 status : " + resp.status)
-        loginSuccess.value = true
-        console.log('로그인 성공')
-        //리다이렉트 to Main -> profileBox 변경
-      }).catch(() => {
-        console.log(URL_MEMBER_LOGIN + " 요청 실패")
-        loginError.value = true
-        loginMsg.value = "로그인에 실패 하였습니다. 아이디 또는 비밀번호를 확인해 주세요. "
-      })
+      login.doLogin(id.value, password.value, URL_MEMBER_LOGIN);
+      loginMsg.value = login.loginMsg.value
     }
 
     const validateParams = (template) => {
@@ -92,22 +75,13 @@ export default {
         template.$refs.focusId.focus()
         loginMsg.value = "아이디를 입력해 주세요"
         return false
+
       } else if (password.value.length === 0) {
         template.$refs.focusPw.focus()
         loginMsg.value = "비밀번호를 입력해 주세요"
         return false
       }
       return true
-    }
-
-    const getCookie = (key) => {
-      const value = document.cookie
-          .split(';')
-          .find((i) => i.trim().startsWith(key + '='))
-      if (!!value) {
-        return value.trim().substring(key.length + 1)
-      }
-      return null
     }
 
     const testMethod = () => {
@@ -118,7 +92,7 @@ export default {
           id: id.value,
         },
         headers: {
-          Authorization: 'Bearer ' + getCookie('token')
+          Authorization: 'Bearer ' + cookies.get('token')
         },
       }).then((resp) => {
         console.log("테스트 메소드 요청 성공 status : " + resp.status)
@@ -128,6 +102,7 @@ export default {
       })
     }
 
+    let loginSuccess = login.loginSuccess
 
     return {
       imgPath,
@@ -136,7 +111,7 @@ export default {
       loginMsg,
       sendLoginData,
       testMethod,
-      cookie,
+      loginSuccess,
     }
   }
 }

@@ -146,12 +146,9 @@
 
 <script>
 import {inject, ref} from "vue";
-import DoldolseoHeader from "../common/DoldolseoHeader.vue";
-import DoldolseoFooter from "../common/DoldolseoFooter.vue";
 
 export default {
   name: "DoldolseoMain",
-  components: {DoldolseoHeader, DoldolseoFooter},
   setup() {
     const imgPath = inject('contextPath') + '_image/main'
     const counter = ref(0)
