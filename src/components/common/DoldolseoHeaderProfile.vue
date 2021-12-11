@@ -1,18 +1,79 @@
 <template>
   <div class="miniprofile">
+    <!-- After Login -->
+    <div v-if="cookies.get('token') != null && loginState === 'login'"
+         class="miniprofileBox">
+      <div class="miniprofile__photo">
+        <img :src="URL_MEMBER_IMAGES+memberImg"
+             alt="profile2">
+      </div>
+      <div class="miniprofile__info">
+        <span style="color:#37FFEB;"
+              id="header-miniprofile__span--nickname">{{ memberNickname }}</span>
+        <span id="header-miniprofile__span--white"> 님</span>
+        <br/>
+        안녕하세요
+      </div>
+
+      <div class="miniprofile__button">
+        <button type="button"
+                @click="logout(this)">
+          LOGOUT
+        </button>
+        <router-link :to="{name: 'memberMypage'}">
+          <button type="button">
+            MYPAGE
+          </button>
+        </router-link>
+      </div>
+    </div>
     <!-- Before Login -->
-    <div class="miniprofileBox__guest">
-      <button class="button1" type="button" onclick="location.href='${pageContext.request.contextPath}/memberL'">LOGIN</button>
-      <button class="button2" type="button" onclick="location.href='${pageContext.request.contextPath}/memberJ'">JOIN</button>
+    <div v-else
+         class="miniprofileBox__guest">
+      <button class="button1"
+              type="button"
+              @click="router.push({name: 'memberLogin'})">LOGIN
+      </button>
+      <button class="button2"
+              type="button"
+              @click="router.push({name: 'memberJoin'})">JOIN
+      </button>
     </div>
   </div>
-
-
 </template>
 
 <script>
+import {useRouter} from "vue-router";
+import {useCookies} from "vue3-cookies";
+import {inject, ref} from "vue";
+import login from "../../module/login";
+
+
 export default {
-  name: "DoldolseoHeaderProfile"
+  name: "DoldolseoHeaderProfile",
+  setup() {
+    const {cookies} = useCookies()
+    const router = useRouter()
+    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
+
+    const loginState = ref(localStorage.getItem('loginState'))
+    const memberNickname = localStorage.getItem('nickname')
+    const memberImg = localStorage.getItem('memberImg')
+
+    const logout = (component) => {
+      login.doLogout(component)
+    }
+
+    return {
+      router,
+      cookies,
+      loginState,
+      memberNickname,
+      memberImg,
+      URL_MEMBER_IMAGES,
+      logout,
+    }
+  }
 }
 </script>
 
@@ -91,7 +152,7 @@ export default {
   /*border: 1px solid;*/
 }
 
-.miniprofile__button > button {
+.miniprofile__button button {
   background-color: #4b8de9;
   color: white;
   font-family: 'jua', sans-serif;

@@ -44,7 +44,7 @@
     </div>
 
     <!--미니프로필 -->
-    <doldolseo-header-profile/>
+    <doldolseo-header-profile :key="profileRefreshKey"/>
 
     <div class='navbar__area'
          v-show="isMouseover"
@@ -62,6 +62,7 @@
 import {inject, ref} from "vue";
 import DoldolseoHeaderProfile from "./DoldolseoHeaderProfile.vue";
 import DoldolseoHeaderWidget from "./DoldolseoHeaderWidget.vue";
+import login from "../../module/login";
 
 export default {
   name: "DoldolseoHeader",
@@ -78,6 +79,8 @@ export default {
     const textColorCrew = ref('white')
     const isMouseover = ref(false)
 
+    const profileRefreshKey = login.refreshKey
+
     return {
       areaMenu,
       img_logo1,
@@ -86,6 +89,7 @@ export default {
       textColorReview,
       textColorCrew,
       isMouseover,
+      profileRefreshKey,
     }
   }
 }

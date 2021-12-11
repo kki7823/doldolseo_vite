@@ -171,7 +171,7 @@ export default {
 .areaList-container {
   background-color: white;
   width: 100%;
-  margin: 0 auto;
+  margin: 0 auto 40px;
   /*border: 1px solid;*/
 }
 

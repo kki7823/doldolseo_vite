@@ -16,6 +16,7 @@ export default {
   setup() {
     provide('contextPath', 'src/')
     provide('doldolseoArea', '/doldolseo/area')
+    provide('doldolseoMember', '/doldolseo/member')
 
     const areaMenu = {
       1: '강남',
@@ -68,10 +69,11 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   width: 100%;
   min-width: 1300px;
+  margin: 0;
+  padding: 0;
 }
 
 a {

@@ -146,12 +146,9 @@
 
 <script>
 import {inject, ref} from "vue";
-import DoldolseoHeader from "../common/DoldolseoHeader.vue";
-import DoldolseoFooter from "../common/DoldolseoFooter.vue";
 
 export default {
   name: "DoldolseoMain",
-  components: {DoldolseoHeader, DoldolseoFooter},
   setup() {
     const imgPath = inject('contextPath') + '_image/main'
     const counter = ref(0)
@@ -187,7 +184,7 @@ hr {
 .main_container {
   width: 100%;
   background-color: white;
-  margin: 0 auto;
+  margin: 0 auto 40px;
   /*border: 1px solid;*/
 }
 
