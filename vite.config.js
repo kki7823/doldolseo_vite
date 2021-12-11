@@ -6,11 +6,16 @@ export default defineConfig({
     plugins: [vue()],
     server: {
         proxy: {
-            '/doldolseo': {
+            '/doldolseo/area': {
+                target: 'http://localhost:53990',
+                changeOrigin: true,
+                rewrite: (path) => path.replace('^/', '')
+            },
+            '/doldolseo/member': {
                 target: 'http://localhost:8080',
                 changeOrigin: true,
                 rewrite: (path) => path.replace('^/', '')
             },
-        }
+        },
     }
 })
