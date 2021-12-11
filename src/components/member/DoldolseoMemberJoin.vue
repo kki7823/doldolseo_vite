@@ -326,7 +326,7 @@ export default {
     const gender = ref('')
 
     const memberImgUrl = ref(null)
-    let memberImgFile = null
+    let memberImgFile = null;
 
     const setMemberImg = (e) => {
       memberImgFile = e.target.files[0]
@@ -375,7 +375,11 @@ export default {
       formData.append('email', email.value)
       formData.append('phone', phone.value)
 
-      axios.post(URL_MEMBER, formData).then((resp) => {
+      axios.post(URL_MEMBER, formData, {
+        header: {
+          'Content-Type' : 'multipart/form-data'
+        }
+      }).then((resp) => {
         console.log(URL_MEMBER + " 요청 성공 status : " + resp.status)
         console.log(resp.data)
       }).catch(() => {

@@ -4,11 +4,7 @@
     <div v-if="cookies.get('token') != null && loginState === 'login'"
          class="miniprofileBox">
       <div class="miniprofile__photo">
-        <img v-if="memberImg == null"
-             src="${pageContext.request.contextPath}/_image/profile/${member.member_img}"
-             alt="profile1">
-        <img v-else
-             :src="URL_MEMBER_IMAGES+memberImg"
+        <img :src="URL_MEMBER_IMAGES+memberImg"
              alt="profile2">
       </div>
       <div class="miniprofile__info">
@@ -20,10 +16,15 @@
       </div>
 
       <div class="miniprofile__button">
-        <button type="button" @click="logout">LOGOUT</button>
-        <button type="button" onclick="location.href='${pageContext.request.contextPath}/mypageD?id=${member.id}'">
-          MYPAGE
+        <button type="button"
+                @click="logout(this)">
+          LOGOUT
         </button>
+        <router-link :to="{name: 'memberMypage'}">
+          <button type="button">
+            MYPAGE
+          </button>
+        </router-link>
       </div>
     </div>
     <!-- Before Login -->
@@ -50,17 +51,17 @@ import login from "../../module/login";
 
 export default {
   name: "DoldolseoHeaderProfile",
-
   setup() {
     const {cookies} = useCookies()
     const router = useRouter()
     const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
+
     const loginState = ref(localStorage.getItem('loginState'))
     const memberNickname = localStorage.getItem('nickname')
     const memberImg = localStorage.getItem('memberImg')
-    const logout = () => {
-      login.doLogout()
-      this.$forceUpdate()
+
+    const logout = (component) => {
+      login.doLogout(component)
     }
 
     return {
@@ -151,7 +152,7 @@ export default {
   /*border: 1px solid;*/
 }
 
-.miniprofile__button > button {
+.miniprofile__button button {
   background-color: #4b8de9;
   color: white;
   font-family: 'jua', sans-serif;
