@@ -23,7 +23,7 @@
           </a>
         </li>
         <li>
-          <router-link to="/review">
+          <router-link :to="{name: 'reviewList', params:{areaNo: ''}}" >
             <span @mouseover="textColorReview = '#F4B7B4'"
                   @mouseleave="textColorReview = 'white'"
                   :style="{color: textColorReview}">

@@ -12,6 +12,11 @@ export default defineConfig({
                 rewrite: (path) => path.replace('^/', '')
             },
             '/doldolseo/member': {
+                target: 'http://localhost:61150',
+                changeOrigin: true,
+                rewrite: (path) => path.replace('^/', '')
+            },
+            '/doldolseo/review': {
                 target: 'http://localhost:8080',
                 changeOrigin: true,
                 rewrite: (path) => path.replace('^/', '')

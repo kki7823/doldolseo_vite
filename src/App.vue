@@ -17,6 +17,7 @@ export default {
     provide('contextPath', 'src/')
     provide('doldolseoArea', '/doldolseo/area')
     provide('doldolseoMember', '/doldolseo/member')
+    provide('doldolseoReview', '/doldolseo/review')
 
     const areaMenu = {
       1: '강남',
@@ -85,4 +86,12 @@ table {
   /*border: 1pt solid;*/
   border-collapse: collapse;
 }
+
+/* tiptap */
+.ProseMirror {
+  height: 100%;
+  width: 100%;
+  outline: none;
+}
+
 </style>

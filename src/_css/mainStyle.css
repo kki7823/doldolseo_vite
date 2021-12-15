@@ -50,12 +50,14 @@ html, body {
     font-family: 'Nanum Gothic', sans-serif;
 }
 
+
+
 a {
     text-decoration-line: none;
     color: black;
 }
 
-.line--horizon {
+.nav--line__horizon {
     background-color: #CDCECF;
     border: 0;
     height: 2px
@@ -80,6 +82,15 @@ table {
     padding: 5px 3px 3px;
 }
 
+
+
+.common-miniTitle {
+    text-align: left;
+    font-family: 'Jua', sans-serif;
+    color: #6E6E6E;
+    font-size: 25px;
+    position: relative;
+}
 /* 테이블 항목 */
 .list--item {
     border-bottom: 1px #CDCECF solid;
@@ -441,6 +452,16 @@ table {
     height: 100%;
 }
 
+.common-top__drilldownbox {
+    float: left;
+    font-family: 'Nanum Gothic', sans-serif;
+    font-size: 20px;
+}
+
+.common-top__drilldownbox a {
+    color: #F78181;
+}
+
 /* 상단 컨테이너 (제목, 드릴다운 등) - reviewL, reviewD */
 .review-container--top {
     width: 1000px;
@@ -481,124 +502,12 @@ table {
 }
 
 /* ----- reviewNavibar by 경일 ----- */
-.nav-container {
-    width: 220px;
-    background-color: #F4B7B4;
-    border-top: 1pt solid white;
-    height: 100%;
-    margin-top: 40px;
-    position: relative;
-}
 
-.nav-titlebox {
-    margin: 50px 0 20px 25px;
-    text-align: left;
-}
-
-#nav-titlebox__title {
-    font-family: 'Jua', sans-serif;
-    font-size: 30px;
-    color: #A9E2F3;
-}
-
-.nav-list {
-    font-family: 'Nanum Gothic Coding', sans-serif;
-    font-weight: bold;
-    list-style: none;
-    padding-left: 0;
-}
-
-.nav-list__item {
-    font-size: 20px;
-    text-align: left;
-    margin-top: 24px;
-    margin-left: 25px;
-    color: blue;
-}
-
-.nav-list__item > a {
-    text-decoration-line: none;
-    color: white;
-}
-
-.nav-list__item > a:hover {
-    color: #F6CECE;
-}
-
-#nav-backimg {
-    width: inherit;
-    height: 250px;
-    position: absolute;
-    bottom: 0;
-    overflow: hidden;
-    /*border: 1pt solid;*/
-}
-
-#nav-backimg > img {
-    width: inherit;
-    height: inherit;
-    object-fit: cover;
-}
 
 /* ----- reviewList by 경일 ----- */
-#reviewL-top__buttonbox {
-    position: relative;
-    left: 392px;
-}
 
-#reviewL-listbox {
-    display: inline-block;
-    width: 1100px;
-    height: inherit;
-    margin: 0 auto;
-}
 
-#reviewL-list {
-    width: 1000px;
-    margin: 10px auto 0;
-}
-
-#reviewL-container--bottom {
-    width: 1000px;
-    height: 118px;
-    margin: 30px auto 0;
-    text-align: center;
-    /*border: 1px solid;*/
-}
-
-#reviewL-bottom_search {
-    margin-top: 48px;
-    right: 18px;
-}
-
-.common-searchbar {
-    display: inline-block;
-    position: relative;
-    width: 330px;
-    height: 50px;
-}
-
-.common-searchbar input[type=text] {
-    border: 1px #CDCECF solid;
-    padding: 8px;
-    margin-top: 10px;
-}
-
-.common-searchbar select {
-    width: 90px;
-    border: 1px #CDCECF solid;
-    padding: 8px;
-    margin-top: 10px;
-}
-
-/*.common-searchBtn {*/
-.common-searchbar > button {
-    position: absolute;
-    height: 33px;
-    border-radius: 0;
-    bottom: 6px;
-    margin: 1px;
-}
+/* ----- reviewDetail by 경일 ----- */
 
 /* -----  reviewInsert & Update  by 경일 ----- */
 .common-iuContainer--main {
@@ -653,8 +562,6 @@ table {
     height: inherit;
     object-fit: cover;
 }
-
-/* ----- reviewDetail by 경일 ----- */
 
 #reviewD-container {
     display: inline-block;
