@@ -92,6 +92,15 @@ table {
   height: 100%;
   width: 100%;
   outline: none;
+  content: attr(data-placeholder);
+}
+
+.ProseMirror p.is-editor-empty:first-child::before{
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
 }
 
 </style>

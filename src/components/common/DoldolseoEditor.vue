@@ -137,7 +137,6 @@
         </button>
       </div>
       <span class="editor--line_vertical"/>
-
       <div class="editor--button_group">
         <button @click="editor.chain().focus().toggleBulletList().run()"
                 :class="{ 'is-active': editor.isActive('bulletList') }">
@@ -239,7 +238,6 @@
           </svg>
         </button>
       </div>
-
     </div>
     <div class="editor--editarea">
       <editor-content
@@ -258,13 +256,24 @@ import FontFamily from '@tiptap/extension-font-family'
 import {Color} from '@tiptap/extension-color'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
+import CharacterCount from '@tiptap/extension-character-count'
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 
+const content = ref('')
 export default {
-  setup() {
+  components: {
+    EditorContent,
+  },
+  name: "DoldolseoTextEditor",
+  props: {
+    imageUuid: {
+      type: String,
+      require: true,
+    },
+  },
+  setup(props) {
     const editor = useEditor({
-      // content: '',
       extensions: [
         StarterKit,
         TextStyle,
@@ -274,11 +283,16 @@ export default {
           inline: true,
         }),
         Placeholder.configure({
-          placeholder: 'asdasdasdasdasdasdasdasdaasdasd',
+          placeholder: '최대 2048자까지 쓸 수 있습니다.',
+        }),
+        CharacterCount.configure({
+          limit: 2048,
         }),
       ],
+      onUpdate: ({editor}) => {
+        content.value = editor.getHTML()
+      },
     })
-
 
     const isClicked_font = ref(false)
     const isClicked_color = ref(false)
@@ -298,6 +312,7 @@ export default {
       'serif',
       'Verdana'
     ]
+
     const colorList = [
       'transparent', '#999999', '#FAE0D4', '#FAECC5', '#E4F7BA', '#CEFBC9', '#D4F4FA', '#D9E5FF', '#DAD9FF', '#E8D9FF', '#FFD9FA', '#FFD9EC',
       '#ffffff', '#777777', '#FFC19E', '#FFE08C', '#CEF279', '#B7F0B1', '#B2EBF4', '#B2CCFF', '#B5B2FF', '#D1B2FF', '#FFB2F5', '#FFB2D9',
@@ -309,24 +324,25 @@ export default {
     ]
 
     //임시 url, prop으로 컴포넌트 생성시 전달하게끔 구현
-    const URL_REVIEW = inject('doldolseoReview') + '/444' + '/images'
+    const URL_REVIEW_IMAGE = inject('doldolseoReview') + '/images/' + props.imageUuid
 
     const setImage = (e) => {
       const formData = new FormData()
       formData.append('imgFile', e.target.files[0])
 
-      axios.post(URL_REVIEW, formData, {
+      axios.post(URL_REVIEW_IMAGE, formData, {
         header: {
           'Content-Type': 'multipart/form-data'
         }
       }).then((resp) => {
-        console.log(URL_REVIEW + " 이미지 가져오기 성공 status : " + resp.status)
-        console.log(URL_REVIEW + '/' + resp.data)
-        editor.value.chain().focus().setImage({src: URL_REVIEW + '/' + resp.data}).run()
+        console.log(URL_REVIEW_IMAGE + " 이미지 가져오기 성공 status : " + resp.status)
+        console.log(URL_REVIEW_IMAGE + '/' + resp.data)
+        editor.value.chain().focus().setImage({src: URL_REVIEW_IMAGE + '/' + resp.data}).run()
       }).catch(() => {
-        console.log(URL_REVIEW + " 이미지 가져오기 실패")
+        console.log(URL_REVIEW_IMAGE + " 이미지 가져오기 실패")
       })
     }
+
     return {
       editor,
       isClicked_font,
@@ -334,13 +350,10 @@ export default {
       fontList,
       colorList,
       setImage,
-      URL_REVIEW,
+      URL_REVIEW_IMAGE,
     }
   },
-  components: {
-    EditorContent,
-  },
-  name: "DoldolseoTextEditor"
+  content: content,
 }
 </script>
 
@@ -350,7 +363,6 @@ export default {
 }
 
 .editor--menubar {
-  /*width: 100%;*/
   background-color: #fbfbfb;
   height: 40px;
   border: 1px solid rgba(0, 0, 0, .06);
@@ -403,6 +415,7 @@ export default {
   min-height: 450px;
   max-height: 1000px;
   overflow: auto;
+  width: 1010px;
   border: 1px solid rgba(0, 0, 0, .06);
 }
 

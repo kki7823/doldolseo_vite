@@ -516,6 +516,12 @@ table {
     /*font-size: 0;*/
 }
 
+.common-deleteMark--x {
+    color: #CDCECF;
+    font-size: 20px;
+    /*border: 1px solid;*/
+}
+
 .common-iuTop--title {
     text-align: left;
     font-family: 'Jua', sans-serif;
@@ -535,10 +541,6 @@ table {
     color: #CDCECF;
     font-size: 20px;
     /*border: 1px solid;*/
-}
-
-
-#writeform__item--course {
 }
 
 #reviewIU-container--bottom {

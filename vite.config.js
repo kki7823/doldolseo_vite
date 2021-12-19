@@ -6,16 +6,16 @@ export default defineConfig({
     plugins: [vue()],
     server: {
         proxy: {
-            '/doldolseo/area': {
-                target: 'http://localhost:53990',
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
-            '/doldolseo/member': {
-                target: 'http://localhost:61150',
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
+            // '/doldolseo/area': {
+            //     target: 'http://localhost:50280',
+            //     changeOrigin: true,
+            //     rewrite: (path) => path.replace('^/', '')
+            // },
+            // '/doldolseo/member': {
+            //     target: 'http://localhost:51446',
+            //     changeOrigin: true,
+            //     rewrite: (path) => path.replace('^/', '')
+            // },
             '/doldolseo/review': {
                 target: 'http://localhost:8080',
                 changeOrigin: true,

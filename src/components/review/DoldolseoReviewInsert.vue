@@ -3,91 +3,232 @@
   <section class="common-iuContainer--main">
 
     <!-- 제목 -->
-    <div class="common-iuTop--title" style="color:#F4B7B4 ">
+    <div class="common-iuTop--title">
       글쓰기
     </div>
 
     <!-- 글쓰기 폼 지역/제목/내용/코스추가/코스/ -->
-    <form id="reviewIU-form" enctype="multipart/form-data">
-      <table class="common-iuContainer--writeform">
+    <table class="common-iuContainer--writeform">
+      <!-- 지역 : select -->
+      <tr class="common-tbl__item">
+        <td>
+          <b>지역</b>
+        </td>
+        <td>
+          <select class="writeform__component"
+                  v-model="areaNo">
+            <option v-for="(area, idx) in areaMenu" :value="idx===0 ? 99 : idx">{{ area }}</option>
+          </select>
+        </td>
+      </tr>
 
-        <!-- id : hidden -->
-        <input name="member.id" type="hidden" value="${member.id}"/><!-- 추후 세션처리 -->
+      <!-- 제목 : text -->
+      <tr class="common-tbl__item">
+        <td>
+          제목
+        </td>
+        <td>
+          <input name="title"
+                 class="reviewIU--input_title"
+                 type="text"
+                 ref="focusTitle"
+                 v-model="title"
+          />
+        </td>
+      </tr>
 
-        <!-- 지역 : select -->
-        <tr class="common-tbl__item">
-          <td style="width: 170px">
-            <b>지역</b>
-          </td>
-          <td>
-            <select name="areaNo" class="writeform__component">
-              <option value="1">강남</option>
-              <option value="2">강북</option>
-              <option value="3">광화문</option>
-              <option value="4">명동</option>
-              <option value="5">여의도</option>
-              <option value="6">잠실</option>
-              <option value="7">홍대</option>
-              <option value="0">기타</option>
-            </select>
-          </td>
-        </tr>
+      <tr class="common-tbl__item">
+        <td>
+          내용
+        </td>
+        <td>
+          <doldolseo-editor ref="focusContent"
+                            :image-uuid="IMAGE_UUID"
+          />
+        </td>
+      </tr>
+      <!-- 코스 그리기 추가 : select (선택시 코스 이름, 코스그리기 항목 추가) -->
+      <tr class="common-tbl__item">
+        <td>
+          여행 코스 추가
+        </td>
+        <td>
+          <select @input="isSelected = !isSelected;">
+            <option>추가 안함</option>
+            <option>추가</option>
+          </select>
+        </td>
+      </tr>
+      <tr v-show="isSelected"
+          class='common-tbl__item'>
+        <td>코스 이름</td>
+        <td>
+          <div class="reviewIU--box_courseTitle">
+            <input v-model="courseTitle"
+                   type='text'
+            />
+            <button type='button'
+                    class='review-button--course'
+                    @click="courseMaker.addTitle(courseTitle)">
+              적용
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr v-show="isSelected"
+          class='common-tbl__item'>
+        <td>
+          코스 그리기
+        </td>
+        <td>
+          <div class="reviewIU--box-canvasinput">
+            <input id='placeName'
+                   type='text'
+                   v-model="placeName"
+            />
+            <input type='radio'
+                   :value=1
+                   checked='checked'
+                   v-model="placeType"
+            />
+            음식점
+            <input
+                type='radio'
+                :value=2
+                v-model="placeType"
+            />
+            쇼핑
+            <input
+                type='radio'
+                :value=3
+                v-model="placeType"
+            />
+            문화
+            <button type='button'
+                    class="review-button--course"
+                    @click="courseMaker.drawNodeAndLine(placeName, placeType)">
+              여행지 추가
+            </button>
+            <button type='button'
+                    class="review-button--course"
+                    @click="courseMaker.clearNode()">
+              초기화
+            </button>
+          </div>
+          <canvas id='canvas'
+                  width="1052"
+                  height="550"
+                  ref="canvas"
+          />
+          <div class="reviewIU--buttonbox-couresave">
+            <button class="review-button--course"
+                    @click="courseMaker.uploadCourse(URL_REVIEW_COURSE); isCourseUploaded = true;">
+              코스 저장
+            </button>
+          </div>
+        </td>
+      </tr>
+    </table>
 
-        <!-- 제목 : text -->
-        <tr class="common-tbl__item">
-          <td style="width: 170px">
-            제목
-          </td>
-          <td>
-            <input name="title" class="reviewIU--input_title" type="text"/>
-          </td>
-        </tr>
-
-        <tr class="common-tbl__item">
-          <td style="width: 170px">
-            내용
-          </td>
-          <td>
-            <doldolseo-editor/>
-          </td>
-        </tr>
-
-        <!-- 코스 그리기 추가 : select (선택시 코스 이름, 코스그리기 항목 추가) -->
-        <tr class="common-tbl__item" id="reviewI-selectBox">
-          <td style="width: 170px">
-            여행 코스 추가
-          </td>
-          <td>
-            <select id="reviewI-select--course">
-              <option value="no">추가 안함</option>
-              <option value="yes">추가</option>
-            </select>
-          </td>
-        </tr>
-      </table>
-
-      <!-- 저장 버튼 -->
-      <div id="reviewIU-container--bottom">
-        <button type="button" onclick="uploadCanvasData('${pageContext.request.contextPath}');"
-                id="reviewIU-btn--submit"
-                class="button--exceptionboot" style="width: 130px; height: 40px; font-size: 23px">
-          저장
-        </button>
-      </div>
-    </form>
+    <!-- 저장 버튼 -->
+    <div class="reviewIU-container--bottom">
+      <button type="button"
+              @click="sendReviewData(this)"
+              class="review-button">
+        저장
+      </button>
+    </div>
   </section>
 </template>
 
 <script>
-
 import DoldolseoEditor from "../common/DoldolseoEditor.vue";
+import DoldolseoCourseMaker from "./DoldolseoCourseMaker.vue";
+import courseMaker from "../../module/courseMaker";
+import {inject, onMounted, ref} from "vue";
+import {axios} from "@bundled-es-modules/axios";
+import {v4 as uuidv4} from "uuid";
 
 export default {
   name: "DoldolseoReviewInsert",
-  components: {DoldolseoEditor},
+  components: {DoldolseoCourseMaker, DoldolseoEditor},
   setup() {
+    const isSelected = ref(false)
+    const URL_REVIEW = inject('doldolseoReview')
+    const areaMenu = inject('areaMenu')
+    const areaNo = ref(99)
+    const title = ref('')
+    const courseTitle = ref('')
+    const placeName = ref('')
+    const placeType = ref(1)
+    const canvas = ref(null)
+    const isCourseUploaded = ref(false)
 
-    return {}
+    const IMAGE_UUID = uuidv4()
+    const URL_REVIEW_COURSE = inject('doldolseoReview') + '/course/' + IMAGE_UUID
+
+    onMounted(() => {
+          courseMaker.canvas.value = canvas.value
+          courseMaker.drawDefaultNode()
+        }
+    )
+
+    const sendReviewData = (template) => {
+      if (!validParams(template)) return
+
+      if (!confirm("저장되지 않는 코스는 게시글에 첨부 되지 않습니다. \n 저장 하시겠습니까?.")) return
+
+      const formData = new FormData()
+      // formData.append('id', localStorage.getItem('id'))
+      formData.append('id', 'kki7823')
+      formData.append('title', title.value)
+      formData.append('content', DoldolseoEditor.content.value)
+      formData.append('areaNo', areaNo.value)
+      formData.append('imageUUID', IMAGE_UUID)
+      formData.append('isCourseUploaded', isCourseUploaded.value )
+
+      axios.post(URL_REVIEW, formData, {
+        header: {
+          // 'Content-Type': 'multipart/form-data'
+        }
+      }).then((resp) => {
+        console.log(URL_REVIEW + ": 게시글 저장" + resp.status)
+      }).catch(() => {
+        console.log(URL_REVIEW + ": 게시글 저장 실패")
+      })
+    }
+
+    const validParams = (template) => {
+      if (title.value.length === 0) {
+        alert("제목을 입력해 주세요")
+        template.$refs.focusTitle.focus()
+        return false;
+      } else if (DoldolseoEditor.content.value.length === 0) {
+        alert("내용을 작성하여 주세요")
+        template.$refs.focusContent.focus()
+        return false;
+      }
+      console.log("all parameters are valid")
+      return true
+    }
+
+
+    return {
+      canvas,
+      courseMaker,
+      isSelected,
+      URL_REVIEW,
+      IMAGE_UUID,
+      URL_REVIEW_COURSE,
+      isCourseUploaded,
+      areaMenu,
+      areaNo,
+      title,
+      courseTitle,
+      placeName,
+      placeType,
+      sendReviewData,
+    }
   },
 }
 </script>
@@ -95,13 +236,15 @@ export default {
 <style scoped>
 .common-iuContainer--main {
   margin: 30px auto;
+  width: 1400px;
+  height: 100%;
   /*font-size: 0;*/
 }
 
 .common-iuTop--title {
   text-align: left;
   font-family: 'Jua', sans-serif;
-  color: #A9E2F3;
+  color: #F4B7B4;
   font-size: 50px;
   margin: 0 auto;
   width: 90%;
@@ -123,6 +266,8 @@ export default {
 
 .common-tbl__item > td {
   padding: 10px 20px 10px 20px;
+  width: 170px;
+  vertical-align: middle;
 }
 
 .common-tbl__item input[type=text] {
@@ -147,41 +292,95 @@ export default {
   resize: none;
 }
 
-.common-deleteMark--x {
-  color: #CDCECF;
-  font-size: 20px;
-  /*border: 1px solid;*/
-}
-
-
-.reviewIU--input_title{
+.reviewIU--input_title {
   width: 98%;
   min-width: 1000px;
 }
 
-#writeform__item--course {
-}
-
-#reviewIU-container--bottom {
+.reviewIU-container--bottom {
   width: 90%;
   text-align: right;
   margin: 20px auto 0;
   position: relative;
 }
 
-#secret {
-  width: 30px;
-  height: 32px;
-  position: absolute;
-  overflow: hidden;
-  right: 100px;
-  bottom: 3px;
+.reviewIU-container--bottom button {
+  width: 130px;
+  height: 40px;
+  font-size: 23px
 }
 
-#secret > img {
-  width: inherit;
-  height: inherit;
-  object-fit: cover;
+#canvas {
+  border: 1px solid rgba(0, 0, 0, .06);
 }
+
+.reviewIU--box-canvasinput {
+  margin-bottom: 10px;
+}
+
+.reviewIU--box_courseTitle {
+  position: relative;
+}
+
+.reviewIU--box_courseTitle input {
+  width: 400px;
+}
+
+
+.reviewIU--box_courseTitle button {
+  position: absolute;
+  left: 425px;
+  top: 3px;
+}
+
+.review-button {
+  color: white;
+  background-color: #F78181;
+  font-family: 'Jua', sans-serif;
+  font-size: 19px;
+  border-radius: 6px;
+  border: none;
+  padding: 5px 8px 3px 8px;
+  cursor: pointer;
+  vertical-align: baseline;
+  margin-left: 5px;
+}
+
+.review-button {
+  color: white;
+  background-color: #F78181;
+  font-family: 'Jua', sans-serif;
+  font-size: 19px;
+  border-radius: 6px;
+  border: none;
+  padding: 5px 8px 3px 8px;
+  cursor: pointer;
+  vertical-align: baseline;
+  margin-left: 5px;
+}
+
+.review-button--course {
+  color: white;
+  background-color: #909090;
+  font-family: 'Jua', sans-serif;
+  font-size: 16px;
+  border: none;
+  padding: 5px 8px 3px 8px;
+  cursor: pointer;
+  vertical-align: baseline;
+  margin-left: 5px;
+}
+
+.reviewIU--buttonbox-couresave {
+  /*border: 1px solid;*/
+  margin-top: 7px;
+  margin-bottom: 3px;
+  text-align: right;
+}
+
+.reviewIU--buttonbox-couresave button {
+  font-size: 15px;
+}
+
 
 </style>
