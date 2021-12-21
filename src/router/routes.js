@@ -6,8 +6,9 @@ import MemberJoin from "../components/member/DoldolseoMemberJoin.vue";
 import MemberMypage from "../components/member/DoldolseoMemberMypage.vue";
 import ReviewList from "../components/review/DoldolseoReviewList.vue";
 import ReviewDetail from "../components/review/DoldolseoReviewDetail.vue";
-import {defineComponent} from "vue";
 import ReviewInsert from "../components/review/DoldolseoReviewInsert.vue";
+import ReviewUpdate from "../components/review/DoldolseoReviewUpdate.vue";
+import {defineComponent} from "vue";
 
 const NotFound = defineComponent({
     template: '<div>Not Found</div>',
@@ -22,8 +23,9 @@ const routes = [
     {path: '/member/join', name: 'memberJoin', component: MemberJoin},
     {path: '/member/mypage', name: 'memberMypage', component: MemberMypage},
     {path: '/review:areaNo?', name: 'reviewList', component: ReviewList},
-    {path: '/review:reviewNo?', name: 'reviewDetail', component: ReviewDetail},
+    {path: '/review/:reviewNo', name: 'reviewDetail', component: ReviewDetail, props:true},
     {path: '/review/insert', name: 'reviewInsert', component: ReviewInsert},
+    {path: '/review/update/:reviewNo', name: 'reviewUpdate', component: ReviewUpdate, props:true},
     {path: '/:catchAll(.*)+', component: NotFound},
 ]
 

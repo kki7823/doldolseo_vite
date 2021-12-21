@@ -28,8 +28,7 @@
           제목
         </td>
         <td>
-          <input name="title"
-                 class="reviewIU--input_title"
+          <input class="reviewIU--input_title"
                  type="text"
                  ref="focusTitle"
                  v-model="title"
@@ -122,7 +121,7 @@
           />
           <div class="reviewIU--buttonbox-couresave">
             <button class="review-button--course"
-                    @click="courseMaker.uploadCourse(URL_REVIEW_COURSE); isCourseUploaded = true;">
+                    @click="uploadCourse()">
               코스 저장
             </button>
           </div>
@@ -148,13 +147,15 @@ import courseMaker from "../../module/courseMaker";
 import {inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {v4 as uuidv4} from "uuid";
+import {useRouter} from "vue-router";
+
 
 export default {
   name: "DoldolseoReviewInsert",
   components: {DoldolseoCourseMaker, DoldolseoEditor},
   setup() {
+    const router = useRouter()
     const isSelected = ref(false)
-    const URL_REVIEW = inject('doldolseoReview')
     const areaMenu = inject('areaMenu')
     const areaNo = ref(99)
     const title = ref('')
@@ -162,7 +163,12 @@ export default {
     const placeName = ref('')
     const placeType = ref(1)
     const canvas = ref(null)
-    const isCourseUploaded = ref(false)
+    const isCourseUploaded = ref('n')
+
+    const uploadCourse = () => {
+      courseMaker.uploadCourse(URL_REVIEW_COURSE);
+      isCourseUploaded.value = 'y';
+    }
 
     const IMAGE_UUID = uuidv4()
     const URL_REVIEW_COURSE = inject('doldolseoReview') + '/course/' + IMAGE_UUID
@@ -173,6 +179,7 @@ export default {
         }
     )
 
+    const URL_REVIEW = inject('doldolseoReview')
     const sendReviewData = (template) => {
       if (!validParams(template)) return
 
@@ -185,7 +192,7 @@ export default {
       formData.append('content', DoldolseoEditor.content.value)
       formData.append('areaNo', areaNo.value)
       formData.append('imageUUID', IMAGE_UUID)
-      formData.append('isCourseUploaded', isCourseUploaded.value )
+      formData.append('isCourseUploaded', isCourseUploaded.value)
 
       axios.post(URL_REVIEW, formData, {
         header: {
@@ -193,6 +200,8 @@ export default {
         }
       }).then((resp) => {
         console.log(URL_REVIEW + ": 게시글 저장" + resp.status)
+        router.replace('/review').then(() => {
+        })
       }).catch(() => {
         console.log(URL_REVIEW + ": 게시글 저장 실패")
       })
@@ -217,10 +226,8 @@ export default {
       canvas,
       courseMaker,
       isSelected,
-      URL_REVIEW,
       IMAGE_UUID,
-      URL_REVIEW_COURSE,
-      isCourseUploaded,
+      uploadCourse,
       areaMenu,
       areaNo,
       title,
@@ -236,7 +243,8 @@ export default {
 <style scoped>
 .common-iuContainer--main {
   margin: 30px auto;
-  width: 1400px;
+  width: 100%;
+  max-width: 1400px;
   height: 100%;
   /*font-size: 0;*/
 }
@@ -266,8 +274,8 @@ export default {
 
 .common-tbl__item > td {
   padding: 10px 20px 10px 20px;
-  width: 170px;
   vertical-align: middle;
+  min-width: 110px;
 }
 
 .common-tbl__item input[type=text] {
@@ -286,15 +294,8 @@ export default {
   top: 2px;
 }
 
-.common-tbl__item textarea {
-  border: 1px #CDCECF solid;
-  padding: 8px;
-  resize: none;
-}
-
 .reviewIU--input_title {
-  width: 98%;
-  min-width: 1000px;
+  min-width: 1034px;
 }
 
 .reviewIU-container--bottom {
@@ -376,6 +377,7 @@ export default {
   margin-top: 7px;
   margin-bottom: 3px;
   text-align: right;
+  width: 1055px;
 }
 
 .reviewIU--buttonbox-couresave button {

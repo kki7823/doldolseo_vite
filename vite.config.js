@@ -11,11 +11,11 @@ export default defineConfig({
             //     changeOrigin: true,
             //     rewrite: (path) => path.replace('^/', '')
             // },
-            // '/doldolseo/member': {
-            //     target: 'http://localhost:51446',
-            //     changeOrigin: true,
-            //     rewrite: (path) => path.replace('^/', '')
-            // },
+            '/doldolseo/member': {
+                target: 'http://localhost:64780',
+                changeOrigin: true,
+                rewrite: (path) => path.replace('^/', '')
+            },
             '/doldolseo/review': {
                 target: 'http://localhost:8080',
                 changeOrigin: true,

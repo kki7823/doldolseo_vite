@@ -257,7 +257,7 @@ import {Color} from '@tiptap/extension-color'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
-import {inject, ref} from "vue";
+import {inject, onMounted, ref, watch} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 
 const content = ref('')
@@ -271,9 +271,15 @@ export default {
       type: String,
       require: true,
     },
+    contentBeforeUpdating: {
+      type: String,
+      require: false,
+      default: '',
+    },
   },
   setup(props) {
     const editor = useEditor({
+      content: props.contentBeforeUpdating,
       extensions: [
         StarterKit,
         TextStyle,
@@ -359,7 +365,9 @@ export default {
 
 <style scoped>
 .editor--container {
-  width: 100%;
+  width: 1050px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .editor--menubar {
@@ -368,6 +376,7 @@ export default {
   border: 1px solid rgba(0, 0, 0, .06);
   text-align: left;
   box-shadow: 0 3px 5px -4px gray;
+  width: 100%;
   /*border-bottom: 1px solid rgba(0,0,0,.2);*/
 }
 
@@ -415,7 +424,7 @@ export default {
   min-height: 450px;
   max-height: 1000px;
   overflow: auto;
-  width: 1010px;
+  width: 96.2%;
   border: 1px solid rgba(0, 0, 0, .06);
 }
 

@@ -101,6 +101,7 @@ table {
   color: #adb5bd;
   pointer-events: none;
   height: 0;
+  width: 500px;
 }
 
 </style>

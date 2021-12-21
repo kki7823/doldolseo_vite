@@ -42,6 +42,7 @@ export default {
   width: 220px;
   background-color: #F78181;
   border-top: 1pt solid white;
+  min-height: 900px;
   height: 100%;
   margin-top: 40px;
   position: relative;

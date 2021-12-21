@@ -36,7 +36,7 @@
             class="list--item">
           <td>{{ areaMenu[review.areaNo] }}</td>
           <td>
-            <router-link :to="{name: 'reviewDetail', params:{reviewNo: 1 }}">
+            <router-link :to="{name: 'reviewDetail', params:{reviewNo: review.reviewNo}}">
               {{ review.title }}
             </router-link>
           </td>
@@ -48,7 +48,8 @@
 
       <!-- 페이지네이션 및 검색창-->
       <div class="reviewL-container--bottom">
-        <div class="reviewL-bottom__pagination">
+        <div class="reviewL-bottom__pagination"
+             v-if="totalPages > 1">
           <table class="pagination">
             <tr>
               <td @click="page=0"> &lt;&lt;</td>
@@ -153,7 +154,6 @@ export default {
   text-align: center;
   margin: 0 auto;
   font-size: 0;
-  border: 1px solid;
 }
 
 /* 네비게이션 컨테이너 - reviewL, reviewD */
