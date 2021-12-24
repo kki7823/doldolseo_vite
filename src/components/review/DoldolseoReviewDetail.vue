@@ -34,7 +34,8 @@
           </button>
         </router-link>
         <button class="review-button"
-                type="button">
+                type="button"
+                style="margin-left: 10px">
           글 삭제
         </button>
       </div>
@@ -139,37 +140,8 @@
 
         <hr class="line--horizon">
       </div>
-
-      <table class="reviewD-tablelayout">
-        <!-- 댓글 목록 출력 -->
-      </table>
-
-      <!-- 댓글 입력 폼 -->
-
-      <!--      <c:choose>-->
-      <!--        <c:when test="${member.id eq null}">-->
-      <!--          <div class="comment__input">-->
-      <!--            <textarea name="content" placeholder="로그인이 필요합니다." readonly="readonly"></textarea>-->
-      <!--            <div class="comment__buttonbox">-->
-      <!--            </div>-->
-      <!--          </div>-->
-      <!--        </c:when>-->
-      <!--        <c:otherwise>-->
-      <div class="comment__input" id="reviewD-comment__input">
-        <input type="hidden" name="member.id" value="${member.id}">
-        <input type="hidden" name="review.reviewNo" value=${reviewNo}>
-        <textarea id="comment__input__textarea" name="content" placeholder="댓글을 입력해 보세요"
-                  onfocusin="changeBorderOnFocus()"
-                  onfocusout="changeBorderOnFocusOut()"></textarea>
-        <div class="comment__buttonbox">
-          <button type="button"
-                  onclick="insertComment('${pageContext.request.contextPath}',${reviewNo})"
-                  class="button--comment">등록
-          </button>
-        </div>
-      </div>
-      <!--        </c:otherwise>-->
-      <!--      </c:choose>-->
+      <!-- here -->
+      <doldolseo-comment :review-no="reviewNo"/>
 
     </section>
   </div>
@@ -178,12 +150,12 @@
 <script>
 import DoldolseoReviewNav from "./DoldolseoReviewNav.vue";
 import {axios} from "@bundled-es-modules/axios";
-import {router} from "../../router/router";
-import {inject, onMounted, ref} from "vue";
+import {computed, inject, onMounted, ref} from "vue";
+import DoldolseoComment from "../common/DoldolseoComment.vue";
 
 export default {
   name: "DoldolseoReviewDetail",
-  components: {DoldolseoReviewNav},
+  components: {DoldolseoComment, DoldolseoReviewNav},
   props: {
     reviewNo: {
       type: String,
@@ -195,7 +167,6 @@ export default {
     const URL_REVIEW_IMG = inject('doldolseoReview') + '/images/'
     const URL_GET_REVIEW = URL_REVIEW + '/' + props.reviewNo
     const URL_MEMBER_IMG = inject('doldolseoMember') + '/images/'
-    const reviewNo = ref(0)
     const wdate = ref([])
     const title = ref('')
     const content = ref('')
@@ -213,7 +184,6 @@ export default {
         },
       }).then((resp) => {
         console.log(URL_GET_REVIEW + " 요청 성공")
-        reviewNo.value = resp.data.reviewNo
         wdate.value = resp.data.wdate
         title.value = resp.data.title
         content.value = resp.data.content
@@ -229,7 +199,6 @@ export default {
     return {
       URL_MEMBER_IMG,
       URL_REVIEW_IMG,
-      reviewNo,
       title,
       content,
       wdate,
@@ -286,10 +255,6 @@ export default {
   margin: 0 auto;
   text-align: right;
   /*border: 1px solid;*/
-}
-
-.review-btnBox--reviewEdit button {
-  margin-right: 10px;
 }
 
 .review-button {
@@ -353,30 +318,6 @@ export default {
 
 .common-top__drilldownbox a {
   color: #F78181;
-}
-
-.comment-tablelayout {
-  border: 1px #CDCECF solid;
-  font-family: 'Nanum Gothic Coding', monospace;
-  font-size: 15px;
-  color: black;
-  text-align: left;
-}
-
-.comment-tablelayout > td {
-  padding: 10px 20px 10px 20px;
-  white-space: nowrap;
-}
-
-.comment-tablelayout input[type=text] {
-  border: 1px #CDCECF solid;
-  padding: 8px;
-}
-
-.comment-tablelayout select {
-  width: 150px;
-  border: 1px #CDCECF solid;
-  padding: 8px;
 }
 
 .common-top__title {
@@ -538,100 +479,4 @@ export default {
   line-height: 20px;
   /*border: 1pt solid;*/
 }
-
-.comment__input {
-  display: inline-block;
-  width: 100%;
-  height: 140px;
-  margin-top: 20px;
-  border: 1px #CDCECF solid;
-}
-
-.comment__input > textarea {
-  border: none;
-  /*border: 1px solid;*/
-  width: 99%;
-  height: 100px;
-  outline: none;
-  resize: none;
-}
-
-.comment__buttonbox {
-  text-align: right;
-}
-
-/* 클릭시 댓글 수정 삭제 활성화 */
-.comment__deleteUpdateButton {
-  position: absolute;
-  right: 0;
-  color: #CDCECF;
-  background-color: white;
-  font-family: 'Jua', sans-serif;
-  font-size: 16px;
-  padding: 6px 8px 4px 8px;
-  border: none;
-  /*border: 1pt solid;*/
-}
-
-.comment__deleteUpdateButton:hover {
-  color: #A9E2F3;
-}
-
-.comment__deleteUpdateBox {
-  width: 90px;
-  height: 54px;
-  border-radius: 10px;
-  font-family: 'Jua', sans-serif;
-  padding: 4px;
-  box-shadow: 3px 3px #E6E6E6;
-  border: 1pt solid #E6E6E6;
-  position: absolute;
-  right: 30px;
-  display: none;
-}
-
-.comment__deleteUpdatelist {
-  list-style: none;
-  margin: 3px auto 0;
-  border: 1pt solid white;
-  text-align: center;
-  font-size: 16px;
-  width: 80px;
-}
-
-.comment__deleteUpdatelist:hover {
-  background-color: #F2F2F2;
-}
-
-.comment__deleteUpdatelist > button {
-  font-family: 'Jua', sans-serif;
-  font-size: 16px;
-  background-color: unset;
-  border: none;
-}
-
-.comment-editSubbox {
-  width: 90px;
-  position: absolute;
-  text-align: center;
-  bottom: 2px;
-  right: 4px;
-  display: none;
-  /*border: 1pt solid;*/
-}
-
-.comment-editSubbox > button {
-  background-color: white;
-  color: black;
-  font-family: 'Jua', sans-serif;
-  font-size: 17px;
-  border-radius: 5px;
-  padding: 2px 4px 0 4px;
-  border: 1px #CDCECF solid;
-}
-
-.comment-editSubbox > button:hover {
-  color: #A9E2F3;
-}
-
 </style>
