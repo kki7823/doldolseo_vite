@@ -23,7 +23,7 @@
           </a>
         </li>
         <li>
-          <router-link :to="{name: 'reviewList', params:{areaNo: ''}}" >
+          <router-link :to="{name: 'reviewList', params:{areaNo: ''}}">
             <span @mouseover="textColorReview = '#F4B7B4'"
                   @mouseleave="textColorReview = 'white'"
                   :style="{color: textColorReview}">
@@ -32,13 +32,13 @@
           </router-link>
         </li>
         <li>
-          <a href="${pageContext.request.contextPath}/crewL">
+          <router-link :to="{name: 'crewList'}">
             <span @mouseover="textColorCrew = '#FF8000'"
                   @mouseleave="textColorCrew = 'white'"
                   :style="{color: textColorCrew}">
               CREW
             </span>
-          </a>
+          </router-link>
         </li>
       </ul>
     </div>

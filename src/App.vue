@@ -18,6 +18,7 @@ export default {
     provide('doldolseoArea', '/doldolseo/area')
     provide('doldolseoMember', '/doldolseo/member')
     provide('doldolseoReview', '/doldolseo/review')
+    provide('doldolseoCrew', '/doldolseo/crew')
 
     const areaMenu = {
       1: '강남',

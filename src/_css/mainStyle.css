@@ -1197,10 +1197,7 @@ table {
 }
 
 /* crewInsert */
-.crewI-insertTbl {
-    width: 1115px;
-    margin-top: 50px;
-}
+
 
 .crew-logobox {
     display: inline-block;
@@ -1226,9 +1223,7 @@ table {
     height: 30px
 }
 
-#crewI_input--image {
-    display: none;
-}
+
 
 #crewI-input--name {
     position: absolute;

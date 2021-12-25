@@ -11,12 +11,17 @@ export default defineConfig({
             //     changeOrigin: true,
             //     rewrite: (path) => path.replace('^/', '')
             // },
-            '/doldolseo/member': {
-                target: 'http://localhost:64780',
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
-            '/doldolseo/review': {
+            // '/doldolseo/member': {
+            //     target: 'http://localhost:64780',
+            //     changeOrigin: true,
+            //     rewrite: (path) => path.replace('^/', '')
+            // },
+            // '/doldolseo/review': {
+            //     target: 'http://localhost:8080',
+            //     changeOrigin: true,
+            //     rewrite: (path) => path.replace('^/', '')
+            // },
+            '/doldolseo/crew': {
                 target: 'http://localhost:8080',
                 changeOrigin: true,
                 rewrite: (path) => path.replace('^/', '')

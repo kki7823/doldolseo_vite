@@ -1,12 +1,13 @@
 import {axios} from "@bundled-es-modules/axios";
 import {ref} from "vue"
-import {router} from "../router/router";
 import {useCookies} from "vue3-cookies";
+import {useRouter} from "vue-router";
 
 const loginMsg = ref('')
 const refreshKey = ref(0)
 const memberData = ref('')
 const {cookies} = useCookies()
+const router = useRouter()
 
 export default {
     loginMsg: loginMsg,
