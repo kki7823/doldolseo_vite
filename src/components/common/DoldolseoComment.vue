@@ -70,17 +70,6 @@
     </tr>
   </table>
 
-  <!-- 댓글 입력 폼 -->
-
-  <!--      <c:choose>-->
-  <!--        <c:when test="${member.id eq null}">-->
-  <!--          <div class="comment__input">-->
-  <!--            <textarea name="content" placeholder="로그인이 필요합니다." readonly="readonly"></textarea>-->
-  <!--            <div class="comment__buttonbox">-->
-  <!--            </div>-->
-  <!--          </div>-->
-  <!--        </c:when>-->
-  <!--        <c:otherwise>-->
   <div class="comment__input"
        @focusin="isCommentFocused=true"
        @focusout="isCommentFocused=false"
@@ -97,8 +86,6 @@
       </button>
     </div>
   </div>
-  <!--        </c:otherwise>-->
-  <!--      </c:choose>-->
 </template>
 
 <script>

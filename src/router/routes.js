@@ -10,6 +10,8 @@ import ReviewInsert from "../components/review/DoldolseoReviewInsert.vue";
 import ReviewUpdate from "../components/review/DoldolseoReviewUpdate.vue";
 import CrewCreate from "../components/crew/DoldolseoCrewCreate.vue";
 import CrewList from "../components/crew/DoldolseoCrewList.vue";
+import CrewDetail from "../components/crew/DoldolseoCrewDetail.vue";
+import CrewManage from "../components/crew/DoldolseoCrewManage.vue";
 import {defineComponent} from "vue";
 
 const NotFound = defineComponent({
@@ -30,6 +32,8 @@ const routes = [
     {path: '/review/update/:reviewNo', name: 'reviewUpdate', component: ReviewUpdate, props:true},
     {path: '/crew', name: 'crewList', component: CrewList},
     {path: '/crew/create', name: 'crewCreate', component: CrewCreate},
+    {path: '/crew/:crewNo', name: 'crewDetail', component: CrewDetail , props:true},
+    {path: '/crew/manage/:id', name: 'crewManage', component: CrewManage , props:true},
     {path: '/:catchAll(.*)+', component: NotFound},
 ]
 

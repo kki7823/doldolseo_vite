@@ -12,7 +12,7 @@ export default defineConfig({
             //     rewrite: (path) => path.replace('^/', '')
             // },
             // '/doldolseo/member': {
-            //     target: 'http://localhost:64780',
+            //     target: 'http://localhost:8090',
             //     changeOrigin: true,
             //     rewrite: (path) => path.replace('^/', '')
             // },

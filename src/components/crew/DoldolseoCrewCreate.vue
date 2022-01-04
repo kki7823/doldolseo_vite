@@ -19,7 +19,12 @@
         <td rowspan="2"
             class="common-td__border">
           <div class="crew-logobox">
-            <img id="crewI_img"
+            <img v-if ="crewImgUrl == null"
+                 :src="IMAGEPATH_CREW_LOGO_DEFAULT"
+                 alt="crew-logo"
+            />
+            <img v-else
+                 id="crewI_img"
                  :src="crewImgUrl"
                  alt="crew-logo"
             />
@@ -49,7 +54,7 @@
                  @change="isCheckedCrewNameDuplicate=false"
           />
           <button type="button"
-                  class="crew-button" @click="isDuplicateCrewName(crewName)">
+                  class="crew-button" @click="checkDuplicateCrewName(crewName)">
             중복 확인
           </button>
           <p class="msg"
@@ -183,6 +188,7 @@ export default {
   name: "DoldolseoCrewCreate",
   setup() {
     const URL_CREW = inject('doldolseoCrew')
+    const IMAGEPATH_CREW_LOGO_DEFAULT = inject('contextPath') + '/_image/crew/logo/default_crew.png'
     const router = useRouter()
     const crewName = ref('')
     const checkedArea = ref([])
@@ -296,8 +302,8 @@ export default {
 
     const isCheckedCrewNameDuplicate = ref(false)
 
-    const isDuplicateCrewName = async (crewName) => {
-      const URL_CREW_CHECK_CREWNAME = URL_CREW + '/' + crewName
+    const checkDuplicateCrewName = async (crewName) => {
+      const URL_CREW_CHECK_CREWNAME = URL_CREW + '/check/' + crewName
 
       await axios({
         method: 'get',
@@ -325,6 +331,7 @@ export default {
     }
 
     return {
+      IMAGEPATH_CREW_LOGO_DEFAULT,
       crewName,
       checkedArea,
       intro,
@@ -341,7 +348,7 @@ export default {
       crewNameMsgColor,
       isCheckedCrewNameDuplicate,
       validateCrewName,
-      isDuplicateCrewName,
+      checkDuplicateCrewName,
       sendCrewData,
     }
   }

@@ -48,28 +48,14 @@
 
       <!-- 페이지네이션 및 검색창-->
       <div class="reviewL-container--bottom">
-        <div class="reviewL-bottom__pagination"
-             v-if="totalPages > 1">
-          <table class="pagination">
-            <tr>
-              <td @click="page=0"> &lt;&lt;</td>
-              <td v-if="startBlockPage === 1"
-                  @click="page = startBlockPage-2">
-                &lt;
-              </td>
-              <td v-for="idx in endBlockPage-startBlockPage+1"
-                  @click="page = idx-1">
-                {{ idx }}
-              </td>
-              <td v-if="endBlockPage !== totalPages"
-                  @click="page = endBlockPage">
-                &gt;
-              </td>
-              <td @click="page=totalPages-1">
-                &gt;&gt;
-              </td>
-            </tr>
-          </table>
+        <div class="reviewL-bottom__pagination">
+          <doldolseo-pagenation
+              v-if="totalPages > 1"
+              :page="page"
+              :start-block-page="startBlockPage"
+              :end-block-page="endBlockPage"
+              :total-pages="totalPages"
+          />
         </div>
         <!-- 검색창 -->
         <div id="reviewL-bottom_search"
@@ -98,10 +84,11 @@ import DoldolseoReviewNav from "./DoldolseoReviewNav.vue";
 import {inject, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRoute} from "vue-router";
+import DoldolseoPagenation from "../common/DoldolseoPagenation.vue";
 
 export default {
   name: "DoldolseoReviewList",
-  components: {DoldolseoReviewNav},
+  components: {DoldolseoPagenation, DoldolseoReviewNav},
   setup() {
     const route = useRoute()
     const areaMenu = inject('areaMenu')
@@ -122,7 +109,6 @@ export default {
         }
       }).then((resp) => {
         console.log(URL_REVIEW + " - 요청 성공 status : " + resp.status)
-
         reviewList.value = resp.data.reviewList
         startBlockPage.value = resp.data.startBlockPage
         endBlockPage.value = resp.data.endBlockPage
@@ -279,18 +265,4 @@ export default {
 .list--item > td {
   padding: 5px 3px 3px;
 }
-
-.pagination {
-  display: inline-block;
-}
-
-.pagination td {
-  border: 1px #CDCECF solid;
-  font-family: 'Nanum Gothic Coding', sans-serif;
-  font-size: 15px;
-  font-weight: bold;
-  padding: 4px 14px 4px 14px;
-  cursor: pointer;
-}
-
 </style>

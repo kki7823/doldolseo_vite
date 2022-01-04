@@ -1168,15 +1168,6 @@ table {
     left: 19px;
 }
 
-.crew-member-decotext {
-    font-family: 'Jua', sans-serif;
-    font-size: 14px;
-    color: white;
-    background-color: #6E6E6E;
-    padding: 6px 12px 3px 12px;
-    border-radius: 15px;
-}
-
 .crew-recruitContainer {
     display: inline-block;
     width: 530px;
@@ -1268,7 +1259,6 @@ table {
     position: relative;
     left: 50px;
     /*border: 1pt solid;*/
-
 }
 
 .crewM-member--idbox__btnbox {

@@ -51,7 +51,9 @@
          @mouseleave="isMouseover = false">
       <ul>
         <li v-for="(areaName, sigungu) in areaMenu">
-          <router-link :to="{name: 'areaList', query:{sigungu: sigungu}}">{{ areaName }}</router-link>
+          <router-link :to="{name: 'areaList', query:{sigungu: sigungu}}">
+            {{ areaName }}
+          </router-link>
         </li>
       </ul>
     </div>
