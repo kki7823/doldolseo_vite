@@ -33,17 +33,13 @@
                  :src="URL_CREW_IMAGE+crewImage"
                  alt="crew-logo"
             />
-            <form id="crewM-form-img" enctype="multipart/form-data">
-              <label id="crewD-label--img"
-                     class="crew-label--upload"
-                     for="crewM_input--image">
-                변경
-              </label>
-              <input type="file"
-                     name="crewImageFile"
-                     id="crewM_input--image"
-                     onchange="setImg_m(event,'${pageContext.request.contextPath}',${crew.crewNo})">
-            </form>
+            <label class="crew-label--upload"
+                   for="crewM_input--image">
+              변경
+            </label>
+            <input type="file"
+                   id="crewM_input--image"
+                   @change="updateCrewImage">
           </div>
         </div>
 
@@ -99,13 +95,7 @@
           <span class="crew-namelabel">
             {{ areaNoToString(areaNoFirst, areaNoSecond, areaNoThird) }}
           </span>
-          <button class="crew-button"
-                  style="height: 31px; margin-left: 5px;"
-                  onclick="goAreaEditMode('${pageContext.request.contextPath}',${crew.crewNo})">
-            수정
-          </button>
         </div>
-
 
         <!-- 크루소개(간략) : 수정 -->
         <div class="crew-info__item">
@@ -138,19 +128,21 @@
           <textarea class="crewM-textArea--introDetail"
                     :readonly="isClickedUpdateIntroDetail"
                     id="crewM-IntroDetail"
-                    :style="{border: setBoderIfEdit(isClickedUpdateIntroDetail)}">{{ introDetail }}</textarea>
-          <button id="crewM-btn--modifyInfo"
-                  class="crew-button"
+                    v-model="introDetail"
+                    :style="{border: setBoderIfEdit(isClickedUpdateIntroDetail)}">
+          </textarea>
+          <button v-if="isClickedUpdateIntroDetail"
+                  class="crewM-btn--modifyInfo"
                   @click="isClickedUpdateIntroDetail = !isClickedUpdateIntroDetail;
                           setFocus('crewM-IntroDetail');">
             수정
           </button>
-          <form id="crewM-form--introD"
-                method="post">
-            <label id="crewM-editBox--intro">
-              <!-- 수정 양식 추가 되는 곳 -->
-            </label>
-          </form>
+          <button v-else
+                  class="crewM-btn--modifyInfo"
+                  @click="isClickedUpdateIntroDetail = !isClickedUpdateIntroDetail;
+                          updateCrewData()">
+            완료
+          </button>
         </div>
       </div>
     </div>
@@ -173,7 +165,9 @@
           <tr class="common-tbl__item">
             <td>
               <div class="crew-master--decorate">
-                <span class="crew-master--decotext">크루장</span>
+                <span class="crew-master--decotext">
+                  크루장
+                </span>
                 <img :src="IMAGEPATH_CREW+'/crew_master_crown.png'"
                      alt="crown">
               </div>
@@ -194,7 +188,9 @@
           <tr v-for="member in members_joined"
               class="common-tbl__item">
             <td>
-              <span class="crew-member-decotext">크루원</span>
+              <span class="crew-member-decotext">
+                크루원
+              </span>
             </td>
             <td>
               <div class="crew-member--idbox">
@@ -211,7 +207,7 @@
                   <button type="button"
                           class="crew-button"
                           style="margin-left: 5px"
-                          onclick="DenyOrKick('${pageContext.request.contextPath}',${crewMember.regNo})">
+                          @click="kickMember(member.crewMemberNo)">
                     강퇴
                   </button>
                 </div>
@@ -228,24 +224,40 @@
            style="width: 550px; top:45px; left: 65px; font-size: 32px;">
         <span>모집 공고</span>
 
-        <button id=crewM-btn--modifyJoin
-                class="crew-button"
-                onclick="popupEditJoin()"
+        <button class="crew-button"
+                @click="popupVal_JoinEdit = !popupVal_JoinEdit"
                 style="float: right; margin-top: 2px; width: 130px">
           가입 양식 수정
         </button>
+        <doldolseo-crew-join-edit v-if="popupVal_JoinEdit"
+                                  :toggle-popup="togglePopup_JoinEdit"
+                                  :crew-no="crewNo"
+                                  :question-first="questionFirst"
+                                  :question-second="questionSecond"
+                                  :question-third="questionThird"
+        />
       </div>
-      <div id="crewM-recruiutBox"
-           class="crew-recruitContainer">
-        {{ recruit }}
-      </div>
-      <button id=crewM-btn--modifyRecuit
+      <textarea class="crewM-textArea--recruit"
+                :readonly="isClickedUpdateRecruit"
+                id="crewM-IntroDetail"
+                v-model="recruit"
+                :style="{border: setBoderIfEdit(isClickedUpdateRecruit)}">
+          </textarea>
+      <button v-if="isClickedUpdateRecruit"
               class="crew-button"
-              onclick="goRecruitEditMode('${pageContext.request.contextPath}',${crew.crewNo})"
-              style="float: right; margin-top: 7px">수정
+              @click="isClickedUpdateRecruit = !isClickedUpdateRecruit;"
+              style="float: right; margin-top: 7px">
+        수정
       </button>
-    </div>
+      <button v-else
+              class="crew-button"
+              @click="isClickedUpdateRecruit = !isClickedUpdateRecruit;
+                      updateCrewData();"
+              style="float: right; margin-top: 7px">
+        완료
+      </button>
 
+    </div>
 
     <!-- 가입대기자 정보 -->
     <div class="common-miniTitle"
@@ -263,9 +275,15 @@
           </tr>
         </table>
         <table class="crew-memberTbl--bottom">
-
+          <tr v-if="members_wating.length === 0"
+              class="common-tbl__item"
+              style="color: grey; text-align: center">
+            <p>가입 신청이 없습니다</p>
+          </tr>
           <!-- 가입대기자 목록 출력 -->
-          <tr v-for="(member, idx) in members_wating"
+          <tr v-else
+              v-for="(member, idx) in members_wating"
+              :key="member.crewMemberNo"
               class="common-tbl__item">
             <td style="font-size: 20px; width: 100px">
               {{ idx + 1 }}
@@ -281,20 +299,28 @@
                   {{ member.crewMemberId }}
                 </div>
                 <span class="crewM-member--idbox__btnbox">
+                  <doldolseo-crew-join-info v-if="idx === selectIdx && popupVal_JoinInfo"
+                                            :toggle-popup="togglePopup_JoinInfo"
+                                            :crew-member-no="member.crewMemberNo"
+                                            :question-first="questionFirst"
+                                            :question-second="questionSecond"
+                                            :question-third="questionThird"
+                  />
                   <button class="crew-button"
                           type="button"
                           style="width: 100px"
-                          onclick="getJoinInfo('${watingMember.member.id}')">
+                          @click="selectIdx = idx;
+                                  popupVal_JoinInfo = !popupVal_JoinInfo">
                     가입서 보기
                   </button>
                   <button type="button"
                           class="crew-button"
-                          onclick="agreeJoin('${pageContext.request.contextPath}',${watingMember.regNo})">
+                          @click="agreeJoin(member.crewMemberNo)">
                     승인
                   </button>
                   <button type="button"
                           class="crew-button"
-                          onclick="DenyOrKick('${pageContext.request.contextPath}',${watingMember.regNo})">
+                          @click="denyJoin(member.crewMemberNo)">
                     거절
                   </button>
                 </span>
@@ -309,12 +335,14 @@
 
 <script>
 import DoldolseoCrewNav from "./DoldolseoCrewNav.vue";
+import DoldolseoCrewJoinEdit from "./DoldolseoCrewJoinEdit.vue";
 import {inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import DoldolseoCrewJoinInfo from "./DoldolseoCrewJoinInfo.vue";
 
 export default {
   name: "DoldolseoCrewManagement",
-  components: {DoldolseoCrewNav},
+  components: {DoldolseoCrewJoinInfo, DoldolseoCrewJoinEdit, DoldolseoCrewNav},
   props: {
     id: {
       type: String,
@@ -349,6 +377,7 @@ export default {
 
     const isClickedUpdateIntro = ref(true);
     const isClickedUpdateIntroDetail = ref(true);
+    const isClickedUpdateRecruit = ref(true);
 
     const setBoderIfEdit = (isClicked) => {
       if (!isClicked) {
@@ -363,6 +392,10 @@ export default {
     }
 
     onMounted(() => {
+      getCrewData()
+    })
+
+    const getCrewData = () => {
       axios({
         method: 'get',
         url: URL_GET_CREW_BY_ID,
@@ -389,7 +422,7 @@ export default {
       }).catch(() => {
         console.log(URL_GET_CREW_BY_ID + " 요청 실패")
       })
-    })
+    }
 
     const areaNoToString = (first, second, third) => {
       let areaArray = []
@@ -407,7 +440,7 @@ export default {
       else return 'crew_grade_1.png'
     }
 
-    const updateCrewData = () =>{
+    const updateCrewData = () => {
       axios({
         method: 'put',
         url: URL_CREW + '/' + crewNo.value,
@@ -427,12 +460,96 @@ export default {
       })
     }
 
+    const updateCrewImage = (e) => {
+      const formData = new FormData()
+      formData.append('imageFile', e.target.files[0])
+      axios.put(URL_CREW + '/' + crewNo.value + '/images', formData, {
+        header: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then((resp) => {
+        console.log(URL_CREW + '/' + crewNo.value + '/images' + " 요청 성공 status : " + resp.status)
+        crewImage.value = resp.data
+        alert('수정이 완료 되었습니다.')
+
+      }).catch(() => {
+        console.log(URL_CREW + '/' + crewNo.value + '/images' + " 요청 실패")
+      })
+    }
+
+    const popupVal_JoinEdit = ref(false)
+    const popupVal_JoinInfo = ref(false)
+    const selectIdx = ref(0)
+
+    const togglePopup_JoinEdit = () => {
+      popupVal_JoinEdit.value = !popupVal_JoinEdit.value
+    }
+
+    const togglePopup_JoinInfo = () => {
+      popupVal_JoinInfo.value = !popupVal_JoinInfo.value
+    }
+
+    const kickMember = (crewMemberNo) => {
+      if(!confirm("해당 크루원을 정말로 강퇴 하시겠습니까?"))  return
+
+      axios({
+        method: 'delete',
+        url: URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo,
+        data: {
+          crewMemberNo: crewMemberNo,
+        }
+      }).then((resp) => {
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + "크루원 강퇴" + resp.status)
+        alert('해당 크루원을 강퇴 하였습니다.')
+        getCrewData()
+      }).catch(() => {
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + "크루원 가입신청 거절 실패")
+      })
+    }
+
+    const agreeJoin = (crewMemberNo) => {
+      if(!confirm("가입 신청을 승인하시겠습니까?"))  return
+
+      axios({
+        method: 'put',
+        url: URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo,
+        data: {
+          crewMemberNo: crewMemberNo,
+        }
+      }).then((resp) => {
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + " 크루원 승인" + resp.status)
+        alert('승인 되었습니다.')
+        getCrewData()
+      }).catch(() => {
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + " 크루원 승인 실패")
+      })
+    }
+
+    const denyJoin = (crewMemberNo) => {
+      if(!confirm("가입 신청을 거절하시겠습니까?"))  return
+
+      axios({
+        method: 'delete',
+        url: URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo,
+        data: {
+          crewMemberNo: crewMemberNo,
+        }
+      }).then((resp) => {
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + " 크루원 가입신청 거절" + resp.status)
+        alert('가입신청을 거절 하였습니다.')
+        getCrewData()
+      }).catch(() => {
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + "크루원 가입신청 거절 실패")
+      })
+    }
+
     return {
       URL_CREW_IMAGE,
       IMAGEPATH_CREW,
       IMAGEPATH_CREW_GRADE,
       areaMenu,
 
+      crewNo,
       crewName,
       areaNoFirst,
       areaNoSecond,
@@ -452,14 +569,26 @@ export default {
 
       isClickedUpdateIntro,
       isClickedUpdateIntroDetail,
+      isClickedUpdateRecruit,
+
       setBoderIfEdit,
       setFocus,
       updateCrewData,
+      updateCrewImage,
 
       areaNoToString,
       getCrewGrade,
-    }
 
+      popupVal_JoinEdit,
+      popupVal_JoinInfo,
+      togglePopup_JoinEdit,
+      togglePopup_JoinInfo,
+      selectIdx,
+
+      agreeJoin,
+      denyJoin,
+      kickMember,
+    }
   }
 }
 </script>
@@ -669,24 +798,20 @@ export default {
   padding: 10px;
 }
 
-#crewM-btn--modifyInfo {
+.crewM-btn--modifyInfo {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.2rem;
+  line-height: 32px;
+  border-radius: 6px;
+  border: none;
+  height: 28px;
+  width: 50px;
+  cursor: pointer;
+  background-color: #FF8000;
+  color: white;
   position: relative;
   left: 462px;
   top: 5px;
-}
-
-
-.crew-infolabel {
-  display: block;
-  text-align: left;
-  font-size: 15px;
-  font-family: 'Nanum Gothic', sans-serif;
-  width: 490px;
-  height: 266px;
-  margin: 10px 0 auto;
-  border-radius: 5px;
-  border: 1px solid #CDCECF;
-  padding: 10px;
 }
 
 .crew-midContainer--left {
@@ -748,9 +873,10 @@ export default {
 
 .crew-member--idbox {
   text-align: left;
-  width: 270px;
+  width: 230px;
   display: inline-block;
   padding-left: 30px;
+  /*border: 1px solid;*/
 }
 
 .common-tbl__item {
@@ -778,6 +904,8 @@ export default {
   background-color: #6E6E6E;
   padding: 6px 12px 3px 12px;
   border-radius: 15px;
+  position: relative;
+  left: 15px;
 }
 
 .crew-member--photo {
@@ -805,7 +933,7 @@ export default {
   overflow: hidden;
   position: relative;
   display: inline-block;
-  /*border: 1pt solid;*/
+  left: 15px;
 }
 
 .crew-master--decorate > img {
@@ -835,7 +963,8 @@ export default {
   /*border: 1pt solid;*/
 }
 
-.crew-recruitContainer {
+.crewM-textArea--recruit {
+  outline: none;
   display: inline-block;
   width: 530px;
   height: 239px;
@@ -847,6 +976,7 @@ export default {
   font-family: 'Nanum Gothic', sans-serif;
   font-size: 17px;
   padding: 30px 10px 30px 10px;
+  resize: none;
 }
 
 .crewM-container--bottom {
@@ -883,6 +1013,25 @@ export default {
 
 .crewM-member--idbox__btnbox button {
   margin-left: 3px;
+}
+
+.crew-label--upload {
+  background-color: #FF8000;
+  cursor: pointer;
+  border-radius: 6px;
+  border: none;
+  color: #F8ECE0;
+  width: 35px;
+  height: 20px;
+  font-family: 'Jua', sans-serif;
+  font-size: 15px;
+  padding: 1px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  line-height: 20px;
+  display: inline-block;
 }
 
 </style>
