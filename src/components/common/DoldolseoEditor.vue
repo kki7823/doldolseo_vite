@@ -267,7 +267,7 @@ export default {
   },
   name: "DoldolseoTextEditor",
   props: {
-    imageUuid: {
+    imageUrl: {
       type: String,
       require: true,
     },
@@ -329,23 +329,22 @@ export default {
       '#353535', '#000000', '#662500', '#664B00', '#476600', '#22741C', '#005766', '#002266', '#030066', '#2A0066', '#660058', '#660033',
     ]
 
-    //임시 url, prop으로 컴포넌트 생성시 전달하게끔 구현
-    const URL_REVIEW_IMAGE = inject('doldolseoReview') + '/images/' + props.imageUuid
+    const imageURL = props.imageUrl
 
     const setImage = (e) => {
       const formData = new FormData()
       formData.append('imgFile', e.target.files[0])
 
-      axios.post(URL_REVIEW_IMAGE, formData, {
+      axios.post(imageURL, formData, {
         header: {
           'Content-Type': 'multipart/form-data'
         }
       }).then((resp) => {
-        console.log(URL_REVIEW_IMAGE + " 이미지 가져오기 성공 status : " + resp.status)
-        console.log(URL_REVIEW_IMAGE + '/' + resp.data)
-        editor.value.chain().focus().setImage({src: URL_REVIEW_IMAGE + '/' + resp.data}).run()
+        console.log(imageURL + " 이미지 가져오기 성공 status : " + resp.status)
+        console.log(imageURL + '/' + resp.data)
+        editor.value.chain().focus().setImage({src: imageURL + '/' + resp.data}).run()
       }).catch(() => {
-        console.log(URL_REVIEW_IMAGE + " 이미지 가져오기 실패")
+        console.log(imageURL + " 이미지 가져오기 실패")
       })
     }
 
@@ -356,7 +355,6 @@ export default {
       fontList,
       colorList,
       setImage,
-      URL_REVIEW_IMAGE,
     }
   },
   content: content,

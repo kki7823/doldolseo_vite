@@ -4,25 +4,26 @@
     <!-- 상단 제목,드릴다운 : 공통 -->
     <div class="crew-topContainer">
       <!-- 제목 -->
-      <div class="common-top__title"
-           style="color: #FAAC58">
+      <div class="common-top__title">
         크루 목록
-
-        <!-- 임시 -->
-
         <router-link :to="{name: 'crewManage', params:{id: 'kki7823'}}">
           <button>
             크루 관리
           </button>
         </router-link>
-        <!-- 임시 -->
       </div>
       <!-- 게시판 드릴다운 -->
       <span class="common-top__drilldownbox">
-                    <a href="#" style="color: #FF8000;">크루 게시판</a>
-                    <span> > </span>
-                    <a href="#">크루 목록</a>
-            </span>
+        <router-link :to="{name: 'crewList'}"
+                     style="color: #ff8000">
+          크루 게시판
+        </router-link>
+        <span> > </span>
+        <router-link :to="{name: 'crewList'}"
+                     style="color: #6E6E6E">
+          크루 목록
+        </router-link>
+      </span>
 
       <!-- 로그인 및 권한에 따라 구분 -->
       <!--      <button onclick="">-->
@@ -193,7 +194,7 @@ export default {
 
 <style scoped>
 .crew-mainContainer {
-  width: 1400px;
+  max-width: 1400px;
   min-height: 800px;
   text-align: center;
   margin: 0 auto 30px;
@@ -290,7 +291,7 @@ export default {
 .common-top__title {
   text-align: left;
   font-family: 'Jua', sans-serif;
-  color: #A9E2F3;
+  color: #FAAC58;
   font-size: 50px;
   position: relative;
 }

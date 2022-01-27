@@ -19,6 +19,7 @@ export default {
     provide('doldolseoMember', '/doldolseo/member')
     provide('doldolseoReview', '/doldolseo/review')
     provide('doldolseoCrew', '/doldolseo/crew')
+    provide('doldolseoCrewPost', '/doldolseo/crew/post')
 
     const areaMenu = {
       1: '강남',
@@ -59,6 +60,14 @@ export default {
       },
     ]
     provide('contentMenu', contentMenu)
+
+    const crew_categoryMenu = {
+      1: '맛집',
+      2: '쇼핑',
+      3: '문화',
+      4: '자유',
+    }
+    provide('crew_categoryMenu', crew_categoryMenu)
   }
 }
 </script>

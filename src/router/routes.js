@@ -12,11 +12,27 @@ import CrewCreate from "../components/crew/DoldolseoCrewCreate.vue";
 import CrewList from "../components/crew/DoldolseoCrewList.vue";
 import CrewDetail from "../components/crew/DoldolseoCrewDetail.vue";
 import CrewManage from "../components/crew/DoldolseoCrewManage.vue";
+import CrewPostList from "../components/crewboard/DoldolseoCrewPostList.vue";
+import CrewPostInsert from "../components/crewboard/DoldolseoCrewPostInsert.vue";
+import CrewPostDetail from "../components/crewboard/DoldolseoCrewPostDetail.vue";
+import CrewPostUpdate from "../components/crewboard/DoldolseoCrewPostUpdate.vue";
 import {defineComponent} from "vue";
+import {useCookies} from "vue3-cookies";
+import {router} from "./router";
 
 const NotFound = defineComponent({
     template: '<div>Not Found</div>',
 })
+
+const {cookies} = useCookies()
+
+const isLogined = (to, from, next) => {
+    if (localStorage.loginState === "login" && cookies.get('token') !== "") {
+        return next();
+    }
+    router.replace('/member/login')
+}
+
 
 const routes = [
     {path: '/', redirect: '/main'},
@@ -27,13 +43,17 @@ const routes = [
     {path: '/member/join', name: 'memberJoin', component: MemberJoin},
     {path: '/member/mypage', name: 'memberMypage', component: MemberMypage},
     {path: '/review:areaNo?', name: 'reviewList', component: ReviewList},
-    {path: '/review/:reviewNo', name: 'reviewDetail', component: ReviewDetail, props:true},
-    {path: '/review/insert', name: 'reviewInsert', component: ReviewInsert},
-    {path: '/review/update/:reviewNo', name: 'reviewUpdate', component: ReviewUpdate, props:true},
+    {path: '/review/:reviewNo', name: 'reviewDetail', component: ReviewDetail, props: true},
+    {path: '/review/insert', name: 'reviewInsert', component: ReviewInsert, beforeEnter: isLogined},
+    {path: '/review/update/:reviewNo', name: 'reviewUpdate', component: ReviewUpdate, props: true, beforeEnter: isLogined },
     {path: '/crew', name: 'crewList', component: CrewList},
-    {path: '/crew/create', name: 'crewCreate', component: CrewCreate},
-    {path: '/crew/:crewNo', name: 'crewDetail', component: CrewDetail , props:true},
-    {path: '/crew/manage/:id', name: 'crewManage', component: CrewManage , props:true},
+    {path: '/crew/create', name: 'crewCreate', component: CrewCreate, beforeEnter: isLogined},
+    {path: '/crew/:crewNo', name: 'crewDetail', component: CrewDetail, props: true},
+    {path: '/crew/manage/:id', name: 'crewManage', component: CrewManage, props: true, beforeEnter: isLogined},
+    {path: '/crew/post', name: 'crewPostList', component: CrewPostList,},
+    {path: '/crew/post/insert', name: 'crewPostInsert', component: CrewPostInsert,},
+    {path: '/crew/post/:crewPostNo', name: 'crewPostDetail', component: CrewPostDetail, props: true},
+    {path: '/crew/post/update/:crewPostNo', name: 'crewPostUpdate', component: CrewPostUpdate, props: true},
     {path: '/:catchAll(.*)+', component: NotFound},
 ]
 

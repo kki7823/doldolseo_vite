@@ -543,7 +543,7 @@ table {
     /*border: 1px solid;*/
 }
 
-#reviewIU-container--bottom {
+#crewIU-container--bottom {
     width: 1400px;
     text-align: right;
     margin: 20px auto 0;
@@ -573,13 +573,13 @@ table {
     /*border-left: 1px #CDCECF solid;*/
 }
 
-.reviewD-tablelayout {
+.cBoard-tablelayout {
     width: 1000px;
     text-align: right;
     margin: 10px auto 0;
 }
 
-.reviewD-tablelayout tr {
+.cBoard-tablelayout tr {
     /*border: 1pt solid;*/
 }
 

@@ -60,7 +60,7 @@
         <!-- 검색창 -->
         <div id="reviewL-bottom_search"
              class="common-searchbar">
-          <select name="search"><!-- 검색 조건 -->
+          <select><!-- 검색 조건 -->
             <option value="0">제목</option>
             <option value="1">내용</option>
             <option value="2">닉네임</option>
@@ -116,7 +116,6 @@ export default {
       }).catch(() => {
         console.log(URL_REVIEW + " - 요청 실패")
       })
-
     })
 
     return {

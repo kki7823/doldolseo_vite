@@ -17,7 +17,10 @@
         <td>
           <select class="writeform__component"
                   v-model="areaNo">
-            <option v-for="(area, idx) in areaMenu" :value="idx===0 ? 99 : idx">{{ area }}</option>
+            <option v-for="(area, idx) in areaMenu"
+                    :value="idx===0 ? 99 : idx">
+              {{ area }}
+            </option>
           </select>
         </td>
       </tr>
@@ -42,7 +45,7 @@
         </td>
         <td>
           <doldolseo-editor ref="focusContent"
-                            :image-uuid="IMAGE_UUID"
+                            :image-url="URL_REVIEW_IMAGE"
           />
         </td>
       </tr>
@@ -171,6 +174,7 @@ export default {
     }
 
     const IMAGE_UUID = uuidv4()
+    const URL_REVIEW_IMAGE = inject('doldolseoReview') + '/images/' + IMAGE_UUID
     const URL_REVIEW_COURSE = inject('doldolseoReview') + '/course/' + IMAGE_UUID
 
     onMounted(() => {
@@ -226,7 +230,7 @@ export default {
       canvas,
       courseMaker,
       isSelected,
-      IMAGE_UUID,
+      URL_REVIEW_IMAGE,
       uploadCourse,
       areaMenu,
       areaNo,

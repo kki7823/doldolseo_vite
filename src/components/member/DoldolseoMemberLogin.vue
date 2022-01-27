@@ -87,10 +87,10 @@ export default {
     const testMethod = () => {
       axios({
         method: 'get',
-        url: '/doldolseo/testtest',
-        params: {
-          id: id.value,
-        },
+        url: '/doldolseo/member/kki7823',
+        // params: {
+        //   id: id.value,
+        // },
         headers: {
           Authorization: 'Bearer ' + cookies.get('token')
         },

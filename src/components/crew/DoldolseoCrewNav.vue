@@ -1,15 +1,20 @@
 <template>
   <nav class="crew-navi">
       <span class="crew-navi__btn">
-        <a href="#">
+        <router-link :to="{name: 'crewPostList'}">
           크루활동
-        </a>
+        </router-link>
       </span>
+    <!--    <button>-->
+    <!--      <router-link :to="{name: 'crewManage', params:{id: 'kki7823'}}">-->
+    <!--        크루 관리-->
+    <!--      </router-link>-->
+    <!--    </button>-->
     <span class="crew-navi__btn">
-        <a href="#">
-          크루목록
-        </a>
-      </span>
+      <router-link :to="{name: 'crewList'}">
+        크루목록
+      </router-link>
+    </span>
     <button id="crew-navi__btn--mycrew"
             type="button"
             class="crew-button">

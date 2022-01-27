@@ -1,5 +1,5 @@
 <template>
-  <table class="reviewD-tablelayout">
+  <table class="cBoard-tablelayout">
     <tr v-for="comment in comments"
         class="comment-tablelayout">
       <td>
@@ -93,16 +93,16 @@ import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 
 export default {
-  name: "DoldolseoComment",
+  name: "DoldolseoCrewPostComment",
   props: {
-    reviewNo: {
+    crewPostNo: {
       type: String,
       require: true
     },
   },
   setup(props) {
-    const URL_REVIEW = inject('doldolseoReview')
-    const URL_REVIEW_COMMENT = URL_REVIEW + '/' + props.reviewNo + '/comment'
+    const URL_CREW_POST = inject('doldolseoCrewPost')
+    const URL_CREW_POST_COMMENT = URL_CREW_POST + '/' + props.crewPostNo + '/comment'
     const isCommentFocused = ref(false)
 
     const setCommentInputBorder = computed(() => {
@@ -137,14 +137,14 @@ export default {
 
       axios({
         method: 'get',
-        url: URL_REVIEW_COMMENT,
+        url: URL_CREW_POST_COMMENT,
         data: {
-          review: {
-            reviewNo: props.reviewNo
+          crewPost: {
+            crewPostNo: props.crewPostNo
           }
         }
       }).then((resp) => {
-        console.log(URL_REVIEW_COMMENT + "댓글 가져오기 성공" + resp.status)
+        console.log(URL_CREW_POST_COMMENT + "댓글 가져오기 성공" + resp.status)
         comments.value = resp.data
 
         const isActiveEditBtnBox = {isActiveEditBtnBox: false}
@@ -154,7 +154,7 @@ export default {
           Object.assign(comments.value[i], isActiveEditMode)
         }
       }).catch(() => {
-        console.log(URL_REVIEW_COMMENT + "댓글 가져오기 실패")
+        console.log(URL_CREW_POST_COMMENT + "댓글 가져오기 실패")
       })
     }
 
@@ -162,19 +162,19 @@ export default {
       if (!validParams(template)) return
       axios({
         method: 'post',
-        url: URL_REVIEW_COMMENT,
+        url: URL_CREW_POST_COMMENT,
         data: {
           id: 'kki7823',
           content: commentContent.value,
-          review: {
-            reviewNo: props.reviewNo,
+          crewPost: {
+            crewPostNo: props.crewPostNo,
           }
         }
       }).then((resp) => {
-        console.log(URL_REVIEW_COMMENT + " 요청 성공" + resp.status)
+        console.log(URL_CREW_POST_COMMENT + " 요청 성공" + resp.status)
         getCommentData()
       }).catch(() => {
-        console.log(URL_REVIEW_COMMENT + " 요청 실패")
+        console.log(URL_CREW_POST_COMMENT + " 요청 실패")
       })
     }
 
@@ -191,28 +191,28 @@ export default {
     const updateComment = (commentNo, content) => {
       axios({
         method: 'put',
-        url: URL_REVIEW_COMMENT + '/' + commentNo,
+        url: URL_CREW_POST_COMMENT + '/' + commentNo,
         data: {
           content: content,
         }
       }).then((resp) => {
-        console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 수정" + resp.status)
+        console.log(URL_CREW_POST_COMMENT + '/' + commentNo, +" 댓글 수정" + resp.status)
         getCommentData()
       }).catch(() => {
-        console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 수정 실패")
+        console.log(URL_CREW_POST_COMMENT + '/' + commentNo, +" 댓글 수정 실패")
       })
     }
 
     const deleteComment = (commentNo) => {
       axios({
         method: 'delete',
-        url: URL_REVIEW_COMMENT + '/' + commentNo,
+        url: URL_CREW_POST_COMMENT + '/' + commentNo,
       }).then((resp) => {
-        console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 삭제" + resp.status)
+        console.log(URL_CREW_POST_COMMENT + '/' + commentNo, +" 댓글 삭제" + resp.status)
         alert("삭제 되었습니다.")
         getCommentData()
       }).catch(() => {
-        console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 삭제 실패")
+        console.log(URL_CREW_POST_COMMENT + '/' + commentNo, +" 댓글 삭제 실패")
       })
     }
 
@@ -232,8 +232,8 @@ export default {
 </script>
 
 <style scoped>
-.reviewD-tablelayout {
-  width: 100%;
+.cBoard-tablelayout {
+  width: 1000px;
   text-align: right;
   margin: 10px auto 0;
 }
@@ -248,7 +248,7 @@ export default {
 
 .comment-tablelayout > td {
   padding: 7px 7px 7px 7px;
-  width: 100%;
+  width: 1000px;
   white-space: nowrap;
 }
 
@@ -321,7 +321,7 @@ export default {
 
 .commentbox {
   display: inline-block;
-  width: 78.1%;
+  width: 75.1%;
   height: 100px;
   padding: 4px;
   border: 1px #CDCECF solid;
@@ -341,7 +341,7 @@ export default {
 
 .comment__input {
   display: inline-block;
-  width: 99.7%;
+  width: 1000px;
   height: 140px;
   margin-top: 20px;
   margin-bottom: 20px;

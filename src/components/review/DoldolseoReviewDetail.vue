@@ -25,9 +25,7 @@
       <!-- 수정 삭제 구현 -- 권한  -->
       <!--      <c:if test="${member.id eq review.member.id}">-->
       <div class="review-btnBox--reviewEdit">
-        <router-link :to="{name: 'reviewUpdate', params:{
-          reviewNo: reviewNo,
-        }}">
+        <router-link :to="{name: 'reviewUpdate', params:{ reviewNo: reviewNo, }}">
           <button class="review-button"
                   type="button">
             수정 하기
@@ -42,7 +40,7 @@
       <!--      </c:if>-->
 
       <!-- 상세 글 목록 -->
-      <table class="reviewD-tablelayout">
+      <table class="cBoard-tablelayout">
         <!-- 글상단 : 프로필 박스 + 댓글 및 조회수 -->
         <tr class="common-tbl__item">
           <td>
@@ -141,7 +139,7 @@
         <hr class="line--horizon">
       </div>
       <!-- here -->
-      <doldolseo-comment :review-no="reviewNo"/>
+      <doldolseo-review-comment :review-no="reviewNo"/>
 
     </section>
   </div>
@@ -150,12 +148,12 @@
 <script>
 import DoldolseoReviewNav from "./DoldolseoReviewNav.vue";
 import {axios} from "@bundled-es-modules/axios";
-import {computed, inject, onMounted, ref} from "vue";
-import DoldolseoComment from "../common/DoldolseoComment.vue";
+import {inject, onMounted, ref} from "vue";
+import DoldolseoReviewComment from "./DoldolseoReviewComment.vue";
 
 export default {
   name: "DoldolseoReviewDetail",
-  components: {DoldolseoComment, DoldolseoReviewNav},
+  components: {DoldolseoReviewComment, DoldolseoReviewNav},
   props: {
     reviewNo: {
       type: String,
@@ -244,7 +242,7 @@ export default {
   margin: 40px auto 0;
 }
 
-.reviewD-tablelayout {
+.cBoard-tablelayout {
   width: 100%;
   text-align: right;
   margin: 10px auto 0;
@@ -268,7 +266,7 @@ export default {
   cursor: pointer;
 }
 
-.reviewD-tablelayout tr {
+.cBoard-tablelayout tr {
   /*border: 1pt solid;*/
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="miniprofile">
     <!-- After Login -->
-    <div v-if="cookies.get('token') != null && loginState === 'login'"
+    <div v-if="loginState === 'login'"
          class="miniprofileBox">
       <div class="miniprofile__photo">
         <img :src="URL_MEMBER_IMAGES+memberImg"
@@ -17,7 +17,7 @@
 
       <div class="miniprofile__button">
         <button type="button"
-                @click="logout(this)">
+                @click="logout(this, URL_MEMBER_LOGOUT)">
           LOGOUT
         </button>
         <router-link :to="{name: 'memberMypage'}">
@@ -55,13 +55,14 @@ export default {
     const {cookies} = useCookies()
     const router = useRouter()
     const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
+    const URL_MEMBER_LOGOUT = inject('doldolseoMember') +'/logout/' +localStorage.getItem('id')
 
     const loginState = ref(localStorage.getItem('loginState'))
     const memberNickname = localStorage.getItem('nickname')
     const memberImg = localStorage.getItem('memberImg')
 
-    const logout = (component) => {
-      login.doLogout(component)
+    const logout = (component, URL_MEMBER_LOGOUT) => {
+      login.doLogout(component, URL_MEMBER_LOGOUT)
     }
 
     return {
@@ -71,6 +72,7 @@ export default {
       memberNickname,
       memberImg,
       URL_MEMBER_IMAGES,
+      URL_MEMBER_LOGOUT,
       logout,
     }
   }
