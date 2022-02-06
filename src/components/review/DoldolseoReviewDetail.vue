@@ -33,6 +33,7 @@
         </router-link>
         <button class="review-button"
                 type="button"
+                @click="deleteReviewData()"
                 style="margin-left: 10px">
           글 삭제
         </button>
@@ -139,7 +140,9 @@
         <hr class="line--horizon">
       </div>
       <!-- here -->
-      <doldolseo-review-comment :review-no="reviewNo"/>
+      <doldolseo-review-comment
+          :review-no="reviewNo"
+      />
 
     </section>
   </div>
@@ -150,6 +153,7 @@ import DoldolseoReviewNav from "./DoldolseoReviewNav.vue";
 import {axios} from "@bundled-es-modules/axios";
 import {inject, onMounted, ref} from "vue";
 import DoldolseoReviewComment from "./DoldolseoReviewComment.vue";
+import {useRouter} from "vue-router";
 
 export default {
   name: "DoldolseoReviewDetail",
@@ -172,6 +176,7 @@ export default {
     const imageUUID = ref('')
     const isCourseUploaded = ref('n')
     const hit = ref('')
+    const router = useRouter()
 
     onMounted(() => {
       axios({
@@ -194,6 +199,19 @@ export default {
       })
     })
 
+    const deleteReviewData = () => {
+      if (!confirm("게시글을 삭제 하시겠습니까?")) return
+
+      axios.delete(URL_GET_REVIEW).then((resp) => {
+        console.log(URL_GET_REVIEW + ": 게시글 삭제" + resp.status)
+        alert("게시글이 삭제 되었습니다.")
+        router.replace('/review').then(() => {
+        })
+      }).catch(() => {
+        console.log(URL_GET_REVIEW + ": 게시글 삭제 실패")
+      })
+    }
+
     return {
       URL_MEMBER_IMG,
       URL_REVIEW_IMG,
@@ -203,6 +221,8 @@ export default {
       imageUUID,
       hit,
       isCourseUploaded,
+
+      deleteReviewData,
     }
   },
 

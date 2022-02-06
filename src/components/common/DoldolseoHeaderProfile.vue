@@ -4,7 +4,7 @@
     <div v-if="loginState === 'login'"
          class="miniprofileBox">
       <div class="miniprofile__photo">
-        <img :src="URL_MEMBER_IMAGES+memberImg"
+        <img :src="URL_MEMBER_IMAGES"
              alt="profile2">
       </div>
       <div class="miniprofile__info">
@@ -54,12 +54,12 @@ export default {
   setup() {
     const {cookies} = useCookies()
     const router = useRouter()
-    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
+    const PATH_MEMBER_IMG_DEFAULT = inject('contextPath') + '_image/member/default_member.png'
+    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/' + localStorage.getItem('memberImg')
     const URL_MEMBER_LOGOUT = inject('doldolseoMember') +'/logout/' +localStorage.getItem('id')
 
     const loginState = ref(localStorage.getItem('loginState'))
     const memberNickname = localStorage.getItem('nickname')
-    const memberImg = localStorage.getItem('memberImg')
 
     const logout = (component, URL_MEMBER_LOGOUT) => {
       login.doLogout(component, URL_MEMBER_LOGOUT)
@@ -68,11 +68,12 @@ export default {
     return {
       router,
       cookies,
-      loginState,
-      memberNickname,
-      memberImg,
+      PATH_MEMBER_IMG_DEFAULT,
       URL_MEMBER_IMAGES,
       URL_MEMBER_LOGOUT,
+
+      loginState,
+      memberNickname,
       logout,
     }
   }

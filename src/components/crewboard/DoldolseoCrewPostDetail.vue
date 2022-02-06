@@ -265,7 +265,7 @@ export default {
         router.replace('/crew/post/').then(() => {
         })
       }).catch(() => {
-        console.log(URL_GET_CREW_POST + ": 게시글 수정 실패")
+        console.log(URL_GET_CREW_POST + ": 게시글 삭제 실패")
       })
     }
 

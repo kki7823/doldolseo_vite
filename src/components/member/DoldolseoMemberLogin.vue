@@ -41,14 +41,17 @@
              value="로그인"
              @click="sendLoginData(this)"
       />
-      <input type="button" value="회원가입" onclick="location.href='${pageContext.request.contextPath}/memberJ'">
-      <input type="button" value="테스트버튼" @click="testMethod()">{{ loginSuccess }}
+      <router-link :to="{name: 'memberJoin'}">
+        <input type="button"
+               value="회원가입"
+        />
+      </router-link>
     </div>
   </div>
 </template>
 
 <script>
-import {inject, ref} from "vue";
+import {inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies"
 import login from "../../module/login";
@@ -64,11 +67,19 @@ export default {
     const password = ref('')
     const loginMsg = ref('')
 
-    const sendLoginData = (template) => {
-      if (!validateParams(template)) return
-      login.doLogin(id.value, password.value, URL_MEMBER_LOGIN);
+    const setLoginMsg = ()=>{
       loginMsg.value = login.loginMsg.value
     }
+
+    const sendLoginData = async (template) =>  {
+      if (!validateParams(template)) return
+      await login.doLogin(id.value, password.value, URL_MEMBER_LOGIN);
+      await setLoginMsg()
+    }
+
+
+
+
 
     const validateParams = (template) => {
       if (id.value.length === 0) {
@@ -84,24 +95,6 @@ export default {
       return true
     }
 
-    const testMethod = () => {
-      axios({
-        method: 'get',
-        url: '/doldolseo/member/kki7823',
-        // params: {
-        //   id: id.value,
-        // },
-        headers: {
-          Authorization: 'Bearer ' + cookies.get('token')
-        },
-      }).then((resp) => {
-        console.log("테스트 메소드 요청 성공 status : " + resp.status)
-        console.log(resp.data)
-      }).catch(() => {
-        console.log("테스트 메소드 요청 실패")
-      })
-    }
-
     let loginSuccess = login.loginSuccess
 
     return {
@@ -110,7 +103,6 @@ export default {
       password,
       loginMsg,
       sendLoginData,
-      testMethod,
       loginSuccess,
     }
   }

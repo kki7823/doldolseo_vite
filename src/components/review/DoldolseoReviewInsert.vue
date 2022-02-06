@@ -151,12 +151,15 @@ import {inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {v4 as uuidv4} from "uuid";
 import {useRouter} from "vue-router";
+import {useCookies} from "vue3-cookies";
 
 
 export default {
   name: "DoldolseoReviewInsert",
   components: {DoldolseoCourseMaker, DoldolseoEditor},
+
   setup() {
+    const {cookies} =useCookies()
     const router = useRouter()
     const isSelected = ref(false)
     const areaMenu = inject('areaMenu')
@@ -200,7 +203,7 @@ export default {
 
       axios.post(URL_REVIEW, formData, {
         header: {
-          // 'Content-Type': 'multipart/form-data'
+          Authorization: 'Bearer ' + cookies.get('token')
         }
       }).then((resp) => {
         console.log(URL_REVIEW + ": 게시글 저장" + resp.status)

@@ -123,7 +123,7 @@
       <img
           v-if="memberImgUrl == null"
           class="memberJ-imgcontainer__img-small"
-          :src="imgPath+'/sample.png'"
+          :src="imgPath+'/default_member.png'"
           alt="default_profile"
       />
       <img
@@ -175,13 +175,19 @@
     <!-- 이용약관 체크 여부 -->
     <div class="memberJ-rulecontainer">
       <button type="button"
-              onclick="window.open('${pageContext.request.contextPath}/memberP')">
+              @click="popupVal_Policy = !popupVal_Policy">
         이용방침
       </button>
+      <doldolseo-member-policy v-if="popupVal_Policy"
+                               :toggle-popup="togglePopup_Policy"
+      />
       <button type="button"
-              onclick="window.open('${pageContext.request.contextPath}/memberR')">
+              @click="popupVal_Rule = !popupVal_Rule">
         가입약관
       </button>
+      <doldolseo-member-rule v-if="popupVal_Rule"
+                             :toggle-popup="togglePopup_Rule"
+      />
       <br/>
       <label class="memberJ-rulecontainer__label--move">
         <input type="checkbox"
@@ -190,7 +196,7 @@
                ref="focusAgreeTerms"
                @change="agreeTermMsg = ''"
         />
-        이용약관 체크 여부
+        위 내용에 동의합니다.
       </label>
       <p class="msg">
         {{ agreeTermMsg }}
@@ -211,9 +217,13 @@
 <script>
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import {useRouter} from "vue-router";
+import DoldolseoMemberPolicy from "./DoldolseoMemberPolicy.vue";
+import DoldolseoMemberRule from "./DoldolseoMemberRule.vue";
 
 export default {
   name: "DoldolseoMemberJoin",
+  components: {DoldolseoMemberRule, DoldolseoMemberPolicy},
   setup() {
     const imgPath = inject('contextPath') + '_image/member'
     let checkValues = {
@@ -360,6 +370,7 @@ export default {
     const agreeTermMsg = ref('')
 
     const URL_MEMBER = inject('doldolseoMember')
+    const router = useRouter()
 
     const sendJoinData = (template) => {
       if (!validParams(template)) return
@@ -377,11 +388,13 @@ export default {
 
       axios.post(URL_MEMBER, formData, {
         header: {
-          'Content-Type' : 'multipart/form-data'
+          'Content-Type': 'multipart/form-data'
         }
       }).then((resp) => {
         console.log(URL_MEMBER + " 요청 성공 status : " + resp.status)
-        console.log(resp.data)
+        alert("회원가입이 완료 되었습니다.")
+        router.replace('/member/login').then(() => {
+        })
       }).catch(() => {
         console.log(URL_MEMBER + " 요청 실패")
       })
@@ -416,6 +429,16 @@ export default {
       }
       console.log("all parameters are valid")
       return true
+    }
+
+    const popupVal_Policy = ref(false)
+    const togglePopup_Policy = () => {
+      popupVal_Policy.value = !popupVal_Policy.value
+    }
+
+    const popupVal_Rule = ref(false)
+    const togglePopup_Rule = () => {
+      popupVal_Rule.value = !popupVal_Rule.value
     }
 
     return {
@@ -456,6 +479,10 @@ export default {
       agreeTermMsg,
       URL_MEMBER,
       sendJoinData,
+      popupVal_Policy,
+      togglePopup_Policy,
+      popupVal_Rule,
+      togglePopup_Rule,
     }
   }
 }
@@ -463,7 +490,7 @@ export default {
 
 <style scoped>
 .memberJ-container {
-  width: 1300px;
+  min-width: 1300px;
   margin: auto;
   text-align: center;
   display: flex;

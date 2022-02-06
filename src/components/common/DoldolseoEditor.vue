@@ -259,6 +259,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
 import {inject, onMounted, ref, watch} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import {useCookies} from "vue3-cookies";
 
 const content = ref('')
 export default {
@@ -330,6 +331,7 @@ export default {
     ]
 
     const imageURL = props.imageUrl
+    const {cookies} = useCookies()
 
     const setImage = (e) => {
       const formData = new FormData()
@@ -337,7 +339,7 @@ export default {
 
       axios.post(imageURL, formData, {
         header: {
-          'Content-Type': 'multipart/form-data'
+          Authorization: 'Bearer ' + cookies.get('token')
         }
       }).then((resp) => {
         console.log(imageURL + " 이미지 가져오기 성공 status : " + resp.status)

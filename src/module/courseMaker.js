@@ -1,5 +1,6 @@
 import {ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import {useCookies} from "vue3-cookies";
 
 const start_x = 225
 const start_y = 100
@@ -227,9 +228,10 @@ const uploadCourse = (URL) => {
         formData.append("courseImgFile", file, "course.png");
     }
 
+    const {cookies} = useCookies()
     axios.post(URL, formData, {
         header: {
-            'Content-Type': 'multipart/form-data'
+            Authorization: 'Bearer ' + cookies.get('token')
         }
     }).then((resp) => {
         console.log(URL + " 코스 저장 성공 status : " + resp.status)
