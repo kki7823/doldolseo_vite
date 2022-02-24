@@ -22,23 +22,24 @@
                 </span>
       </div>
 
-      <!-- 수정 삭제 구현 -- 권한  -->
-      <!--      <c:if test="${member.id eq review.member.id}">-->
+      <!-- 수정/삭제 버튼 -->
       <div class="review-btnBox--reviewEdit">
         <router-link :to="{name: 'reviewUpdate', params:{ reviewNo: reviewNo, }}">
-          <button class="review-button"
+          <button v-if="id === idLogedIn"
+                  class="review-button"
                   type="button">
             수정 하기
           </button>
         </router-link>
-        <button class="review-button"
-                type="button"
-                @click="deleteReviewData()"
-                style="margin-left: 10px">
+        <button
+            v-if="id === idLogedIn"
+            class="review-button"
+            type="button"
+            @click="deleteReviewData()"
+            style="margin-left: 10px">
           글 삭제
         </button>
       </div>
-      <!--      </c:if>-->
 
       <!-- 상세 글 목록 -->
       <table class="cBoard-tablelayout">
@@ -57,7 +58,7 @@
               <div class="profilebox--container--sub">
                 <!-- 닉네임 -->
                 <div class="profilebox--nickname">
-                  경경
+                  {{ id }}
                 </div>
                 <!-- 작성날짜 -->
                 <div class="profilebox--wdate">
@@ -107,7 +108,9 @@
         <!-- 글 제목 -->
         <tr class="common-tbl__item">
           <td>
-            <span id="reviewD__title">{{ title }}</span>
+            <span id="reviewD__title">
+              {{ title }}
+            </span>
           </td>
         </tr>
 
@@ -125,15 +128,21 @@
         <!-- 글 내용 -->
         <tr class="common-tbl__item">
           <td>
-            <div v-html="content"/>
+            <div class="common-contents"
+                 v-html="content"
+            />
           </td>
         </tr>
+        <loading :active="isLoading"
+                 :is-full-page="false"
+                 :opacity="1.0">
+        </loading>
       </table>
-
 
       <!-- 댓글 창-->
       <div id="reviewD-comment__banner">
-        <div class="common-top__title" style="font-size: 35px;">
+        <div class="common-top__title"
+             style="font-size: 35px;">
           COMMENT
         </div>
 
@@ -150,14 +159,18 @@
 
 <script>
 import DoldolseoReviewNav from "./DoldolseoReviewNav.vue";
+import DoldolseoReviewComment from "./DoldolseoReviewComment.vue";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 import {axios} from "@bundled-es-modules/axios";
 import {inject, onMounted, ref} from "vue";
-import DoldolseoReviewComment from "./DoldolseoReviewComment.vue";
 import {useRouter} from "vue-router";
+import {useCookies} from "vue3-cookies";
+import login from "../../module/login";
 
 export default {
   name: "DoldolseoReviewDetail",
-  components: {DoldolseoReviewComment, DoldolseoReviewNav},
+  components: {DoldolseoReviewComment, DoldolseoReviewNav, Loading},
   props: {
     reviewNo: {
       type: String,
@@ -165,10 +178,15 @@ export default {
     }
   },
   setup(props) {
+    const isLoading = ref(false);
+    const fullPage = ref(true);
+    const {cookies} = useCookies()
+
     const URL_REVIEW = inject('doldolseoReview')
     const URL_REVIEW_IMG = inject('doldolseoReview') + '/images/'
     const URL_GET_REVIEW = URL_REVIEW + '/' + props.reviewNo
     const URL_MEMBER_IMG = inject('doldolseoMember') + '/images/'
+
     const wdate = ref([])
     const title = ref('')
     const content = ref('')
@@ -177,8 +195,11 @@ export default {
     const isCourseUploaded = ref('n')
     const hit = ref('')
     const router = useRouter()
+    const idLogedIn = ref(localStorage.getItem('id'))
 
     onMounted(() => {
+      isLoading.value = true;
+
       axios({
         method: 'get',
         url: URL_GET_REVIEW,
@@ -190,25 +211,37 @@ export default {
         wdate.value = resp.data.wdate
         title.value = resp.data.title
         content.value = resp.data.content
+        id.value = resp.data.id
         imageUUID.value = resp.data.imageUUID
         hit.value = resp.data.hit
         isCourseUploaded.value = resp.data.isCourseUploaded
-
+        isLoading.value = false
       }).catch(() => {
         console.log(URL_GET_REVIEW + " 요청 실패")
+        isLoading.value = false
       })
     })
 
     const deleteReviewData = () => {
       if (!confirm("게시글을 삭제 하시겠습니까?")) return
 
-      axios.delete(URL_GET_REVIEW).then((resp) => {
+      axios.delete(URL_GET_REVIEW, {
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        }
+      }).then((resp) => {
         console.log(URL_GET_REVIEW + ": 게시글 삭제" + resp.status)
         alert("게시글이 삭제 되었습니다.")
         router.replace('/review').then(() => {
         })
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_GET_REVIEW + ": 게시글 삭제 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
@@ -217,12 +250,16 @@ export default {
       URL_REVIEW_IMG,
       title,
       content,
+      id,
       wdate,
       imageUUID,
       hit,
       isCourseUploaded,
-
       deleteReviewData,
+      isLoading,
+      fullPage,
+
+      idLogedIn,
     }
   },
 
@@ -249,6 +286,7 @@ export default {
 }
 
 .reviewD-container {
+  max-width: 1400px;
   display: inline-block;
   width: 80%;
   height: inherit;
@@ -263,9 +301,11 @@ export default {
 }
 
 .cBoard-tablelayout {
+  max-width: 1400px;
   width: 100%;
   text-align: right;
   margin: 10px auto 0;
+  position: relative;
 }
 
 .review-btnBox--reviewEdit {
@@ -288,6 +328,7 @@ export default {
 
 .cBoard-tablelayout tr {
   /*border: 1pt solid;*/
+
 }
 
 #reviewD__title {
@@ -352,6 +393,14 @@ export default {
   color: black;
   text-align: left;
   border: 1px #CDCECF solid;
+}
+
+.common-contents {
+  width: 100%;
+}
+
+.common-contents :deep(img) {
+  max-width: 100%;
 }
 
 .common-tbl__item > td {

@@ -26,7 +26,7 @@
           <button type="button"
                   class="comment__deleteUpdateButton"
                   @click="comment.isActiveEditBtnBox = !comment.isActiveEditBtnBox"
-                  v-if="!comment.isActiveEditMode">
+                  v-if="!comment.isActiveEditMode && idLogedIn === comment.id">
             >>
           </button>
           <div class="comment__deleteUpdateBox"
@@ -70,14 +70,14 @@
     </tr>
   </table>
 
-  <div class="comment__input"
+  <div v-if="loginState === 'login' && token != null "
+       class="comment__input"
        @focusin="isCommentFocused=true"
        @focusout="isCommentFocused=false"
        :style="{border: setCommentInputBorder}"
        ref="focusComment">
         <textarea placeholder="댓글을 입력해 주세요"
-                  v-model="commentContent">
-        </textarea>
+                  v-model="commentContent"></textarea>
     <div class="comment__buttonbox">
       <button type="button"
               @click="sendCommentData(this)"
@@ -86,11 +86,19 @@
       </button>
     </div>
   </div>
+  <div v-else
+       class="comment__input">
+        <textarea placeholder="로그인이 필요 합니다."
+                  readonly = "readonly"></textarea>
+  </div>
 </template>
 
 <script>
 import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import {useCookies} from "vue3-cookies";
+import login from "../../module/login";
+import {useRouter} from "vue-router";
 
 export default {
   name: "DoldolseoReviewComment",
@@ -103,6 +111,12 @@ export default {
   setup(props) {
     const URL_REVIEW = inject('doldolseoReview')
     const URL_REVIEW_COMMENT = URL_REVIEW + '/' + props.reviewNo + '/comment'
+    const {cookies} = useCookies()
+    const router = useRouter()
+    const loginState = ref(localStorage.getItem('loginState'))
+    const token = ref(cookies.get('token'))
+
+    const idLogedIn = ref(localStorage.getItem('id'))
     const isCommentFocused = ref(false)
 
     const setCommentInputBorder = computed(() => {
@@ -134,7 +148,6 @@ export default {
     })
 
     const getCommentData = () => {
-
       axios({
         method: 'get',
         url: URL_REVIEW_COMMENT,
@@ -163,8 +176,11 @@ export default {
       axios({
         method: 'post',
         url: URL_REVIEW_COMMENT,
+        headers: {
+          Authorization: 'Bearer ' + token
+        },
         data: {
-          id: 'kki7823',
+          id: localStorage.getItem('id'),
           content: commentContent.value,
           review: {
             reviewNo: props.reviewNo,
@@ -173,8 +189,14 @@ export default {
       }).then((resp) => {
         console.log(URL_REVIEW_COMMENT + " 요청 성공" + resp.status)
         getCommentData()
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + " 요청 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
@@ -192,14 +214,23 @@ export default {
       axios({
         method: 'put',
         url: URL_REVIEW_COMMENT + '/' + commentNo,
+        headers: {
+          Authorization: 'Bearer ' + token
+        },
         data: {
           content: content,
         }
       }).then((resp) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 수정" + resp.status)
         getCommentData()
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 수정 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
@@ -207,17 +238,29 @@ export default {
       axios({
         method: 'delete',
         url: URL_REVIEW_COMMENT + '/' + commentNo,
+        headers: {
+          Authorization: 'Bearer ' + token
+        },
       }).then((resp) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 삭제" + resp.status)
         alert("삭제 되었습니다.")
         getCommentData()
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 삭제 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
     return {
       isCommentFocused,
+      idLogedIn,
+      loginState,
+      token,
       setCommentInputBorder,
       setCommentListBorder,
       commentContent,

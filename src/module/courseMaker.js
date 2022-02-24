@@ -1,6 +1,8 @@
 import {ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
+import {router} from "../router/router";
+import login from "./login";
 
 const start_x = 225
 const start_y = 100
@@ -213,7 +215,7 @@ const addTitle = (title) => {
 }
 
 const uploadCourse = (URL) => {
-    const formData = new  FormData()
+    const formData = new FormData()
 
     if (canvas.value != null) {
         const imageBase64 = canvas.value.toDataURL('image/png');
@@ -230,15 +232,21 @@ const uploadCourse = (URL) => {
 
     const {cookies} = useCookies()
     axios.post(URL, formData, {
-        header: {
-            Authorization: 'Bearer ' + cookies.get('token')
+        headers: {
+            Authorization: 'Bearer ' + cookies.get('token'),
         }
     }).then((resp) => {
         console.log(URL + " 코스 저장 성공 status : " + resp.status)
         console.log(URL + '/' + resp.data)
         alert("코스를 저장하였습니다.")
-    }).catch(() => {
-        console.log(URL + " 코스 저장 실패")
+    }).catch((err) => {
+        console.log(URL + " 코스 저장 실패 ")
+        if (err.response.status === 401) {
+            alert("로그인이 필요 합니다.")
+            router.replace('/member/login').then(() => {
+                login.removeUserInfo()
+            })
+        }
     })
 }
 

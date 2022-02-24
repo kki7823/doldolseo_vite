@@ -152,6 +152,7 @@ import {axios} from "@bundled-es-modules/axios";
 import {v4 as uuidv4} from "uuid";
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
+import login from "../../module/login";
 
 
 export default {
@@ -161,6 +162,7 @@ export default {
   setup() {
     const {cookies} =useCookies()
     const router = useRouter()
+
     const isSelected = ref(false)
     const areaMenu = inject('areaMenu')
     const areaNo = ref(99)
@@ -193,8 +195,7 @@ export default {
       if (!confirm("저장되지 않는 코스는 게시글에 첨부 되지 않습니다. \n 저장 하시겠습니까?.")) return
 
       const formData = new FormData()
-      // formData.append('id', localStorage.getItem('id'))
-      formData.append('id', 'kki7823')
+      formData.append('id', localStorage.getItem('id'))
       formData.append('title', title.value)
       formData.append('content', DoldolseoEditor.content.value)
       formData.append('areaNo', areaNo.value)
@@ -202,15 +203,21 @@ export default {
       formData.append('isCourseUploaded', isCourseUploaded.value)
 
       axios.post(URL_REVIEW, formData, {
-        header: {
+        headers: {
           Authorization: 'Bearer ' + cookies.get('token')
         }
       }).then((resp) => {
         console.log(URL_REVIEW + ": 게시글 저장" + resp.status)
         router.replace('/review').then(() => {
         })
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_REVIEW + ": 게시글 저장 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 

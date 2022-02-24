@@ -48,17 +48,28 @@
       </router-link>
     </div>
   </div>
+  <div class="vld-parent">
+    <loading :active="isLoading"
+             :is-full-page="fullPage">
+    </loading>
+  </div>
 </template>
 
 <script>
-import {inject, onMounted, ref} from "vue";
-import {axios} from "@bundled-es-modules/axios";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+
+import {inject, ref} from "vue";
 import {useCookies} from "vue3-cookies"
 import login from "../../module/login";
 
 export default {
   name: "DoldolseoMemberLogin",
+  components: {Loading},
   setup() {
+    const isLoading = ref(false);
+    const fullPage = ref(true);
+
     const {cookies} = useCookies()
     const imgPath = inject('contextPath') + '_image/member'
     const URL_MEMBER_LOGIN = inject('doldolseoMember') + '/login'
@@ -73,13 +84,11 @@ export default {
 
     const sendLoginData = async (template) =>  {
       if (!validateParams(template)) return
+      isLoading.value = true;
       await login.doLogin(id.value, password.value, URL_MEMBER_LOGIN);
+      isLoading.value = false
       await setLoginMsg()
     }
-
-
-
-
 
     const validateParams = (template) => {
       if (id.value.length === 0) {
@@ -104,6 +113,9 @@ export default {
       loginMsg,
       sendLoginData,
       loginSuccess,
+
+      isLoading,
+      fullPage,
     }
   }
 }

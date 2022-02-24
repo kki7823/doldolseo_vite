@@ -20,6 +20,10 @@
 
     <div class="common-miniTitle">
       크루 정보
+      <button class="crew-button--close"
+              @click="closeCrew()">
+        크루 폐쇄
+      </button>
     </div>
     <!-- 크루 정보 컨테이너 -->
     <div class="crew-infoContainer">
@@ -150,7 +154,7 @@
     <div class="crew-midContainer--left">
       <div class="common-miniTitle"
            style="top:45px; font-size: 32px">
-        <span>크루원 정보</span>
+        <span>크루원 정보 </span>
       </div>
       <!-- 크루 멤버 컨테이너 -->
       <div class="crew-memberContainer">
@@ -175,8 +179,9 @@
             <td>
               <div class="crew-member--idbox">
                 <div class="crew-member--photo">
-                  <img src="${pageContext.request.contextPath}/_image/crew/profile/${crew.member.member_img}"
-                       alt="profile"/>
+                  <img :src="URL_MEMBER_IMAGES+crewLeader"
+                       alt="profile"
+                  />
                 </div>
                 <div class="crew-member--id">
                   {{ crewLeader }}
@@ -195,19 +200,21 @@
             <td>
               <div class="crew-member--idbox">
                 <div class="crew-member--photo">
-                  <img src="${pageContext.request.contextPath}/_image/profile/${crewMember.member.member_img}"/>
+                  <img :src="URL_MEMBER_IMAGES+member.memberId"
+                       alt="profile"
+                  />
                 </div>
                 <div class="crew-member--id">
-                  {{ member.crewMemberId }}
+                  {{ member.memberId }}
                   <button type="button"
                           class="crew-button"
-                          onclick="giveCrewMaster('${pageContext.request.contextPath}',${crew.crewNo})">
+                          @click="delegateLeader(member.crewMemberNo, member.memberId)">
                     위임
                   </button>
                   <button type="button"
                           class="crew-button"
                           style="margin-left: 5px"
-                          @click="kickMember(member.crewMemberNo)">
+                          @click="kickMember(member.memberId)">
                     강퇴
                   </button>
                 </div>
@@ -283,7 +290,7 @@
           <!-- 가입대기자 목록 출력 -->
           <tr v-else
               v-for="(member, idx) in members_wating"
-              :key="member.crewMemberNo"
+              :key="member.memberId"
               class="common-tbl__item">
             <td style="font-size: 20px; width: 100px">
               {{ idx + 1 }}
@@ -291,17 +298,18 @@
             <td>
               <div class="crewM-member--idbox">
                 <div class="crew-member--photo">
-                  <img src="${pageContext.request.contextPath}/_image/profile/${watingMember.member.member_img}"
+                  <img :src="URL_MEMBER_IMAGES+member.memberId"
                        alt="profile"
                   />
                 </div>
                 <div class="crew-member--id">
-                  {{ member.crewMemberId }}
+                  {{ member.memberId }}
                 </div>
                 <span class="crewM-member--idbox__btnbox">
                   <doldolseo-crew-join-info v-if="idx === selectIdx && popupVal_JoinInfo"
                                             :toggle-popup="togglePopup_JoinInfo"
-                                            :crew-member-no="member.crewMemberNo"
+                                            :crew-no="crewNo"
+                                            :member-id="member.memberId"
                                             :question-first="questionFirst"
                                             :question-second="questionSecond"
                                             :question-third="questionThird"
@@ -315,12 +323,12 @@
                   </button>
                   <button type="button"
                           class="crew-button"
-                          @click="agreeJoin(member.crewMemberNo)">
+                          @click="agreeJoin(member.memberId)">
                     승인
                   </button>
                   <button type="button"
                           class="crew-button"
-                          @click="denyJoin(member.crewMemberNo)">
+                          @click="denyJoin(member.memberId)">
                     거절
                   </button>
                 </span>
@@ -339,23 +347,25 @@ import DoldolseoCrewJoinEdit from "./DoldolseoCrewJoinEdit.vue";
 import {inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import DoldolseoCrewJoinInfo from "./DoldolseoCrewJoinInfo.vue";
+import {useCookies} from "vue3-cookies";
+import login from "../../module/login";
+import {useRouter} from "vue-router";
 
 export default {
   name: "DoldolseoCrewManagement",
   components: {DoldolseoCrewJoinInfo, DoldolseoCrewJoinEdit, DoldolseoCrewNav},
-  props: {
-    id: {
-      type: String,
-      require: true
-    }
-  },
-  setup(props) {
+  setup() {
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREW_IMAGE = inject('doldolseoCrew') + '/images/'
-    const URL_GET_CREW_BY_ID = URL_CREW + '/manage/' + props.id
+    const URL_CREW_MANAGE = URL_CREW + '/manage'
+    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
+    const URL_MEMBER = inject('doldolseoMember')
+    const URL_MEMBER_REFRESH = URL_MEMBER + '/refresh'
     const IMAGEPATH_CREW = inject('contextPath') + '/_image/crew'
     const IMAGEPATH_CREW_GRADE = IMAGEPATH_CREW + '/grade/'
     const areaMenu = inject('areaMenu')
+    const {cookies} = useCookies()
+    const router = useRouter()
 
     const crewNo = ref(0)
     const crewName = ref('')
@@ -397,10 +407,13 @@ export default {
 
     const getCrewData = () => {
       axios({
-        method: 'get',
-        url: URL_GET_CREW_BY_ID,
+        method: 'post',
+        url: URL_CREW_MANAGE,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        }
       }).then((resp) => {
-        console.log(URL_GET_CREW_BY_ID + " 요청 성공")
+        console.log(URL_CREW_MANAGE + " 요청 성공")
         crewNo.value = resp.data.crewDTO.crewNo
         crewName.value = resp.data.crewDTO.crewName
         areaNoFirst.value = resp.data.crewDTO.areaNoFirst
@@ -419,8 +432,14 @@ export default {
         members_joined.value = resp.data.crewMemberDTO_Joined
         members_wating.value = resp.data.crewMemberDTO_Wating
 
-      }).catch(() => {
-        console.log(URL_GET_CREW_BY_ID + " 요청 실패")
+      }).catch((err) => {
+        console.log(URL_CREW_MANAGE + " 요청 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
@@ -444,6 +463,9 @@ export default {
       axios({
         method: 'put',
         url: URL_CREW + '/' + crewNo.value,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        },
         data: {
           areaNoFirst: areaNoFirst.value,
           areaNoSecond: areaNoSecond.value,
@@ -455,8 +477,14 @@ export default {
       }).then((resp) => {
         console.log(URL_CREW + '/' + crewNo.value, +" 크루 수정" + resp.status)
         alert('수정이 완료 되었습니다.')
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW + '/' + crewNo.value, +" 크루 수정 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
@@ -464,7 +492,8 @@ export default {
       const formData = new FormData()
       formData.append('imageFile', e.target.files[0])
       axios.put(URL_CREW + '/' + crewNo.value + '/images', formData, {
-        header: {
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token'),
           'Content-Type': 'multipart/form-data'
         }
       }).then((resp) => {
@@ -472,8 +501,14 @@ export default {
         crewImage.value = resp.data
         alert('수정이 완료 되었습니다.')
 
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW + '/' + crewNo.value + '/images' + " 요청 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
@@ -489,62 +524,170 @@ export default {
       popupVal_JoinInfo.value = !popupVal_JoinInfo.value
     }
 
-    const kickMember = (crewMemberNo) => {
-      if(!confirm("해당 크루원을 정말로 강퇴 하시겠습니까?"))  return
+    const kickMember = (memberId) => {
+      if (!confirm("해당 크루원을 정말로 강퇴 하시겠습니까?")) return
 
       axios({
         method: 'delete',
-        url: URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo,
-        data: {
-          crewMemberNo: crewMemberNo,
+        url: URL_CREW + '/' + crewNo.value + '/member/',
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        },
+        params: {
+          memberId: memberId,
         }
       }).then((resp) => {
-        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + "크루원 강퇴" + resp.status)
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + "크루원 강퇴" + resp.status)
         alert('해당 크루원을 강퇴 하였습니다.')
         getCrewData()
-      }).catch(() => {
-        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + "크루원 가입신청 거절 실패")
+      }).catch((err) => {
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + "크루원 가입신청 거절 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
-    const agreeJoin = (crewMemberNo) => {
-      if(!confirm("가입 신청을 승인하시겠습니까?"))  return
+    const agreeJoin = (memberId) => {
+      if (!confirm("가입 신청을 승인하시겠습니까?")) return
 
       axios({
         method: 'put',
-        url: URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo,
-        data: {
-          crewMemberNo: crewMemberNo,
-        }
+        url: URL_CREW + '/' + crewNo.value + '/member/' + memberId,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        },
       }).then((resp) => {
-        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + " 크루원 승인" + resp.status)
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + " 크루원 승인" + resp.status)
         alert('승인 되었습니다.')
         getCrewData()
-      }).catch(() => {
-        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + " 크루원 승인 실패")
+      }).catch((err) => {
+        console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + " 크루원 승인 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
-    const denyJoin = (crewMemberNo) => {
-      if(!confirm("가입 신청을 거절하시겠습니까?"))  return
+    const denyJoin = (memberId) => {
+      if (!confirm("가입 신청을 거절하시겠습니까?")) return
 
       axios({
         method: 'delete',
-        url: URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo,
-        data: {
-          crewMemberNo: crewMemberNo,
+        url: URL_CREW + '/' + crewNo.value + '/member',
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        },
+        params: {
+          memberId: memberId
         }
       }).then((resp) => {
-        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + " 크루원 가입신청 거절" + resp.status)
+        console.log(URL_CREW + '/' + crewNo.value + '/member' + " 크루원 가입신청 거절" + resp.status)
         alert('가입신청을 거절 하였습니다.')
         getCrewData()
-      }).catch(() => {
-        console.log(URL_CREW + '/' + crewNo.value + '/member/' + crewMemberNo + "크루원 가입신청 거절 실패")
+      }).catch((err) => {
+        console.log(URL_CREW + '/' + crewNo.value + '/member' + "크루원 가입신청 거절 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
+      })
+    }
+
+    const delegateLeader = async (memberId) => {
+      if (!confirm("권한을 위임하면 해당 크루에 대한 관리자 권한이 사라집니다. 위임 하시겠습니까?")) return
+
+      try {
+        const checkAlreadyLeader = await axios({
+          url: URL_CREW + '/leader/' + memberId,
+          method: 'post',
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token'),
+          },
+        })
+
+        if (checkAlreadyLeader.data) {
+          alert("해당 멤버는 이미 크루장 입니다.")
+          return
+        }
+
+        const responseCrew = await axios({
+          url: URL_CREW + '/' + crewNo.value + '/leader',
+          method: 'put',
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token'),
+          },
+          params: {
+            memberId: memberId,
+          }
+        })
+
+        console.log(URL_CREW + '/' + crewNo.value + '/leader' + responseCrew.status)
+        alert('위임 되었습니다.')
+        router.replace('/crew/' + crewNo).then(() => {
+        })
+
+        const responseMember = await axios({
+          method: 'post',
+          url: URL_MEMBER_REFRESH,
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token')
+          }
+        })
+
+        console.log(URL_MEMBER_REFRESH + " 요청 성공 status : " + responseMember.status)
+        localStorage.setItem('memberRole', responseMember.data) //Refesh role
+        router.replace('/crew').then(() => {
+        })
+
+      } catch (err) {
+        console.log(URL_CREW + " 요청 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
+      }
+    }
+
+    const closeCrew = () => {
+      if (!confirm("크루가 폐쇄되면 크루원들과 크루활동게시글 정보가 자동으로 삭제됩니다.정말로 크루를 폐쇄 하시겠습니까?"))
+        return
+
+      axios({
+        method: 'delete',
+        url: URL_CREW + '/' + crewNo.value,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        }
+      }).then((resp) => {
+        console.log(URL_CREW + " : " + resp.data)
+        alert("크루가 폐쇄 되었습니다.")
+        router.replace('/crew').then(() => {
+        })
+      }).catch((err) => {
+        console.log(URL_CREW_MANAGE + " 요청 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
     return {
       URL_CREW_IMAGE,
+      URL_MEMBER_IMAGES,
       IMAGEPATH_CREW,
       IMAGEPATH_CREW_GRADE,
       areaMenu,
@@ -588,9 +731,12 @@ export default {
       agreeJoin,
       denyJoin,
       kickMember,
+      delegateLeader,
+      closeCrew,
     }
   }
 }
+
 </script>
 
 <style scoped>
@@ -731,6 +877,22 @@ export default {
   cursor: pointer;
   background-color: #FF8000;
   color: white;
+}
+
+.crew-button--close {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.2rem;
+  line-height: 30px;
+  border-radius: 6px;
+  border: none;
+  height: 28px;
+  width: 90px;
+  cursor: pointer;
+  background-color: #6E6E6E;
+  color: white;
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
 }
 
 .crew-info__pointbar--holder {

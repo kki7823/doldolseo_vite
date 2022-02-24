@@ -1,7 +1,7 @@
 <template>
   <div class="miniprofile">
     <!-- After Login -->
-    <div v-if="loginState === 'login'"
+    <div v-if="areYouLogedIn"
          class="miniprofileBox">
       <div class="miniprofile__photo">
         <img :src="URL_MEMBER_IMAGES"
@@ -45,7 +45,7 @@
 <script>
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
-import {inject, ref} from "vue";
+import {computed, inject, ref} from "vue";
 import login from "../../module/login";
 
 
@@ -55,11 +55,13 @@ export default {
     const {cookies} = useCookies()
     const router = useRouter()
     const PATH_MEMBER_IMG_DEFAULT = inject('contextPath') + '_image/member/default_member.png'
-    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/' + localStorage.getItem('memberImg')
+    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/' + localStorage.getItem('id')
     const URL_MEMBER_LOGOUT = inject('doldolseoMember') +'/logout/' +localStorage.getItem('id')
-
-    const loginState = ref(localStorage.getItem('loginState'))
     const memberNickname = localStorage.getItem('nickname')
+
+    const areYouLogedIn = computed(() => {
+      return cookies.get('token') != null && localStorage.getItem('loginState') === 'login';
+    })
 
     const logout = (component, URL_MEMBER_LOGOUT) => {
       login.doLogout(component, URL_MEMBER_LOGOUT)
@@ -72,7 +74,7 @@ export default {
       URL_MEMBER_IMAGES,
       URL_MEMBER_LOGOUT,
 
-      loginState,
+      areYouLogedIn,
       memberNickname,
       logout,
     }

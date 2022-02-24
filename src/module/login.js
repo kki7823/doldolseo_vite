@@ -63,5 +63,20 @@ export default {
         cookies.remove('token')
         component.$forceUpdate()
         refreshKey.value++
-    }
+    },
+
+    removeUserInfo: () => {
+        localStorage.setItem('loginState', 'logout')
+        localStorage.removeItem('id')
+        localStorage.removeItem('nickname')
+        localStorage.removeItem('memberImg')
+        localStorage.removeItem('birth')
+        localStorage.removeItem('gender')
+        localStorage.removeItem('email')
+        localStorage.removeItem('phone')
+        localStorage.removeItem('memberRole')
+        cookies.remove('token')
+        refreshKey.value++
+    },
+
 }

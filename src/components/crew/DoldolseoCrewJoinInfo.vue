@@ -8,11 +8,11 @@
     <table class="crewJ-tbl">
       <tr class="common-tbl__item">
         <td style="width: 170px; height: 30px">
-          <b>아이디{{crewMemberNo}}</b>
+          <b>아이디</b>
         </td>
         <td>
           <span style="color: green">
-            {{crewMemberId}}
+            {{ memberId }}
           </span>
         </td>
       </tr>
@@ -92,12 +92,17 @@
 <script>
 import {inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import {useCookies} from "vue3-cookies";
 
 export default {
   name: "DoldolseoCrewJoinInfo",
   props: {
     togglePopup: {},
-    crewMemberNo: {
+    crewNo: {
+      type: String,
+      require: true,
+    },
+    memberId: {
       type: String,
       require: true,
     },
@@ -114,9 +119,10 @@ export default {
   },
   setup(props) {
     const URL_CREW = inject('doldolseoCrew')
-    const URL_GET_CREW_MEMBER = URL_CREW + '/member/' + props.crewMemberNo
+    const URL_GET_CREW_MEMBER = URL_CREW + '/member/'
+    const {cookies} =useCookies()
 
-    const crewMemberId = ref('')
+    const memberId = ref('')
     const answerFirst = ref('')
     const answerSecond = ref('')
     const answerThird = ref('')
@@ -125,9 +131,16 @@ export default {
       axios({
         method: 'get',
         url: URL_GET_CREW_MEMBER,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token'),
+        },
+        params: {
+          crewNo: props.crewNo,
+          memberId: props.memberId,
+        }
       }).then((resp) => {
         console.log(URL_GET_CREW_MEMBER + " 요청 성공")
-        crewMemberId.value = resp.data.crewMemberId
+        memberId.value = resp.data.memberId
         answerFirst.value = resp.data.answerFirst
         answerSecond.value = resp.data.answerSecond
         answerThird.value = resp.data.answerThird
@@ -137,7 +150,7 @@ export default {
     })
 
     return {
-      crewMemberId,
+      memberId,
       answerFirst,
       answerSecond,
       answerThird,

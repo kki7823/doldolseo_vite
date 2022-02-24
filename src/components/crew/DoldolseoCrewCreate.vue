@@ -19,7 +19,7 @@
         <td rowspan="2"
             class="common-td__border">
           <div class="crew-logobox">
-            <img v-if ="crewImgUrl == null"
+            <img v-if="crewImgUrl == null"
                  :src="IMAGEPATH_CREW_LOGO_DEFAULT"
                  alt="crew-logo"
             />
@@ -183,12 +183,17 @@
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
+import {useCookies} from "vue3-cookies";
+import login from "../../module/login";
 
 export default {
   name: "DoldolseoCrewCreate",
   setup() {
     const URL_CREW = inject('doldolseoCrew')
+    const URL_MEMBER = inject('doldolseoMember')
+    const URL_MEMBER_REFRESH = URL_MEMBER + '/refresh'
     const IMAGEPATH_CREW_LOGO_DEFAULT = inject('contextPath') + '/_image/crew/logo/default_crew.png'
+    const {cookies} = useCookies()
     const router = useRouter()
     const crewName = ref('')
     const checkedArea = ref([])
@@ -205,12 +210,37 @@ export default {
 
     const setCrewImg = (e) => {
       imageFile = e.target.files[0]
+
+      if (!checkExt(imageFile)) return;
+      if (!checkFileSize(imageFile)) return
+
       crewImgUrl.value = URL.createObjectURL(imageFile)
+    }
+
+    const checkFileSize = (file) => {
+      if (file.size > 500000) {
+        alert("이미지 사이즈는 500Kb 이내로 첨부 가능합니다. ")
+        return false
+      }
+      return true
+    }
+
+    const checkExt = (file) => {
+      const fileName = file.name
+      const extList = ['jpg', 'jpeg', 'png', 'gif']
+      const extIdx = fileName.lastIndexOf(".")
+      const ext = fileName.substring(extIdx + 1, fileName.length).toLowerCase()
+
+      if (extList.indexOf(ext) === -1) {
+        alert("이미지 파일만 첨부 가능합니다.")
+        return false
+      }
+      return true
     }
 
     const questionCounter = ref(0)
 
-    const sendCrewData = (template) => {
+    const sendCrewData = async (template) => {
       if (!validParams(template)) return
 
       const formData = new FormData()
@@ -220,7 +250,6 @@ export default {
       for (let i = 0; i < checkedArea.value.length; i++) {
         formData.append(areaNoArray[i], checkedArea.value[i])
       }
-
       formData.append('intro', intro.value)
       formData.append('introDetail', introDetail.value)
       formData.append('recruit', recruit.value)
@@ -228,19 +257,39 @@ export default {
       formData.append('questionFirst', questionFirst.value)
       formData.append('questionSecond', questionSecond.value)
       formData.append('questionThird', questionThird.value)
-      formData.append('crewLeader', questionThird.value)
 
-      axios.post(URL_CREW, formData, {
-        header: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }).then((resp) => {
-        console.log(URL_CREW + " 요청 성공 status : " + resp.status)
-        router.replace('/crew')
+      try {
+        const responseCrew = await axios.post(URL_CREW, formData, {
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token'),
+            'Content-Type': 'multipart/form-data'
+          }
+        })
 
-      }).catch(() => {
+        console.log(URL_CREW + " 요청 성공 status : " + responseCrew.status)
+
+        const responseMember = await axios({
+          method: 'post',
+          url: URL_MEMBER_REFRESH,
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token')
+          }
+        })
+
+        console.log(URL_MEMBER_REFRESH + " 요청 성공 status : " + responseMember.status)
+        localStorage.setItem('memberRole', responseMember.data) //Refesh role
+        router.replace('/crew').then(() => {
+        })
+
+      } catch (err) {
         console.log(URL_CREW + " 요청 실패")
-      })
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
+      }
     }
 
     const crewNameMsg = ref('')
@@ -308,6 +357,9 @@ export default {
       await axios({
         method: 'get',
         url: URL_CREW_CHECK_CREWNAME,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        },
         params: {
           crewName: crewName,
         }
@@ -325,8 +377,14 @@ export default {
         }
 
         return true
-      }).catch(() => {
-        console.log(URL_CREW_CHECK_CREWNAME + " 요청 실패 status : " + resp.status)
+      }).catch((err) => {
+        console.log(URL_CREW_CHECK_CREWNAME + " 요청 실패")
+        if (err.response.status === 401) {
+          alert("잘못된 접근 입니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 

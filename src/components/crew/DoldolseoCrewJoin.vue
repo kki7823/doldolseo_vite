@@ -25,7 +25,7 @@
           />
         </td>
       </tr>
-      <tr v-if="questionSecond != null"
+      <tr v-if="questionSecond !== ''"
           class="crewJ-tbl__item">
         <td class="crewJ-tbl__label">
           <b>질문2</b>
@@ -36,7 +36,7 @@
           </span>
         </td>
       </tr>
-      <tr v-if="questionSecond != null"
+      <tr v-if="questionSecond !== ''"
           class="crewJ-tbl__item">
         <td class="crewJ-tbl__label">
           답변
@@ -85,7 +85,7 @@
 
     <div class="crewJ-container-bottom">
       <button type="button"
-              @click="sendCresJoinData()">
+              @click="sendCrewJoinData()">
         가입
       </button>
       <button type="button"
@@ -99,6 +99,9 @@
 <script>
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import {useCookies} from "vue3-cookies";
+import login from "../../module/login";
+import {useRouter} from "vue-router";
 
 export default {
   name: "DoldolseoCrewJoin",
@@ -123,21 +126,28 @@ export default {
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREW_MEMBER = URL_CREW + '/' + props.crewNo + '/member'
 
+    const {cookies} = useCookies()
+    const router = useRouter()
+
     const answerFirst = ref('')
     const answerSecond = ref('')
     const answerThird = ref('')
     const isAgree = ref(false)
 
-    const sendCresJoinData = (template) => {
+
+    const sendCrewJoinData = (template) => {
       if (!validParams(template)) return
       axios({
         method: 'post',
         url: URL_CREW_MEMBER,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        },
         data: {
-          crewMemberId: 'test1',
           crew: {
             crewNo: props.crewNo,
           },
+          memberId: localStorage.getItem('id'),
           answerFirst: answerFirst.value,
           answerSecond: answerSecond.value,
           answerThird: answerThird.value,
@@ -148,8 +158,14 @@ export default {
         console.log(resp.data)
         alert('가입 요청되었습니다. 크루원 활동은 요청이 승인 된 후부터 가능합니다. 감사합니다')
         props.togglePopup()
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_MEMBER + " 테스트 메소드 요청 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
@@ -184,7 +200,7 @@ export default {
       answerThird,
       isAgree,
 
-      sendCresJoinData,
+      sendCrewJoinData,
     }
   }
 }

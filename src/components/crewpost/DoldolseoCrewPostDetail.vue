@@ -174,7 +174,9 @@
       <!-- 글 내용 -->
       <tr class="common-tbl__item">
         <td>
-          <div v-html="content"/>
+          <div class="common-contents"
+               v-html="content"
+          />
         </td>
       </tr>
     </table>
@@ -303,7 +305,6 @@ export default {
 
     const addMemberData = (memberId) => {
       if (memberId === '') return
-
       axios({
         method: 'post',
         url: URL_CREW_POST_ADD_MEMBERSWITH,
@@ -437,6 +438,14 @@ export default {
   width: 1000px;
   text-align: right;
   margin: 10px auto 0;
+}
+
+.common-contents {
+  width: 100%;
+}
+
+.common-contents >>> img {
+  width: 100%;
 }
 
 

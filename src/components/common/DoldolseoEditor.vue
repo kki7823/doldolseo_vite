@@ -257,9 +257,11 @@ import {Color} from '@tiptap/extension-color'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
-import {inject, onMounted, ref, watch} from "vue";
+import {ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
+import login from "../../module/login";
+import {useRouter} from "vue-router";
 
 const content = ref('')
 export default {
@@ -332,22 +334,55 @@ export default {
 
     const imageURL = props.imageUrl
     const {cookies} = useCookies()
+    const router = useRouter()
 
     const setImage = (e) => {
+      const file = e.target.files[0]
+
+      if(!checkExt(file)) return;
+      if (!checkFileSize(file)) return
+
       const formData = new FormData()
-      formData.append('imgFile', e.target.files[0])
+      formData.append('imgFile', file)
 
       axios.post(imageURL, formData, {
-        header: {
+        headers: {
           Authorization: 'Bearer ' + cookies.get('token')
         }
       }).then((resp) => {
         console.log(imageURL + " 이미지 가져오기 성공 status : " + resp.status)
         console.log(imageURL + '/' + resp.data)
         editor.value.chain().focus().setImage({src: imageURL + '/' + resp.data}).run()
-      }).catch(() => {
-        console.log(imageURL + " 이미지 가져오기 실패")
+      }).catch((err) => {
+        console.log(imageURL + " 이미지 가져오기 실패 "+err.response.status)
+        if (err.response.status === 401) {
+          alert("권한 없음")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
+    }
+
+    const checkFileSize = (file) => {
+      if (file.size > 500000) {
+        alert("이미지 사이즈는 500Kb 이내로 첨부 가능합니다. ")
+        return false
+      }
+      return true
+    }
+
+    const checkExt = (file) => {
+      const fileName = file.name
+      const extList = ['jpg','jpeg','png','gif']
+      const extIdx = fileName.lastIndexOf(".")
+      const ext = fileName.substring(extIdx+1,fileName.length).toLowerCase()
+
+      if(extList.indexOf(ext) === -1){
+        alert("이미지 파일만 첨부 가능합니다.")
+        return false
+      }
+      return true
     }
 
     return {

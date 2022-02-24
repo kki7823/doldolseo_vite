@@ -74,7 +74,7 @@
             <option value="">선택안함</option>
             <option v-for="crewMember in crewMembers"
                     :value="crewMember">
-              {{ crewMember.crewMemberId }}
+              {{ crewMember.memberId }}
             </option>
           </select>
           <div v-if="selectedMemberSet.size !== 0"
@@ -118,20 +118,22 @@ import DoldolseoTextEditor from "../common/DoldolseoEditor.vue";
 import {v4 as uuidv4} from "uuid";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
+import {useCookies} from "vue3-cookies";
+import login from "../../module/login";
 
 export default {
   name: "DoldolseoCrewPostInsert",
   components: {DoldolseoTextEditor},
   setup() {
     const router = useRouter()
+    const {cookies} = useCookies()
+
     const URL_CREW = inject('doldolseoCrew')
-    const URL_CREW_MEMBERS = URL_CREW + '/members/' + 'kki7823'
     const URL_CREW_POST = inject('doldolseoCrewPost')
-    // const URL_CREW_MEMBERS = URL_CREW + '/members/' + localStorage.getItem('id')
+    const URL_CREW_MEMBERS = URL_CREW + '/members/' + localStorage.getItem('id')
     const IMAGEPATH_DEFAULT_MEMBER_IMG = inject('contextPath') + '/_image/member/default_member.png'
     const IMAGE_UUID = uuidv4()
     const URL_CREW_POST_IMAGE = inject('doldolseoCrewPost') + '/images/' + IMAGE_UUID
-
     const title = ref('')
     const category = ref('')
     const categoryMenu = inject('crew_categoryMenu')
@@ -155,11 +157,20 @@ export default {
       axios({
         method: 'get',
         url: URL_CREW_MEMBERS,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token'),
+        },
       }).then((resp) => {
         console.log(URL_CREW_MEMBERS + " 요청 성공" + resp.status)
         crews.value = resp.data
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_MEMBERS + " 요청 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 
@@ -168,11 +179,20 @@ export default {
         axios({
           method: 'get',
           url: URL_CREW + '/' + selectedCrew.value.crewNo + '/members',
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token'),
+          },
         }).then((resp) => {
           console.log(URL_CREW + '/' + selectedCrew.value.crewNo + '/members' + " 요청 성공" + resp.status)
           crewMembers.value = resp.data
-        }).catch(() => {
+        }).catch((err) => {
           console.log(URL_CREW + '/' + selectedCrew.value.crewNo + '/members' + " 요청 실패")
+          if (err.response.status === 401) {
+            alert("로그인이 필요 합니다.")
+            router.replace('/member/login').then(() => {
+              login.removeUserInfo()
+            })
+          }
         })
       }
     })
@@ -181,25 +201,30 @@ export default {
       if (!validParams(template)) return
 
       const formData = new FormData()
-      // formData.append('id', localStorage.getItem('id'))
       formData.append('crewNo', selectedCrew.value.crewNo)
-      formData.append('writerId', 'kki7823')
+      formData.append('writerId', localStorage.getItem('id'))
       formData.append('category', category.value)
       formData.append('title', title.value)
       formData.append('content', DoldolseoTextEditor.content.value)
       formData.append('imageUUID', IMAGE_UUID)
-      formData.append('membersWith', JSON.stringify([...selectedMemberSet.value]))
+      formData.append('taggedMembers', JSON.stringify([...selectedMemberSet.value]))
 
       axios.post(URL_CREW_POST, formData, {
-        header: {
-          // 'Content-Type': 'multipart/form-data'
-        }
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token'),
+        },
       }).then((resp) => {
         console.log(URL_CREW_POST + ": 게시글 저장" + resp.status)
         router.replace('/crew/post').then(() => {
         })
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_POST + ": 게시글 저장 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
       })
     }
 

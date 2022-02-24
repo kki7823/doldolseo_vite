@@ -48,7 +48,7 @@
           <div class="crew-info__item">
             크루설립일 :
             <span class="crew-namelabel">
-              {{ cDate }}
+              {{ cDate[0] + '-' + cDate[1] + '-' + cDate[2] }}
             </span>
           </div>
 
@@ -132,7 +132,7 @@
               <td>
                 <div class="crew-member--idbox">
                   <div class="crew-member--photo">
-                    <img src="${pageContext.request.contextPath}/_image/profile/${crew.member.member_img}"
+                    <img :src="URL_MEMBER_IMAGE+crewLeader"
                          alt="profile"
                     />
                   </div>
@@ -144,7 +144,6 @@
             </tr>
 
             <!-- 크루원 -->
-            <!-- v-for -->
             <tr v-for="member in members"
                 class="common-tbl__item">
               <td>
@@ -153,12 +152,12 @@
               <td>
                 <div class="crew-member--idbox">
                   <div class="crew-member--photo">
-                    <img src="${pageContext.request.contextPath}/_image/profile/${crewMember.member.member_img}"
+                    <img :src="URL_MEMBER_IMAGE+member.memberId"
                          alt="크루원"
                     />
                   </div>
                   <div class="crew-memberNickname">
-                    {{ member.crewMemberId }}
+                    {{ member.memberId }}
                   </div>
                 </div>
               </td>
@@ -172,17 +171,17 @@
         <div class="common-miniTitle"
              style="width: 550px; top:45px; left: 65px; font-size: 32px;">
           <span>모집 공고</span>
-          <!--              <c:when test="${crewMembers.contains(member.id)}">-->
-          <!--                <button class="crew-button" style="float: right; margin-top: 2px">-->
-          <!--                  크루-->
-          <!--                  탈퇴-->
-          <!--                </button>-->
-          <!--              </c:when>-->
-          <button class="crew-button"
+          <button v-if="areYouLogedIn && areYouCrewMember"
+                  class="crew-button"
+                  style="float: right; margin-top: 2px"
+                  @click="getOutOfThisCrew()">
+            크루 탈퇴
+          </button>
+          <button v-else-if="areYouLogedIn && !areYouCrewMember"
+                  class="crew-button"
                   style="float: right; margin-top: 2px"
                   @click="popupVal = !popupVal">
-            크루
-            가입
+            크루 가입
           </button>
           <doldolseo-crew-join v-if="popupVal"
                                :crew-no="crewNo"
@@ -203,8 +202,11 @@
 <script>
 import DoldolseoCrewNav from "./DoldolseoCrewNav.vue";
 import DoldolseoCrewJoin from "./DoldolseoCrewJoin.vue";
-import {inject, onMounted, ref} from "vue";
+import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import login from "../../module/login";
+import {useCookies} from "vue3-cookies";
+import {useRouter} from "vue-router";
 
 export default {
   name: "DoldolseoCrewDetail",
@@ -219,9 +221,15 @@ export default {
     const URL_CREW = inject('doldolseoCrew')
     const URL_GET_CREW = URL_CREW + '/' + props.crewNo
     const URL_CREW_IMAGE = URL_CREW + '/images/'
-    const IMAGEPATH_CREW = inject('contextPath') + '/_image/crew'
+    const URL_CREW_CHECKMEMBER = URL_CREW + '/member/check'
+    const URL_CREW_GETOUT = URL_CREW + '/' + props.crewNo + '/member/' + localStorage.getItem('id')
+    const URL_MEMBER_IMAGE = inject('doldolseoMember') + '/images/'
+
+    const IMAGEPATH_CREW = inject('contextPath') + '/_image/crew/'
     const IMAGEPATH_CREW_GRADE = IMAGEPATH_CREW + '/grade/'
+
     const areaMenu = inject('areaMenu')
+    const memberRole = localStorage.getItem('memberRole')
 
     const crewName = ref('')
     const areaNoFirst = ref('')
@@ -235,11 +243,13 @@ export default {
     const questionThird = ref('')
     const crewImage = ref('')
     const crewPoint = ref(0)
-    const cDate = ref('')
+    const cDate = ref([])
     const crewLeader = ref('')
     const members = ref({})
 
     onMounted(() => {
+      checkCrewMember()
+
       axios({
         method: 'get',
         url: URL_GET_CREW,
@@ -257,9 +267,9 @@ export default {
         questionThird.value = resp.data.crewDTO.questionThird
         crewImage.value = resp.data.crewDTO.crewImage
         crewPoint.value = resp.data.crewDTO.crewPoint
-        cDate.value = resp.data.crewDTO.cDate
+        cDate.value = resp.data.crewDTO.cdate
         crewLeader.value = resp.data.crewDTO.crewLeader
-        members.value = resp.data.crewMemberDTO
+        members.value = resp.data.crewMemberDTO_Joined
 
       }).catch(() => {
         console.log(URL_GET_CREW + " 요청 실패")
@@ -287,11 +297,71 @@ export default {
       popupVal.value = !popupVal.value
     }
 
+    const {cookies} = useCookies()
+    const router = useRouter()
+    const areYouLogedIn = computed(() => {
+      return cookies.get('token') != null && localStorage.getItem('loginState') === 'login';
+    })
+    const areYouCrewMember = ref(false)
+
+    const checkCrewMember = () => {
+      if (!areYouLogedIn.value) return
+
+      axios({
+        method: 'get',
+        url: URL_CREW_CHECKMEMBER,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        },
+        params: {
+            crewNo: props.crewNo,
+        }
+      }).then((resp) => {
+        console.log(URL_CREW_CHECKMEMBER + " 요청 성공 status : " + resp.status)
+        areYouCrewMember.value = resp.data
+      }).catch((err) => {
+        console.log(URL_CREW_CHECKMEMBER + "요청 실패 status :" + err.response.status)
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
+      })
+    }
+
+    const getOutOfThisCrew = () => {
+      if (!confirm("정말로 크루를 탈퇴 하시겠습니까?")) return
+
+      axios({
+        method: 'delete',
+        url: URL_CREW_GETOUT,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        },
+      }).then((resp) => {
+        console.log(URL_CREW_CHECKMEMBER + " 요청 성공 status : " + resp.status)
+        alert('탈퇴 되었습니다.')
+        router.replace('/crew').then(() => {
+        })
+      }).catch((err) => {
+        console.log(URL_CREW_CHECKMEMBER + " 테스트 메소드 요청 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
+      })
+    }
+
     return {
       URL_CREW_IMAGE,
+      URL_MEMBER_IMAGE,
       IMAGEPATH_CREW,
       IMAGEPATH_CREW_GRADE,
       areaMenu,
+      memberRole,
 
       crewName,
       areaNoFirst,
@@ -308,6 +378,9 @@ export default {
       cDate,
       crewLeader,
       members,
+      areYouLogedIn,
+      areYouCrewMember,
+      getOutOfThisCrew,
 
       areaNoToString,
       getCrewGrade,

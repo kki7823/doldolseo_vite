@@ -5,27 +5,41 @@
           크루활동
         </router-link>
       </span>
-    <!--    <button>-->
-    <!--      <router-link :to="{name: 'crewManage', params:{id: 'kki7823'}}">-->
-    <!--        크루 관리-->
-    <!--      </router-link>-->
-    <!--    </button>-->
     <span class="crew-navi__btn">
       <router-link :to="{name: 'crewList'}">
         크루목록
       </router-link>
     </span>
-    <button id="crew-navi__btn--mycrew"
-            type="button"
-            class="crew-button">
-      My Crew
-    </button>
+    <router-link :to="{name: 'crewList', params: {memberId: memberId}}">
+      <button v-if="areYouLogedIn"
+              type="button"
+              class="crew-button">
+        My Crew
+      </button>
+    </router-link>
   </nav>
 </template>
 
 <script>
+import {computed, ref} from "vue";
+import {useCookies} from "vue3-cookies";
+
 export default {
-  name: "DoldolseoCrewNav"
+  name: "DoldolseoCrewNav",
+  setup() {
+    const {cookies} = useCookies()
+
+    const areYouLogedIn = computed(() => {
+      return cookies.get('token') != null && localStorage.getItem('loginState') === 'login';
+    })
+
+    const memberId = ref(localStorage.getItem('id'))
+
+    return {
+      memberId,
+      areYouLogedIn,
+    }
+  }
 }
 </script>
 
@@ -74,7 +88,7 @@ export default {
   padding: 6px 8px 4px 8px;
   cursor: pointer;
   background-color: #FF8000;
-  color: white;
   line-height: 21px;
+  color: white;
 }
 </style>

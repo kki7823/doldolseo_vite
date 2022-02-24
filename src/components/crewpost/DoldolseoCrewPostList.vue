@@ -60,7 +60,7 @@
         <td>조회수</td>
       </tr>
 
-      <tr v-for="crewPost in crewPostList"
+      <tr v-for="crewPost in crewPosts"
           class="list--item">
         <td>{{ crewPost.crewNo }}</td>
         <td>{{ categoryMenu[crewPost.category] }}</td>
@@ -122,7 +122,7 @@ export default {
 
     const crewNo = ref(0)
     const category = ref(0)
-    const crewPostList = ref([])
+    const crewPosts = ref([])
 
     const page = ref(0)
     const startBlockPage = ref(0)
@@ -138,7 +138,7 @@ export default {
         }
       }).then((resp) => {
         console.log(URL_CREW_POST + " - 요청 성공 status : " + resp.status)
-        crewPostList.value = resp.data.crewPostList
+        crewPosts.value = resp.data.crewPosts
         startBlockPage.value = resp.data.startBlockPage
         endBlockPage.value = resp.data.endBlockPage
         totalPages.value = resp.data.totalPages
@@ -152,7 +152,7 @@ export default {
 
       crewNo,
       category,
-      crewPostList,
+      crewPosts,
       startBlockPage,
       endBlockPage,
       totalPages,

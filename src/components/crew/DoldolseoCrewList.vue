@@ -6,11 +6,6 @@
       <!-- 제목 -->
       <div class="common-top__title">
         크루 목록
-        <router-link :to="{name: 'crewManage', params:{id: 'kki7823'}}">
-          <button>
-            크루 관리
-          </button>
-        </router-link>
       </div>
       <!-- 게시판 드릴다운 -->
       <span class="common-top__drilldownbox">
@@ -26,14 +21,20 @@
       </span>
 
       <!-- 로그인 및 권한에 따라 구분 -->
-      <!--      <button onclick="">-->
-      <!--        크루 관리-->
-      <!--      </button>-->
-      <router-link to="/crew/create">
-        <button>
-          크루 생성
-        </button>
-      </router-link>
+      <div v-if="token != null && memberRole === 'USER'">
+        <router-link to="/crew/create">
+          <button>
+            크루 생성
+          </button>
+        </router-link>
+      </div>
+      <div v-else-if="token != null && memberRole === 'CREWLEADER'">
+        <router-link :to="{name: 'crewManage'}">
+          <button>
+            크루 관리
+          </button>
+        </router-link>
+      </div>
     </div>
 
     <!-- 상단 정렬버튼 + 검색창 -->
@@ -129,21 +130,33 @@ import DoldolseoPagenation from "../common/DoldolseoPagenation.vue";
 import {inject, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import DoldolseoCrewNav from "./DoldolseoCrewNav.vue";
+import {useCookies} from "vue3-cookies";
+import {useRouter} from "vue-router";
 
 export default {
   name: "DoldolseoCrewList",
   components: {DoldolseoCrewNav, DoldolseoPagenation},
-  setup() {
+  props: {
+    memberId: {
+      type: String,
+    }
+  },
+  setup(props) {
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREW_IMAGE = URL_CREW + '/images/'
     const IMAGEPATH_CREW_GRADE = inject('contextPath') + '/_image/crew/grade/'
     const areaMenu = inject('areaMenu')
+    const {cookies} = useCookies()
+    const router = useRouter()
 
     const crewList = ref([])
     const page = ref(0)
     const startBlockPage = ref(0)
     const endBlockPage = ref(0)
     const totalPages = ref(0)
+
+    const token = ref(cookies.get('token'))
+    const memberRole = ref(localStorage.getItem('memberRole'))
 
     const areaNoToString = (first, second, third) => {
       let areaArray = []
@@ -158,6 +171,7 @@ export default {
       axios.get(URL_CREW, {
         params: {
           page: page.value,
+          memberId: props.memberId
         }
       }).then((resp) => {
         console.log(URL_CREW + " - 요청 성공 status : " + resp.status)
@@ -187,6 +201,8 @@ export default {
       totalPages,
       areaNoToString,
       getCrewGrade,
+      token,
+      memberRole,
     }
   }
 }
