@@ -105,9 +105,9 @@ import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
 import {useRouter} from "vue-router";
-import login from "../../module/login";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoReviewComment",
@@ -182,8 +182,9 @@ export default {
           Object.assign(comments.value[i], isActiveEditMode)
         }
 
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + "댓글 가져오기 실패")
+        onError.httpErrorException(err)
       })
     }
 
@@ -211,12 +212,7 @@ export default {
         isLoading.value = false
       }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + " 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
         isLoading.value = false
       })
     }
@@ -249,12 +245,7 @@ export default {
         isLoading.value = false
       }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 수정 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
         isLoading.value = false
       })
     }
@@ -276,12 +267,7 @@ export default {
         isLoading.value = false
       }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 삭제 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
         isLoading.value = false
       })
     }

@@ -95,6 +95,7 @@ import {useRoute} from "vue-router";
 import DoldolseoPagenation from "../common/DoldolseoPagenation.vue";
 import Loading from "vue3-loading-overlay";
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoReviewList",
@@ -128,9 +129,10 @@ export default {
         totalPages.value = resp.data.totalPages
 
         isLoading.value = false
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_REVIEW + " - 요청 실패")
-        isLoading.value = true
+        isLoading.value = false
+        onError.httpErrorException(err)
       })
     })
 

@@ -67,6 +67,7 @@ import {onMounted, inject, ref} from "vue";
 import DoldolseoTextEditor from "../common/DoldolseoEditor.vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewPostUpdate",
@@ -108,8 +109,9 @@ export default {
         title.value = resp.data.crewPostDTO.title
         content.value = resp.data.crewPostDTO.content
         imageUUID.value = resp.data.crewPostDTO.imageUUID
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_GET_CREW_POST + " 요청 실패")
+        onError.httpErrorException(err)
       })
     }
 
@@ -126,8 +128,9 @@ export default {
         alert("게시글이 수정 되었습니다.")
         router.replace('/crew/post/' + crewPostNo.value).then(() => {
         })
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_GET_CREW_POST + ": 게시글 수정 실패")
+        onError.httpErrorException(err)
       })
     }
 

@@ -1,202 +1,205 @@
 <template>
-  <body>
-    <doldolseo-crew-nav/>
+  <doldolseo-crew-nav/>
+  <section class="crew-mainContainer">
+    <loading :active="isLoading"
+             :is-full-page="true"
+             :opacity="1.0">
+    </loading>
 
-    <section class="crew-mainContainer">
+    <div class="crew-topContainer">
+      <div class="common-top__title">
+        크루 상세
+      </div>
 
-      <div class="crew-topContainer">
-        <div class="common-top__title">
-          크루 상세
-        </div>
-
-        <span class="common-top__drilldownbox">
+      <span class="common-top__drilldownbox">
                     <a href="#"
                        style="color: #FF8000;">크루 게시판</a>
                     <span> > </span>
-                    <a href="#">크루 목록</a>
+                    <a href="#"
+                       style="color: #FF8000;">크루 목록</a>
                     <span> > </span>
-                    <a href="#">크루 상세</a>
+                    <a href="#"
+                       style="color: #6E6E6E;">크루 상세</a>
             </span>
-      </div>
+    </div>
 
-      <div class="common-miniTitle">
-        크루 정보
-      </div>
+    <div class="common-miniTitle">
+      크루 정보
+    </div>
 
-      <div class="crew-infoContainer">
-        <div class="crew-info__infobox">
-          <div class="crew-info__item">
+    <div class="crew-infoContainer">
+      <div class="crew-info__infobox">
+        <div class="crew-info__item">
             <span>
               로고 :
             </span>
-            <div class="crew-logobox">
-              <img :src="URL_CREW_IMAGE+'/'+crewImage"
-                   alt="crew-logo"
-              />
-            </div>
+          <div class="crew-logobox">
+            <img :src="URL_CREW_IMAGE+crewImage"
+                 alt="crew-logo"
+            />
           </div>
+        </div>
 
-          <div class="crew-info__item">
+        <div class="crew-info__item">
             <span>
               크루명 :
             </span>
-            <span class="crew-namelabel">
+          <span class="crew-namelabel">
               {{ crewName }}
             </span>
-          </div>
+        </div>
 
-          <div class="crew-info__item">
-            크루설립일 :
-            <span class="crew-namelabel">
+        <div class="crew-info__item">
+          크루설립일 :
+          <span class="crew-namelabel">
               {{ cDate[0] + '-' + cDate[1] + '-' + cDate[2] }}
             </span>
-          </div>
+        </div>
 
-          <div class="crew-info__item">
-            크루등급 :
-            <div class="crew-info__grade">
-              <!-- 크루등급별 등급사진 선택 -->
-              <img :src="IMAGEPATH_CREW_GRADE+getCrewGrade(crewPoint)"
-                   alt="grade"
-              />
-            </div>
-            <button class="crew-button"
-                    style="height: 30px">
-              등급안내
-            </button>
+        <div class="crew-info__item">
+          크루등급 :
+          <div class="crew-info__grade">
+            <!-- 크루등급별 등급사진 선택 -->
+            <img :src="IMAGEPATH_CREW_GRADE+getCrewGrade(crewPoint)"
+                 alt="grade"
+            />
           </div>
+          <button class="crew-button"
+                  style="height: 30px">
+            등급안내
+          </button>
+        </div>
 
-          <div class="crew-info__item">
-            크루포인트 :
-            <div class="crew-info__pointbar--holder">
-              <div class="crew-info__pointbar--bar">
-                {{ crewPoint }}
-              </div>
+        <div class="crew-info__item">
+          크루포인트 :
+          <div class="crew-info__pointbar--holder">
+            <div class="crew-info__pointbar--bar">
+              {{ crewPoint }}
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="crew-info__introbox">
-          <div class="crew-info__item"
-               style="margin-top: 112px">
-            관심지역 :
-            <span class="crew-namelabel">
+      <div class="crew-info__introbox">
+        <div class="crew-info__item"
+             style="margin-top: 112px">
+          관심지역 :
+          <span class="crew-namelabel">
               {{ areaNoToString(areaNoFirst, areaNoSecond, areaNoThird) }}
             </span>
-          </div>
+        </div>
 
-          <div class="crew-info__item"
-               style="border: none">
+        <div class="crew-info__item"
+             style="border: none">
             <span>
               크루소개 :
             </span>
-            <span class="crew-infolabel">
+          <span class="crew-infolabel">
               {{ intro }}
             </span>
-          </div>
         </div>
       </div>
+    </div>
 
-      <div class="crew-midContainer--left">
-        <div class="common-miniTitle"
-             style="top:45px; font-size: 32px">
+    <div class="crew-midContainer--left">
+      <div class="common-miniTitle"
+           style="top:45px; font-size: 32px">
           <span>
             크루원 정보
             </span>
-        </div>
-        <!-- 크루 멤버 컨테이너 -->
-        <div class="crew-memberContainer">
-          <table class="crew-memberTbl--top">
-            <tr class="crew-memberTbl__header">
-              <td style="width: 160px">
-                멤버등급
-              </td>
-              <td>
-                멤버
-              </td>
-            </tr>
-          </table>
-          <!-- 크루장 -->
-          <table class="crew-memberTbl--bottom">
-            <tr class="common-tbl__item">
-              <td>
-                <div class="crew-master--decorate">
+      </div>
+      <!-- 크루 멤버 컨테이너 -->
+      <div class="crew-memberContainer">
+        <table class="crew-memberTbl--top">
+          <tr class="crew-memberTbl__header">
+            <td style="width: 160px">
+              멤버등급
+            </td>
+            <td>
+              멤버
+            </td>
+          </tr>
+        </table>
+        <!-- 크루장 -->
+        <table class="crew-memberTbl--bottom">
+          <tr class="common-tbl__item">
+            <td>
+              <div class="crew-master--decorate">
                   <span class="crew-master--decotext">
                     크루장
                   </span>
-                  <img :src="IMAGEPATH_CREW+'crew_master_crown.png'"
-                       alt="crown"
+                <img :src="IMAGEPATH_CREW+'crew_master_crown.png'"
+                     alt="crown"
+                />
+              </div>
+            </td>
+            <td>
+              <div class="crew-member--idbox">
+                <div class="crew-member--photo">
+                  <img :src="URL_MEMBER_IMAGE+crewLeader"
+                       alt="profile"
                   />
                 </div>
-              </td>
-              <td>
-                <div class="crew-member--idbox">
-                  <div class="crew-member--photo">
-                    <img :src="URL_MEMBER_IMAGE+crewLeader"
-                         alt="profile"
-                    />
-                  </div>
-                  <div class="crew-memberNickname">
-                    {{ crewLeader }}
-                  </div>
+                <div class="crew-memberNickname">
+                  {{ crewLeader }}
                 </div>
-              </td>
-            </tr>
+              </div>
+            </td>
+          </tr>
 
-            <!-- 크루원 -->
-            <tr v-for="member in members"
-                class="common-tbl__item">
-              <td>
-                <span class="crew-member-decotext">크루원</span>
-              </td>
-              <td>
-                <div class="crew-member--idbox">
-                  <div class="crew-member--photo">
-                    <img :src="URL_MEMBER_IMAGE+member.memberId"
-                         alt="크루원"
-                    />
-                  </div>
-                  <div class="crew-memberNickname">
-                    {{ member.memberId }}
-                  </div>
+          <!-- 크루원 -->
+          <tr v-for="member in members"
+              class="common-tbl__item">
+            <td>
+              <span class="crew-member-decotext">크루원</span>
+            </td>
+            <td>
+              <div class="crew-member--idbox">
+                <div class="crew-member--photo">
+                  <img :src="URL_MEMBER_IMAGE+member.memberId"
+                       alt="크루원"
+                  />
                 </div>
-              </td>
-            </tr>
-          </table>
-        </div>
+                <div class="crew-memberNickname">
+                  {{ member.memberId }}
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
       </div>
+    </div>
 
-      <!-- 모집 공고 및 크루 가입 -->
-      <div class="crew-midContainer--right">
-        <div class="common-miniTitle"
-             style="width: 550px; top:45px; left: 65px; font-size: 32px;">
-          <span>모집 공고</span>
-          <button v-if="areYouLogedIn && areYouCrewMember"
-                  class="crew-button"
-                  style="float: right; margin-top: 2px"
-                  @click="getOutOfThisCrew()">
-            크루 탈퇴
-          </button>
-          <button v-else-if="areYouLogedIn && !areYouCrewMember"
-                  class="crew-button"
-                  style="float: right; margin-top: 2px"
-                  @click="popupVal = !popupVal">
-            크루 가입
-          </button>
-          <doldolseo-crew-join v-if="popupVal"
-                               :crew-no="crewNo"
-                               :toggle-popup="togglePopup"
-                               :question-first="questionFirst"
-                               :question-second="questionSecond"
-                               :question-third="questionThird"
-          />
-        </div>
-        <div class="crew-recruitContainer">
-          {{ recruit }}
-        </div>
+    <!-- 모집 공고 및 크루 가입 -->
+    <div class="crew-midContainer--right">
+      <div class="common-miniTitle"
+           style="width: 550px; top:45px; left: 65px; font-size: 32px;">
+        <span>모집 공고</span>
+        <button v-if="areYouLogedIn && areYouCrewMember"
+                class="crew-button"
+                style="float: right; margin-top: 2px"
+                @click="getOutOfThisCrew()">
+          크루 탈퇴
+        </button>
+        <button v-else-if="areYouLogedIn && !areYouCrewMember"
+                class="crew-button"
+                style="float: right; margin-top: 2px"
+                @click="popupVal = !popupVal">
+          크루 가입
+        </button>
+        <doldolseo-crew-join v-if="popupVal"
+                             :crew-no="crewNo"
+                             :toggle-popup="togglePopup"
+                             :question-first="questionFirst"
+                             :question-second="questionSecond"
+                             :question-third="questionThird"
+        />
       </div>
-    </section>
-  </body>
+      <div class="crew-recruitContainer">
+        {{ recruit }}
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
@@ -207,10 +210,13 @@ import {axios} from "@bundled-es-modules/axios";
 import login from "../../module/login";
 import {useCookies} from "vue3-cookies";
 import {useRouter} from "vue-router";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewDetail",
-  components: {DoldolseoCrewNav, DoldolseoCrewJoin},
+  components: {DoldolseoCrewNav, DoldolseoCrewJoin, Loading},
   props: {
     crewNo: {
       type: String,
@@ -218,6 +224,8 @@ export default {
     }
   },
   setup(props) {
+    const isLoading = ref(false)
+
     const URL_CREW = inject('doldolseoCrew')
     const URL_GET_CREW = URL_CREW + '/' + props.crewNo
     const URL_CREW_IMAGE = URL_CREW + '/images/'
@@ -249,6 +257,7 @@ export default {
 
     onMounted(() => {
       checkCrewMember()
+      isLoading.value = true
 
       axios({
         method: 'get',
@@ -271,8 +280,11 @@ export default {
         crewLeader.value = resp.data.crewDTO.crewLeader
         members.value = resp.data.crewMemberDTO_Joined
 
-      }).catch(() => {
+        isLoading.value = false
+      }).catch((err) => {
         console.log(URL_GET_CREW + " 요청 실패")
+        isLoading.value = false
+        onError.httpErrorException(err)
       })
     })
 
@@ -321,12 +333,7 @@ export default {
         areYouCrewMember.value = resp.data
       }).catch((err) => {
         console.log(URL_CREW_CHECKMEMBER + "요청 실패 status :" + err.response.status)
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
       })
     }
 
@@ -346,16 +353,12 @@ export default {
         })
       }).catch((err) => {
         console.log(URL_CREW_CHECKMEMBER + " 테스트 메소드 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
       })
     }
 
     return {
+      isLoading,
       URL_CREW_IMAGE,
       URL_MEMBER_IMAGE,
       IMAGEPATH_CREW,

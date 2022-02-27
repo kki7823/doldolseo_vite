@@ -1,5 +1,9 @@
 <template>
   <section class="crew-mainContainer">
+    <loading :active="isLoading"
+             :is-full-page="true"
+             :opacity="1.0">
+    </loading>
     <div class="crew-topContainer">
       <!-- 제목 -->
       <div class="common-top__title">
@@ -184,11 +188,16 @@ import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
-import login from "../../module/login";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewCreate",
+  components: {Loading},
   setup() {
+    const isLoading = ref(false)
+
     const URL_CREW = inject('doldolseoCrew')
     const URL_MEMBER = inject('doldolseoMember')
     const URL_MEMBER_REFRESH = URL_MEMBER + '/refresh'
@@ -259,6 +268,8 @@ export default {
       formData.append('questionThird', questionThird.value)
 
       try {
+        isLoading.value = true
+
         const responseCrew = await axios.post(URL_CREW, formData, {
           headers: {
             Authorization: 'Bearer ' + cookies.get('token'),
@@ -282,14 +293,11 @@ export default {
         await router.replace('/crew').then(() => {
         })
 
+        isLoading.value = false
       } catch (err) {
         console.log(URL_CREW + " 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
+        isLoading.value = false
       }
     }
 
@@ -380,16 +388,13 @@ export default {
         return true
       }).catch((err) => {
         console.log(URL_CREW_CHECK_CREWNAME + " 요청 실패")
-        if (err.response.status === 401) {
-          alert("잘못된 접근 입니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
       })
     }
 
     return {
+      isLoading,
+
       IMAGEPATH_CREW_LOGO_DEFAULT,
       crewName,
       checkedArea,

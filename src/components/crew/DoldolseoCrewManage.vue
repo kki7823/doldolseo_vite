@@ -1,4 +1,8 @@
 <template>
+  <loading :active="isLoading"
+           :is-full-page="true"
+           :opacity="1.0">
+  </loading>
   <doldolseo-crew-nav/>
 
   <section class="crew-mainContainer">
@@ -350,11 +354,16 @@ import DoldolseoCrewJoinInfo from "./DoldolseoCrewJoinInfo.vue";
 import {useCookies} from "vue3-cookies";
 import login from "../../module/login";
 import {useRouter} from "vue-router";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewManagement",
-  components: {DoldolseoCrewJoinInfo, DoldolseoCrewJoinEdit, DoldolseoCrewNav},
+  components: {DoldolseoCrewJoinInfo, DoldolseoCrewJoinEdit, DoldolseoCrewNav, Loading},
   setup() {
+    const isLoading = ref(false)
+
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREW_IMAGE = inject('doldolseoCrew') + '/images/'
     const URL_CREW_MANAGE = URL_CREW + '/manage'
@@ -406,6 +415,7 @@ export default {
     })
 
     const getCrewData = () => {
+      isLoading.value = true
       axios({
         method: 'post',
         url: URL_CREW_MANAGE,
@@ -431,15 +441,11 @@ export default {
         crewLeader.value = resp.data.crewDTO.crewLeader
         members_joined.value = resp.data.crewMemberDTO_Joined
         members_wating.value = resp.data.crewMemberDTO_Wating
-
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_CREW_MANAGE + " 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
+        isLoading.value = false
       })
     }
 
@@ -460,6 +466,7 @@ export default {
     }
 
     const updateCrewData = () => {
+      isLoading.value = true
       axios({
         method: 'put',
         url: URL_CREW + '/' + crewNo.value,
@@ -477,20 +484,19 @@ export default {
       }).then((resp) => {
         console.log(URL_CREW + '/' + crewNo.value, +" 크루 수정" + resp.status)
         alert('수정이 완료 되었습니다.')
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_CREW + '/' + crewNo.value, +" 크루 수정 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
+        isLoading.value = false
       })
     }
 
     const updateCrewImage = (e) => {
       const formData = new FormData()
       formData.append('imageFile', e.target.files[0])
+
+      isLoading.value = true
       axios.put(URL_CREW + '/' + crewNo.value + '/images', formData, {
         headers: {
           Authorization: 'Bearer ' + cookies.get('token'),
@@ -501,14 +507,12 @@ export default {
         crewImage.value = resp.data
         alert('수정이 완료 되었습니다.')
 
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_CREW + '/' + crewNo.value + '/images' + " 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
+
+        isLoading.value = false
       })
     }
 
@@ -527,6 +531,7 @@ export default {
     const kickMember = (memberId) => {
       if (!confirm("해당 크루원을 정말로 강퇴 하시겠습니까?")) return
 
+      isLoading.value = true
       axios({
         method: 'delete',
         url: URL_CREW + '/' + crewNo.value + '/member/',
@@ -540,20 +545,19 @@ export default {
         console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + "크루원 강퇴" + resp.status)
         alert('해당 크루원을 강퇴 하였습니다.')
         getCrewData()
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + "크루원 가입신청 거절 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
+        isLoading.value = false
       })
     }
 
     const agreeJoin = (memberId) => {
       if (!confirm("가입 신청을 승인하시겠습니까?")) return
 
+
+      isLoading.value = true
       axios({
         method: 'put',
         url: URL_CREW + '/' + crewNo.value + '/member/' + memberId,
@@ -564,20 +568,19 @@ export default {
         console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + " 크루원 승인" + resp.status)
         alert('승인 되었습니다.')
         getCrewData()
+
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + " 크루원 승인 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
+        isLoading.value = false
       })
     }
 
     const denyJoin = (memberId) => {
       if (!confirm("가입 신청을 거절하시겠습니까?")) return
 
+      isLoading.value = true
       axios({
         method: 'delete',
         url: URL_CREW + '/' + crewNo.value + '/member',
@@ -591,14 +594,12 @@ export default {
         console.log(URL_CREW + '/' + crewNo.value + '/member' + " 크루원 가입신청 거절" + resp.status)
         alert('가입신청을 거절 하였습니다.')
         getCrewData()
+
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_CREW + '/' + crewNo.value + '/member' + "크루원 가입신청 거절 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
+        isLoading.value = false
       })
     }
 
@@ -606,6 +607,7 @@ export default {
       if (!confirm("권한을 위임하면 해당 크루에 대한 관리자 권한이 사라집니다. 위임 하시겠습니까?")) return
 
       try {
+        isLoading.value = true
         const checkAlreadyLeader = await axios({
           url: URL_CREW + '/leader/' + memberId,
           method: 'post',
@@ -643,20 +645,14 @@ export default {
 
         console.log(URL_MEMBER_REFRESH + " 요청 성공 status : " + responseMember.status)
         localStorage.setItem('memberRole', responseMember.data) //Refesh role
+        isLoading.value = false
         router.replace('/crew').then(() => {
-        })
-
-        router.replace('/crew/' + crewNo).then(() => {
         })
 
       } catch (err) {
         console.log(URL_CREW + " 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
+        isLoading.value = false
       }
     }
 
@@ -665,6 +661,8 @@ export default {
         return
 
       try {
+        isLoading.value = true
+
         const responseCrew = await axios({
           url: URL_CREW + '/' + crewNo.value,
           method: 'delete',
@@ -686,21 +684,20 @@ export default {
         await localStorage.setItem('memberRole', responseMember.data) //Refesh role
 
         alert("크루가 폐쇄 되었습니다.")
+        isLoading.value = false
         router.replace('/crew').then(() => {
         })
       } catch (err) {
         console.log(URL_CREW + " 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
+
+        isLoading.value = false
       }
     }
 
-
     return {
+      isLoading,
+
       URL_CREW_IMAGE,
       URL_MEMBER_IMAGES,
       IMAGEPATH_CREW,

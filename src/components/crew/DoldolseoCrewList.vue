@@ -1,5 +1,9 @@
 <template>
   <section class="crew-mainContainer">
+    <loading :active="isLoading"
+             :is-full-page="false"
+             :opacity="1.0">
+    </loading>
     <doldolseo-crew-nav/>
     <!-- 상단 제목,드릴다운 : 공통 -->
     <div class="crew-topContainer">
@@ -41,7 +45,7 @@
     <div class="crew-topContainer__sub">
       <div class="crew-topContainer__subBtnbox">
         <button class="crew-button">등급 순</button>
-        <button class="crew-button">가입 순</button>
+        <button class="crew-button">최근 순</button>
       </div>
 
       <!-- 검색창 -->
@@ -106,7 +110,6 @@
         </div>
       </div>
       <!-- 크루프로필 end -->
-      <!--      </c:forEach>-->
 
     </div>
     <!-- 페이지네이션 및 검색창-->
@@ -132,16 +135,21 @@ import {axios} from "@bundled-es-modules/axios";
 import DoldolseoCrewNav from "./DoldolseoCrewNav.vue";
 import {useCookies} from "vue3-cookies";
 import {useRouter} from "vue-router";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewList",
-  components: {DoldolseoCrewNav, DoldolseoPagenation},
+  components: {DoldolseoCrewNav, DoldolseoPagenation, Loading},
   props: {
     memberId: {
       type: String,
     }
   },
   setup(props) {
+    const isLoading = ref(false)
+
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREW_IMAGE = URL_CREW + '/images/'
     const IMAGEPATH_CREW_GRADE = inject('contextPath') + '/_image/crew/grade/'
@@ -168,6 +176,8 @@ export default {
     }
 
     watchEffect(() => {
+      isLoading.value = true
+
       axios.get(URL_CREW, {
         params: {
           page: page.value,
@@ -179,8 +189,11 @@ export default {
         startBlockPage.value = resp.data.startBlockPage
         endBlockPage.value = resp.data.endBlockPage
         totalPages.value = resp.data.totalPages
-      }).catch(() => {
+        isLoading.value = false
+      }).catch((err) => {
         console.log(URL_CREW + " - 요청 실패")
+        isLoading.value = false
+        onError.httpErrorException(err)
       })
     })
 
@@ -192,6 +205,8 @@ export default {
     }
 
     return {
+      isLoading,
+
       URL_CREW_IMAGE,
       IMAGEPATH_CREW_GRADE,
       crewList,
@@ -215,6 +230,7 @@ export default {
   text-align: center;
   margin: 0 auto 30px;
   font-size: 0;
+  position: relative;
   /*border: 1pt solid;*/
 }
 
@@ -325,9 +341,9 @@ export default {
 .crew-listContainer {
   width: 1400px;
   margin: 1px auto 0;
-  position: relative;
   text-align: left;
   left: 50px;
+  position: relative;
   /*border: 1pt solid;*/
 }
 

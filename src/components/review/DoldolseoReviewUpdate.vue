@@ -72,7 +72,7 @@ import {useRouter} from "vue-router";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 import {useCookies} from "vue3-cookies";
-import login from "../../module/login";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoReviewUpdate",
@@ -119,9 +119,9 @@ export default {
         title.value = resp.data.title
         content.value = resp.data.content
         imageUUID.value = resp.data.imageUUID
-      }).catch((error) => {
+      }).catch((err) => {
         console.log(URL_GET_OR_UPDATE_REVIEW + " 요청 실패")
-        Promise.reject(error);
+        onError.httpErrorException(err)
       })
     })
 
@@ -147,12 +147,7 @@ export default {
         })
       }).catch((err) => {
         console.log(URL_GET_OR_UPDATE_REVIEW + ": 게시글 수정 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
         isLoading.value = false
       })
     }

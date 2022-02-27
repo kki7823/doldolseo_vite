@@ -164,9 +164,9 @@ import {axios} from "@bundled-es-modules/axios";
 import {inject, onMounted, provide, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
-import login from "../../module/login";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoReviewDetail",
@@ -178,8 +178,8 @@ export default {
     }
   },
   setup(props) {
-    const isLoading = ref(false);
-    const fullPage = ref(true);
+    const isLoading = ref(false)
+    const fullPage = ref(true)
     const {cookies} = useCookies()
 
     const URL_REVIEW = inject('doldolseoReview')
@@ -219,8 +219,9 @@ export default {
         hit.value = resp.data.hit
         isCourseUploaded.value = resp.data.isCourseUploaded
         isLoading.value = false
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_GET_REVIEW + " 요청 실패")
+        onError.httpErrorException(err)
         isLoading.value = false
       })
     })
@@ -239,12 +240,7 @@ export default {
         })
       }).catch((err) => {
         console.log(URL_GET_REVIEW + ": 게시글 삭제 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
       })
     }
 

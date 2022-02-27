@@ -93,6 +93,7 @@
 import {inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewJoinInfo",
@@ -144,8 +145,9 @@ export default {
         answerFirst.value = resp.data.answerFirst
         answerSecond.value = resp.data.answerSecond
         answerThird.value = resp.data.answerThird
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_GET_CREW_MEMBER + " 요청 실패")
+        onError.httpErrorException(err)
       })
     })
 

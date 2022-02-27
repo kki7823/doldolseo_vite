@@ -77,6 +77,7 @@ import {inject, onMounted, ref} from "vue";
 import KakaoMap from "./KakaoMap.vue";
 import Loading from "vue3-loading-overlay";
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoAreaDetail",
@@ -104,8 +105,9 @@ export default {
         console.log(URL + ": 요청 성공 status : " + resp.status)
         areaData.value = resp.data
         contentId.value = resp.data.contentId
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL + ": 요청 실패")
+        onError.httpErrorException(err)
       })
 
       const key = "P3TbC5uJmBCIyJ5XyNE96Iggnml%2FE7YpEPLGKNQAG6P1Pg36WbbyZPeOkl%2BjZa9JsjLoIwO0saCVPxy48P5nMQ%3D%3D"
@@ -120,9 +122,10 @@ export default {
         console.log(URL_overview + "-> 요청 성공 status : " + resp.status)
         overview.value = resp.data.response.body.items.item.overview;
         isLoading.value = false
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_overview + "-> 요청 실패")
         isLoading.value = false
+        onError.httpErrorException(err)
       })
     }
 

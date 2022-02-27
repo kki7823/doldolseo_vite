@@ -52,6 +52,7 @@
 <script>
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoHeaderWidget",
@@ -71,8 +72,9 @@ export default {
       weatherTmp.value = Math.floor(resp.data.main.temp - 273.15);
       weatherImgsrc.value = "http://openweathermap.org/img/wn/" + resp.data.weather[0].icon + "@2x.png";
       console.log("http://openweathermap.org/img/wn/" + resp.data.weather[0].icon + "@2x.png")
-    }).catch(() => {
+    }).catch((err) => {
       console.log(URL + "요청 실패")
+      onError.httpErrorException(err)
     })
 
     return {

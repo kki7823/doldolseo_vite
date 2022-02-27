@@ -115,6 +115,7 @@ import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 import {inject, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRoute} from "vue-router";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoAreaList",
@@ -168,8 +169,9 @@ export default {
         endBlockPage.value = resp.data.endBlockPage
         totalPages.value = resp.data.totalPages
         isLoading.value = false
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL + "요청 실패")
+        onError.httpErrorException(err)
       })
 
       searchKeyword.value = null

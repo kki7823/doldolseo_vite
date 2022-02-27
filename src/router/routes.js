@@ -16,6 +16,8 @@ import CrewPostList from "../components/crewpost/DoldolseoCrewPostList.vue";
 import CrewPostInsert from "../components/crewpost/DoldolseoCrewPostInsert.vue";
 import CrewPostDetail from "../components/crewpost/DoldolseoCrewPostDetail.vue";
 import CrewPostUpdate from "../components/crewpost/DoldolseoCrewPostUpdate.vue";
+import PageNotFound from "../components/exception/DoldolseoNotFound.vue";
+import Error from "../components/exception/DoldolseoError.vue";
 import {defineComponent} from "vue";
 import {useCookies} from "vue3-cookies";
 import {router} from "./router";
@@ -152,8 +154,18 @@ const routes = [
         beforeEnter: isLogined
     },
     {
+        path: '/error',
+        name: 'Error',
+        component: Error,
+    },
+    {
         path: '/:catchAll(.*)+',
-        component: NotFound
+        redirect: '/404'
+    },
+    {
+        path: '/404',
+        name: 'pageNotFound',
+        component: PageNotFound,
     },
 
 ]

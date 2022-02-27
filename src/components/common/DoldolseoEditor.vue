@@ -260,8 +260,8 @@ import CharacterCount from '@tiptap/extension-character-count'
 import {ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
-import login from "../../module/login";
 import {useRouter} from "vue-router";
+import onError from "../../module/onError";
 
 const content = ref('')
 export default {
@@ -355,12 +355,7 @@ export default {
         editor.value.chain().focus().setImage({src: imageURL + '/' + resp.data}).run()
       }).catch((err) => {
         console.log(imageURL + " 이미지 가져오기 실패 "+err.response.status)
-        if (err.response.status === 401) {
-          alert("권한 없음")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
       })
     }
 

@@ -112,6 +112,7 @@
 import DoldolseoCrewNav from "../crew/DoldolseoCrewNav.vue";
 import {inject, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewPostList",
@@ -142,8 +143,9 @@ export default {
         startBlockPage.value = resp.data.startBlockPage
         endBlockPage.value = resp.data.endBlockPage
         totalPages.value = resp.data.totalPages
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_POST + " - 요청 실패")
+        onError.httpErrorException(err)
       })
     })
 

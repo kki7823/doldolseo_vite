@@ -164,6 +164,7 @@ import {useCookies} from "vue3-cookies";
 import login from "../../module/login";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoReviewInsert",
@@ -247,13 +248,8 @@ export default {
         })
       }).catch((err) => {
         console.log(URL_REVIEW + ": 게시글 저장 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
         isLoading.value = false
+        onError.httpErrorException(err)
       })
     }
 

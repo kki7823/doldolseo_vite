@@ -91,6 +91,7 @@
 <script>
 import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewPostComment",
@@ -153,8 +154,9 @@ export default {
           Object.assign(comments.value[i], isActiveEditBtnBox)
           Object.assign(comments.value[i], isActiveEditMode)
         }
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_POST_COMMENT + "댓글 가져오기 실패")
+        onError.httpErrorException(err)
       })
     }
 
@@ -173,8 +175,9 @@ export default {
       }).then((resp) => {
         console.log(URL_CREW_POST_COMMENT + " 요청 성공" + resp.status)
         getCommentData()
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_POST_COMMENT + " 요청 실패")
+        onError.httpErrorException(err)
       })
     }
 
@@ -198,8 +201,9 @@ export default {
       }).then((resp) => {
         console.log(URL_CREW_POST_COMMENT + '/' + commentNo, +" 댓글 수정" + resp.status)
         getCommentData()
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_POST_COMMENT + '/' + commentNo, +" 댓글 수정 실패")
+        onError.httpErrorException(err)
       })
     }
 
@@ -211,8 +215,9 @@ export default {
         console.log(URL_CREW_POST_COMMENT + '/' + commentNo, +" 댓글 삭제" + resp.status)
         alert("삭제 되었습니다.")
         getCommentData()
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_POST_COMMENT + '/' + commentNo, +" 댓글 삭제 실패")
+        onError.httpErrorException(err)
       })
     }
 

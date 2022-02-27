@@ -173,6 +173,7 @@ import {useRouter} from "vue-router";
 import login from "../../module/login";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoMemberMypage",
@@ -281,12 +282,7 @@ export default {
         isLoading.value = false
       }).catch((err) => {
         console.log(URL_MEMBER + '/' + id + " 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
         isLoading.value = false
       })
     }
@@ -326,12 +322,7 @@ export default {
             })
           }).catch((err) => {
             console.log(URL_MEMBER + '/' + id + " 요청 실패")
-            if (err.response.status === 401) {
-              alert("로그인이 필요 합니다.")
-              router.replace('/member/login').then(() => {
-                login.removeUserInfo()
-              })
-            }
+            onError.httpErrorException(err)
             isLoading.value = false
           })
         }

@@ -120,6 +120,7 @@ import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
 import login from "../../module/login";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewPostInsert",
@@ -165,12 +166,7 @@ export default {
         crews.value = resp.data
       }).catch((err) => {
         console.log(URL_CREW_MEMBERS + " 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
       })
     }
 
@@ -187,12 +183,7 @@ export default {
           crewMembers.value = resp.data
         }).catch((err) => {
           console.log(URL_CREW + '/' + selectedCrew.value.crewNo + '/members' + " 요청 실패")
-          if (err.response.status === 401) {
-            alert("로그인이 필요 합니다.")
-            router.replace('/member/login').then(() => {
-              login.removeUserInfo()
-            })
-          }
+          onError.httpErrorException(err)
         })
       }
     })
@@ -219,12 +210,7 @@ export default {
         })
       }).catch((err) => {
         console.log(URL_CREW_POST + ": 게시글 저장 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
       })
     }
 

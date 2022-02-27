@@ -100,8 +100,7 @@
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
-import login from "../../module/login";
-import {useRouter} from "vue-router";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewJoin",
@@ -127,13 +126,11 @@ export default {
     const URL_CREW_MEMBER = URL_CREW + '/' + props.crewNo + '/member'
 
     const {cookies} = useCookies()
-    const router = useRouter()
 
     const answerFirst = ref('')
     const answerSecond = ref('')
     const answerThird = ref('')
     const isAgree = ref(false)
-
 
     const sendCrewJoinData = (template) => {
       if (!validParams(template)) return
@@ -160,12 +157,7 @@ export default {
         props.togglePopup()
       }).catch((err) => {
         console.log(URL_CREW_MEMBER + " 테스트 메소드 요청 실패")
-        if (err.response.status === 401) {
-          alert("로그인이 필요 합니다.")
-          router.replace('/member/login').then(() => {
-            login.removeUserInfo()
-          })
-        }
+        onError.httpErrorException(err)
       })
     }
 

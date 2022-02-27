@@ -225,6 +225,7 @@ import DoldolseoMemberPolicy from "./DoldolseoMemberPolicy.vue";
 import DoldolseoMemberRule from "./DoldolseoMemberRule.vue";
 import Loading from "vue3-loading-overlay";
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoMemberJoin",
@@ -282,6 +283,7 @@ export default {
         }
       }).catch((err) => {
         console.log(URL_MEMBER_CHECK_ID + " 요청 실패 status : " + err.response)
+        onError.httpErrorException(err)
       })
     }
 
@@ -364,6 +366,7 @@ export default {
         }
       }).catch((err) => {
         console.log(URL_MEMBER_CHECK_ID + " 요청 실패 status : " + err.response)
+        onError.httpErrorException(err)
       })
     }
 
@@ -475,8 +478,9 @@ export default {
         isLoading.value = false
         router.replace('/member/login').then(() => {
         })
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_MEMBER + " 요청 실패")
+        onError.httpErrorException(err)
         isLoading.value = false
       })
     }

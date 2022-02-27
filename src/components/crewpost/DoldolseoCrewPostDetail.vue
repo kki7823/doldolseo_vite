@@ -203,6 +203,7 @@ import DoldolseoCrewPostComment from "./DoldolseoCrewPostComment.vue";
 import {inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewPostDetail",
@@ -314,8 +315,9 @@ export default {
       }).then((resp) => {
         console.log(URL_CREW_POST_ADD_MEMBERSWITH + " 요청 성공" + resp.status)
         getCrewPostData()
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_POST_ADD_MEMBERSWITH + " 요청 실패")
+        onError.httpErrorException(err)
       })
     }
 
@@ -331,8 +333,9 @@ export default {
         console.log(URL_CREW_POST_DELETE_MEMBERSWITH + " 요청 성공" + resp.status)
 
         getCrewPostData()
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_CREW_POST_DELETE_MEMBERSWITH + " 요청 실패")
+        onError.httpErrorException(err)
       })
     }
 
