@@ -2,10 +2,10 @@
   <!-- 메인 컨테이너 -->
   <div class="review-container--main">
     <!-- 네비게이션 -->
-    <!-- 게시판 드릴다운 및 글쓰기 버튼 -->
     <nav class="review-container__navi">
       <doldolseo-review-nav/>
     </nav>
+
     <section class="reviewL-listbox">
       <div class="review-container--top">
         <div class="common-top__title">
@@ -18,12 +18,20 @@
 
         <!-- 글쓰기 버튼 -->
         <router-link :to="{name: 'reviewInsert'}">
-          <button class="review-button">글쓰기</button>
+          <button class="review-button">
+            글쓰기
+          </button>
         </router-link>
       </div>
 
       <!-- 글 목록-->
       <table class="reviewL-list">
+        <!-- 로딩 창 -->
+        <loading :active="isLoading"
+                 :is-full-page="false"
+                 :opacity="0.7">
+        </loading>
+
         <tr class="list--header">
           <td style="width: 100px">지역</td>
           <td>제목</td>
@@ -85,11 +93,14 @@ import {inject, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRoute} from "vue-router";
 import DoldolseoPagenation from "../common/DoldolseoPagenation.vue";
+import Loading from "vue3-loading-overlay";
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoReviewList",
-  components: {DoldolseoPagenation, DoldolseoReviewNav},
+  components: {DoldolseoPagenation, DoldolseoReviewNav, Loading},
   setup() {
+    const isLoading = ref(false);
     const route = useRoute()
     const areaMenu = inject('areaMenu')
     const areaNo = ref(route.params.areaNo)
@@ -102,6 +113,8 @@ export default {
     const URL_REVIEW = inject('doldolseoReview')
 
     watchEffect(() => {
+      isLoading.value = true
+
       axios.get(URL_REVIEW, {
         params: {
           areaNo: areaNo.value,
@@ -113,12 +126,17 @@ export default {
         startBlockPage.value = resp.data.startBlockPage
         endBlockPage.value = resp.data.endBlockPage
         totalPages.value = resp.data.totalPages
+
+        isLoading.value = false
       }).catch(() => {
         console.log(URL_REVIEW + " - 요청 실패")
+        isLoading.value = true
       })
     })
 
     return {
+      isLoading,
+
       areaMenu,
       areaNo,
       reviewList,
@@ -194,6 +212,7 @@ export default {
   width: 80%;
   height: inherit;
   margin: 0 auto 0 30px;
+  position: relative;
   /*border: 1px solid;*/
 }
 

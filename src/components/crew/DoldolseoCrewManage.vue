@@ -632,8 +632,6 @@ export default {
 
         console.log(URL_CREW + '/' + crewNo.value + '/leader' + responseCrew.status)
         alert('위임 되었습니다.')
-        router.replace('/crew/' + crewNo).then(() => {
-        })
 
         const responseMember = await axios({
           method: 'post',
@@ -648,6 +646,9 @@ export default {
         router.replace('/crew').then(() => {
         })
 
+        router.replace('/crew/' + crewNo).then(() => {
+        })
+
       } catch (err) {
         console.log(URL_CREW + " 요청 실패")
         if (err.response.status === 401) {
@@ -659,31 +660,45 @@ export default {
       }
     }
 
-    const closeCrew = () => {
+    const closeCrew = async () => {
       if (!confirm("크루가 폐쇄되면 크루원들과 크루활동게시글 정보가 자동으로 삭제됩니다.정말로 크루를 폐쇄 하시겠습니까?"))
         return
 
-      axios({
-        method: 'delete',
-        url: URL_CREW + '/' + crewNo.value,
-        headers: {
-          Authorization: 'Bearer ' + cookies.get('token')
-        }
-      }).then((resp) => {
-        console.log(URL_CREW + " : " + resp.data)
+      try {
+        const responseCrew = await axios({
+          url: URL_CREW + '/' + crewNo.value,
+          method: 'delete',
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token'),
+          },
+        })
+
+        console.log(URL_CREW + " : " + responseCrew.data)
+
+        const responseMember = await axios({
+          method: 'post',
+          url: URL_MEMBER_REFRESH,
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token')
+          }
+        })
+        await console.log(URL_MEMBER_REFRESH + " 요청 성공 status : " + responseMember.status)
+        await localStorage.setItem('memberRole', responseMember.data) //Refesh role
+
         alert("크루가 폐쇄 되었습니다.")
         router.replace('/crew').then(() => {
         })
-      }).catch((err) => {
-        console.log(URL_CREW_MANAGE + " 요청 실패")
+      } catch (err) {
+        console.log(URL_CREW + " 요청 실패")
         if (err.response.status === 401) {
           alert("로그인이 필요 합니다.")
           router.replace('/member/login').then(() => {
             login.removeUserInfo()
           })
         }
-      })
+      }
     }
+
 
     return {
       URL_CREW_IMAGE,

@@ -50,7 +50,7 @@
             <div class="profilebox">
               <!-- 회원사진 나중에 -->
               <div class="profilebox--photo">
-                <img :src="URL_MEMBER_IMG+'kki7823.jpeg'"
+                <img :src="URL_MEMBER_IMG+'/'+id"
                      alt="member_profile"
                 />
               </div>
@@ -82,7 +82,7 @@
                 </svg>
               </div>
               <div class="iconbox__commentcount">
-                123
+                {{numOfComments}}
               </div>
 
               <div class="iconbox__hit">
@@ -160,13 +160,13 @@
 <script>
 import DoldolseoReviewNav from "./DoldolseoReviewNav.vue";
 import DoldolseoReviewComment from "./DoldolseoReviewComment.vue";
-import Loading from 'vue3-loading-overlay';
-import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 import {axios} from "@bundled-es-modules/axios";
-import {inject, onMounted, ref} from "vue";
+import {inject, onMounted, provide, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
 import login from "../../module/login";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoReviewDetail",
@@ -186,6 +186,9 @@ export default {
     const URL_REVIEW_IMG = inject('doldolseoReview') + '/images/'
     const URL_GET_REVIEW = URL_REVIEW + '/' + props.reviewNo
     const URL_MEMBER_IMG = inject('doldolseoMember') + '/images/'
+
+    const numOfComments = ref(0)
+    provide('numOfComments',numOfComments)
 
     const wdate = ref([])
     const title = ref('')
@@ -248,6 +251,8 @@ export default {
     return {
       URL_MEMBER_IMG,
       URL_REVIEW_IMG,
+      numOfComments,
+
       title,
       content,
       id,

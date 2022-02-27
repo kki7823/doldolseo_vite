@@ -314,7 +314,7 @@ export default {
           Authorization: 'Bearer ' + cookies.get('token')
         },
         params: {
-            crewNo: props.crewNo,
+          crewNo: props.crewNo,
         }
       }).then((resp) => {
         console.log(URL_CREW_CHECKMEMBER + " 요청 성공 status : " + resp.status)

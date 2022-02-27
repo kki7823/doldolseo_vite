@@ -4,6 +4,10 @@
 
     <!-- 마이페이지 상세 -->
     <div class="mypageD-container">
+      <loading :active="isLoading"
+               :is-full-page="false"
+               :opacity="0.7">
+      </loading>
       <div class="mypageD-titlecontainer">
         <span class="mypageD-titlecontainer__span--big">내 정보</span>
         <span class="mypageD_span"> (*) : 수정 가능</span>
@@ -162,16 +166,20 @@
 
 <script>
 import DoldolseoMemberMypageNav from "./DoldolseoMemberMypageNav.vue";
-import {inject, ref} from "vue";
+import {computed, inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
 import {useRouter} from "vue-router";
 import login from "../../module/login";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoMemberMypage",
-  components: {DoldolseoMemberMypageNav},
+  components: {DoldolseoMemberMypageNav, Loading},
+
   setup() {
+    const isLoading = ref(false);
     const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
     const router = useRouter()
 
@@ -180,12 +188,13 @@ export default {
     const passwordConfirm = ref(null)
     const name = localStorage.getItem('name')
     const nickname = localStorage.getItem('nickname')
-    const memberImg = localStorage.getItem('memberImg')
     const birth = localStorage.getItem('birth')
     const gender = ref(localStorage.getItem('gender'))
     const email = ref(localStorage.getItem('email'))
     const phone = ref(localStorage.getItem('phone'))
-    const isCrewLeader = localStorage.getItem('isCrewLeader')
+    const isCrewLeader = computed(() => {
+      return localStorage.getItem('role') === 'CREWLEADER';
+    })
     let birth_yy = ''
     let birth_mm = ''
     let birth_dd = ''
@@ -195,14 +204,13 @@ export default {
       birth_dd = birth.split('-')[2].substring(0, 2)
     }
 
-    const memberImgUrl = ref(URL_MEMBER_IMAGES + memberImg)
+    const memberImgUrl = ref(URL_MEMBER_IMAGES + id)
     let memberImgFile = null
 
     const setMemberImg = (e) => {
       memberImgFile = e.target.files[0]
       memberImgUrl.value = URL.createObjectURL(memberImgFile)
     }
-
 
     const validatePwd = () => {
       const pwd = password.value
@@ -253,6 +261,7 @@ export default {
       formData.append('email', email.value)
       formData.append('phone', phone.value)
 
+      isLoading.value = true
       axios.put(URL_MEMBER + '/' + id, formData, {
         headers: {
           Authorization: 'Bearer ' + cookies.get('token'),
@@ -268,18 +277,30 @@ export default {
         template.$forceUpdate()
         location.reload();
         alert('회원정보 수정이 완료 되었습니다.')
-      }).catch(() => {
+
+        isLoading.value = false
+      }).catch((err) => {
         console.log(URL_MEMBER + '/' + id + " 요청 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
+        isLoading.value = false
       })
     }
 
     const deleteData = () => {
+
       if (isCrewLeader) {
         alert("크루장인 경우, 탈퇴가 불가합니다. 크루장을 위임해주시길 바랍니다.");
       } else {
         if (!confirm("탈퇴하시면 복구할 수 없습니다. 정말로 탈퇴하시겠습니까?")) {
           return false;
         } else {
+          isLoading.value = true
+
           axios.delete(URL_MEMBER + '/' + id, {
             headers: {
               Authorization: 'Bearer ' + cookies.get('token'),
@@ -299,17 +320,27 @@ export default {
             login.refreshKey++
 
             router.replace('/main').then(() => {
+              isLoading.value = false
               alert("탈퇴처리가 완료되었습니다. 이용해주셔서 감사합니다.")
               location.reload()
             })
-          }).catch(() => {
+          }).catch((err) => {
             console.log(URL_MEMBER + '/' + id + " 요청 실패")
+            if (err.response.status === 401) {
+              alert("로그인이 필요 합니다.")
+              router.replace('/member/login').then(() => {
+                login.removeUserInfo()
+              })
+            }
+            isLoading.value = false
           })
         }
       }
     }
 
     return {
+      isLoading,
+
       id,
       password,
       passwordConfirm,

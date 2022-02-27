@@ -5,6 +5,11 @@
     </div>
     <hr class="nav--line__horizon">
     <ul class="nav-list">
+      <li class="nav-list__item">
+        <router-link :to="{name: 'reviewList'}" >
+          전체
+        </router-link>
+      </li>
       <li class="nav-list__item"
           v-for="(item, idx) in areaMenu">
         <router-link :to="{name: 'reviewList', params:{areaNo: idx }}" >

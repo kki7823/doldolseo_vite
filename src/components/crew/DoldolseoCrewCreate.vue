@@ -277,8 +277,9 @@ export default {
         })
 
         console.log(URL_MEMBER_REFRESH + " 요청 성공 status : " + responseMember.status)
-        localStorage.setItem('memberRole', responseMember.data) //Refesh role
-        router.replace('/crew').then(() => {
+        await localStorage.setItem('memberRole', responseMember.data) //Refesh role
+
+        await router.replace('/crew').then(() => {
         })
 
       } catch (err) {

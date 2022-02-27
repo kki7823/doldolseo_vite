@@ -1,7 +1,10 @@
 <template>
   <!-- 메인 컨테이너 -->
   <section class="common-iuContainer--main">
-
+    <loading :active="isLoading"
+             :is-full-page="true"
+             :opacity="1.0">
+    </loading>
     <!-- 제목 -->
     <div class="common-iuTop--title">
       글 수정 하기
@@ -41,10 +44,10 @@
           내용
         </td>
         <td>
-          <doldolseo-editor v-if="content !== '' "
+          <doldolseo-editor v-if="content !== '' && URL_REVIEW_IMAGE != null"
                             ref="focusContent"
                             :content-before-updating="content"
-                            :image-uuid="imageUUID"
+                            :image-url="URL_REVIEW_IMAGE"
           />
         </td>
       </tr>
@@ -63,13 +66,17 @@
 
 <script>
 import DoldolseoEditor from "../common/DoldolseoEditor.vue";
-import {inject, onMounted, ref} from "vue";
+import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import {useCookies} from "vue3-cookies";
+import login from "../../module/login";
 
 export default {
   name: "DoldolseoReviewUpdate",
-  components: {DoldolseoEditor},
+  components: {DoldolseoEditor, Loading},
   props: {
     reviewNo: {
       type: String,
@@ -77,9 +84,12 @@ export default {
     },
   },
   setup(props) {
+    const isLoading = ref(false)
+    const {cookies} = useCookies()
     const router = useRouter()
     const URL_REVIEW = inject('doldolseoReview')
     const URL_GET_OR_UPDATE_REVIEW = URL_REVIEW + '/' + props.reviewNo
+
     const reviewNo = ref(0)
     const areaNo = ref(0)
     const areaMenu = inject('areaMenu')
@@ -87,6 +97,12 @@ export default {
     const title = ref('')
     const content = ref('')
     const imageUUID = ref('')
+    const URL_REVIEW_IMAGE = computed(()=>{
+      if(imageUUID.value !== '')
+        return inject('doldolseoReview') + '/images/' + imageUUID.value
+      else
+        return null
+    })
 
     onMounted(() => {
       axios({
@@ -112,22 +128,32 @@ export default {
     const sendReviewUpdateData = (template) => {
       if (!validParams(template)) return
 
+      isLoading.value = true
+
       const formData = new FormData()
       formData.append('title', title.value)
       formData.append('content', DoldolseoEditor.content.value)
       formData.append('areaNo', areaNo.value)
 
       axios.put(URL_GET_OR_UPDATE_REVIEW, formData, {
-        header: {
-          // 'Content-Type': 'multipart/form-data'
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
         }
       }).then((resp) => {
         console.log(URL_GET_OR_UPDATE_REVIEW + ": 게시글 수정" + resp.status)
         alert("게시글이 수정 되었습니다.")
+        isLoading.value = false
         router.replace('/review/' + reviewNo.value).then(() => {
         })
-      }).catch(() => {
+      }).catch((err) => {
         console.log(URL_GET_OR_UPDATE_REVIEW + ": 게시글 수정 실패")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
+        isLoading.value = false
       })
     }
 
@@ -146,6 +172,9 @@ export default {
     }
 
     return {
+      isLoading,
+      URL_REVIEW_IMAGE,
+
       areaNo,
       areaMenu,
       title,

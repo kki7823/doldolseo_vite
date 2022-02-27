@@ -1,12 +1,19 @@
 <template>
+  <p v-if="numOfComments===0" class="comment-ifempty">
+    첫번째 댓글을 작성해 주세요
+  </p>
   <table class="cBoard-tablelayout">
+    <loading :active="isLoading"
+             :is-full-page="false"
+             :opacity="0.7">
+    </loading>
     <tr v-for="comment in comments"
         class="comment-tablelayout">
       <td>
         <div class="profilebox"
              style="margin-top: 7px">
           <div class="profilebox--photo">
-            <img src="#">
+            <img :src="URL_MEMBER_IMAGE+comment.id">
           </div>
           <div class="profilebox--container--sub">
             <div class="profilebox--nickname">
@@ -76,8 +83,8 @@
        @focusout="isCommentFocused=false"
        :style="{border: setCommentInputBorder}"
        ref="focusComment">
-        <textarea placeholder="댓글을 입력해 주세요"
-                  v-model="commentContent"></textarea>
+    <textarea placeholder="댓글을 입력해 주세요"
+              v-model="commentContent"></textarea>
     <div class="comment__buttonbox">
       <button type="button"
               @click="sendCommentData(this)"
@@ -89,7 +96,7 @@
   <div v-else
        class="comment__input">
         <textarea placeholder="로그인이 필요 합니다."
-                  readonly = "readonly"></textarea>
+                  readonly="readonly"></textarea>
   </div>
 </template>
 
@@ -97,11 +104,14 @@
 import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
-import login from "../../module/login";
 import {useRouter} from "vue-router";
+import login from "../../module/login";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoReviewComment",
+  components: {Loading},
   props: {
     reviewNo: {
       type: String,
@@ -109,6 +119,9 @@ export default {
     },
   },
   setup(props) {
+    const isLoading = ref(false);
+
+    const URL_MEMBER_IMAGE = inject('doldolseoMember') + '/images/'
     const URL_REVIEW = inject('doldolseoReview')
     const URL_REVIEW_COMMENT = URL_REVIEW + '/' + props.reviewNo + '/comment'
     const {cookies} = useCookies()
@@ -137,6 +150,7 @@ export default {
 
     const commentContent = ref('')
     const comments = ref([])
+    const numOfComments = inject('numOfComments')
 
     const setFocus = (commentNo) => {
       const textArea = document.getElementById('editArea-' + commentNo)
@@ -158,7 +172,8 @@ export default {
         }
       }).then((resp) => {
         console.log(URL_REVIEW_COMMENT + "댓글 가져오기 성공" + resp.status)
-        comments.value = resp.data
+        comments.value = resp.data.comments
+        numOfComments.value = resp.data.numOfComments
 
         const isActiveEditBtnBox = {isActiveEditBtnBox: false}
         const isActiveEditMode = {isActiveEditMode: false}
@@ -166,6 +181,7 @@ export default {
           Object.assign(comments.value[i], isActiveEditBtnBox)
           Object.assign(comments.value[i], isActiveEditMode)
         }
+
       }).catch(() => {
         console.log(URL_REVIEW_COMMENT + "댓글 가져오기 실패")
       })
@@ -173,11 +189,13 @@ export default {
 
     const sendCommentData = (template) => {
       if (!validParams(template)) return
+      isLoading.value = true
+
       axios({
         method: 'post',
         url: URL_REVIEW_COMMENT,
         headers: {
-          Authorization: 'Bearer ' + token
+          Authorization: 'Bearer ' + token.value
         },
         data: {
           id: localStorage.getItem('id'),
@@ -189,6 +207,8 @@ export default {
       }).then((resp) => {
         console.log(URL_REVIEW_COMMENT + " 요청 성공" + resp.status)
         getCommentData()
+
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + " 요청 실패")
         if (err.response.status === 401) {
@@ -197,6 +217,7 @@ export default {
             login.removeUserInfo()
           })
         }
+        isLoading.value = false
       })
     }
 
@@ -211,11 +232,12 @@ export default {
     }
 
     const updateComment = (commentNo, content) => {
+      isLoading.value = true
       axios({
         method: 'put',
         url: URL_REVIEW_COMMENT + '/' + commentNo,
         headers: {
-          Authorization: 'Bearer ' + token
+          Authorization: 'Bearer ' + token.value
         },
         data: {
           content: content,
@@ -223,6 +245,8 @@ export default {
       }).then((resp) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 수정" + resp.status)
         getCommentData()
+
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 수정 실패")
         if (err.response.status === 401) {
@@ -231,20 +255,25 @@ export default {
             login.removeUserInfo()
           })
         }
+        isLoading.value = false
       })
     }
 
     const deleteComment = (commentNo) => {
+      isLoading.value = true
+
       axios({
         method: 'delete',
         url: URL_REVIEW_COMMENT + '/' + commentNo,
         headers: {
-          Authorization: 'Bearer ' + token
+          Authorization: 'Bearer ' + token.value
         },
       }).then((resp) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 삭제" + resp.status)
         alert("삭제 되었습니다.")
         getCommentData()
+
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + '/' + commentNo, +" 댓글 삭제 실패")
         if (err.response.status === 401) {
@@ -253,11 +282,15 @@ export default {
             login.removeUserInfo()
           })
         }
+        isLoading.value = false
       })
     }
 
     return {
+      isLoading,
       isCommentFocused,
+      numOfComments,
+      URL_MEMBER_IMAGE,
       idLogedIn,
       loginState,
       token,
@@ -275,10 +308,18 @@ export default {
 </script>
 
 <style scoped>
+.comment-ifempty{
+  font-size: 15px;
+  font-family: 'Nanum Gothic Coding', monospace;
+  color: #CDCECF ;
+  text-align: left;
+}
+
 .cBoard-tablelayout {
   width: 100%;
   text-align: right;
   margin: 10px auto 0;
+  position: relative;
 }
 
 .comment-tablelayout {

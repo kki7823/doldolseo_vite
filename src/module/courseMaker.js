@@ -214,7 +214,7 @@ const addTitle = (title) => {
     ctx.fillText(title, 500, 30, 500);
 }
 
-const uploadCourse = (URL) => {
+const uploadCourse = (URL, onSuccess, onFail) => {
     const formData = new FormData()
 
     if (canvas.value != null) {
@@ -236,17 +236,9 @@ const uploadCourse = (URL) => {
             Authorization: 'Bearer ' + cookies.get('token'),
         }
     }).then((resp) => {
-        console.log(URL + " 코스 저장 성공 status : " + resp.status)
-        console.log(URL + '/' + resp.data)
-        alert("코스를 저장하였습니다.")
+        onSuccess(resp)
     }).catch((err) => {
-        console.log(URL + " 코스 저장 실패 ")
-        if (err.response.status === 401) {
-            alert("로그인이 필요 합니다.")
-            router.replace('/member/login').then(() => {
-                login.removeUserInfo()
-            })
-        }
+        onFail(err)
     })
 }
 

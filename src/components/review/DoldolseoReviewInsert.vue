@@ -1,7 +1,10 @@
 <template>
   <!-- 메인 컨테이너 -->
   <section class="common-iuContainer--main">
-
+    <loading :active="isLoading"
+             :is-full-page="true"
+             :opacity="1.0">
+    </loading>
     <!-- 제목 -->
     <div class="common-iuTop--title">
       글쓰기
@@ -117,11 +120,17 @@
               초기화
             </button>
           </div>
-          <canvas id='canvas'
-                  width="1052"
-                  height="550"
-                  ref="canvas"
-          />
+          <div class="reviewI--canvasContainer">
+            <loading :active="isLoading_course"
+                     :is-full-page="false"
+                     :opacity="0.7">
+            </loading>
+            <canvas id='canvas'
+                    width="1052"
+                    height="550"
+                    ref="canvas"
+            />
+          </div>
           <div class="reviewIU--buttonbox-couresave">
             <button class="review-button--course"
                     @click="uploadCourse()">
@@ -153,17 +162,21 @@ import {v4 as uuidv4} from "uuid";
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
 import login from "../../module/login";
-
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoReviewInsert",
-  components: {DoldolseoCourseMaker, DoldolseoEditor},
+  components: {DoldolseoCourseMaker, DoldolseoEditor, Loading},
 
   setup() {
-    const {cookies} =useCookies()
+    const {cookies} = useCookies()
     const router = useRouter()
 
+    const isLoading = ref(false)
+    const isLoading_course = ref(false)
     const isSelected = ref(false)
+
     const areaMenu = inject('areaMenu')
     const areaNo = ref(99)
     const title = ref('')
@@ -174,7 +187,26 @@ export default {
     const isCourseUploaded = ref('n')
 
     const uploadCourse = () => {
-      courseMaker.uploadCourse(URL_REVIEW_COURSE);
+      const onSuccess = (resp) => {
+        isLoading_course.value = false
+        console.log(URL + " 코스 저장 성공 status : " + resp.status)
+        console.log(URL + '/' + resp.data)
+        alert("코스를 저장하였습니다.")
+      }
+
+      const onFail = (err) => {
+        isLoading_course.value = false
+        console.log(URL + " 코스 저장 실패 ")
+        if (err.response.status === 401) {
+          alert("로그인이 필요 합니다.")
+          router.replace('/member/login').then(() => {
+            login.removeUserInfo()
+          })
+        }
+      }
+
+      isLoading_course.value = true
+      courseMaker.uploadCourse(URL_REVIEW_COURSE, onSuccess, onFail);
       isCourseUploaded.value = 'y';
     }
 
@@ -202,12 +234,15 @@ export default {
       formData.append('imageUUID', IMAGE_UUID)
       formData.append('isCourseUploaded', isCourseUploaded.value)
 
+      isLoading.value = true
       axios.post(URL_REVIEW, formData, {
         headers: {
           Authorization: 'Bearer ' + cookies.get('token')
         }
       }).then((resp) => {
         console.log(URL_REVIEW + ": 게시글 저장" + resp.status)
+
+        isLoading.value = false
         router.replace('/review').then(() => {
         })
       }).catch((err) => {
@@ -218,6 +253,7 @@ export default {
             login.removeUserInfo()
           })
         }
+        isLoading.value = false
       })
     }
 
@@ -235,10 +271,11 @@ export default {
       return true
     }
 
-
     return {
       canvas,
       courseMaker,
+      isLoading,
+      isLoading_course,
       isSelected,
       URL_REVIEW_IMAGE,
       uploadCourse,
@@ -260,6 +297,7 @@ export default {
   width: 100%;
   max-width: 1400px;
   height: 100%;
+  position: relative;
   /*font-size: 0;*/
 }
 
@@ -323,6 +361,10 @@ export default {
   width: 130px;
   height: 40px;
   font-size: 23px
+}
+
+.reviewI--canvasContainer {
+  position: relative;
 }
 
 #canvas {

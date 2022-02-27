@@ -3,7 +3,9 @@
 
     <!-- 지역별 배경사진 -->
     <div class="areaList-img">
-      <img :src="imgPath+ '/areaBanner/'+areaImages[sigungu]" alt="img"/>
+      <img :src="imgPath+ '/areaBanner/'+areaImages[sigungu]"
+           alt="img"
+      />
     </div>
 
     <!-- 게시판 드릴 다운 메뉴 -->
@@ -47,11 +49,18 @@
       </div>
     </div>
 
-    <!--     지역 게시글 목록 -->
+    <!-- 지역 게시글 목록 -->
     <div class="areaList-dataContainer">
+      <!-- 로딩 창 -->
+      <loading :active="isLoading"
+               :is-full-page="false"
+               :opacity="0.7">
+      </loading>
       <div class="areaList-dataBox">
+
         <!-- 항목 -->
-        <div v-for="area in areaList" class="areaList-data">
+        <div v-for="area in areaList"
+             class="areaList-data">
           <div class="areaList-dataImg">
             <!-- 상세보기로 이동 -->
             <router-link :to="{name: 'areaDetail', params:{name: encodeURIComponent(area.name) }}">
@@ -78,10 +87,21 @@
         <table class="pagination">
           <tr>
             <td @click="page=0"> &lt;&lt;</td>
-            <td v-if="startBlockPage === 1" @click="page = startBlockPage-2"> &lt;</td>
-            <td v-for="idx in endBlockPage-startBlockPage+1" @click="page = idx-1">{{ idx }}</td>
-            <td v-if="endBlockPage !== totalPages" @click="page = endBlockPage"> &gt;</td>
-            <td @click="page=totalPages-1"> &gt;&gt;</td>
+            <td v-if="startBlockPage === 1"
+                @click="page = startBlockPage-2">
+              &lt;
+            </td>
+            <td v-for="idx in endBlockPage-startBlockPage+1"
+                @click="page = idx-1">
+              {{ idx }}
+            </td>
+            <td v-if="endBlockPage !== totalPages"
+                @click="page = endBlockPage">
+              &gt;
+            </td>
+            <td @click="page=totalPages-1">
+              &gt;&gt;
+            </td>
           </tr>
         </table>
       </div>
@@ -90,13 +110,18 @@
 </template>
 
 <script>
-import {inject, ref, watch, watchEffect} from "vue";
+import Loading from "vue3-loading-overlay";
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import {inject, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRoute} from "vue-router";
 
 export default {
   name: "DoldolseoAreaList",
+  components: {Loading},
   setup() {
+    const isLoading = ref(false);
+
     const route = useRoute()
     const imgPath = inject('contextPath') + '_image/area'
     const areaImages = {
@@ -126,6 +151,8 @@ export default {
     const searchKeyword = ref(null)
 
     watchEffect(() => {
+      isLoading.value = true
+
       axios.get(URL, {
         params: {
           sigungu: sigungu.value,
@@ -140,6 +167,7 @@ export default {
         startBlockPage.value = resp.data.startBlockPage
         endBlockPage.value = resp.data.endBlockPage
         totalPages.value = resp.data.totalPages
+        isLoading.value = false
       }).catch(() => {
         console.log(URL + "요청 실패")
       })
@@ -148,6 +176,8 @@ export default {
     })
 
     return {
+      isLoading,
+
       imgPath,
       areaMenu,
       areaImages,
@@ -172,6 +202,7 @@ export default {
   background-color: white;
   width: 100%;
   margin: 0 auto 40px;
+  position: relative;
   /*border: 1px solid;*/
 }
 
@@ -273,6 +304,7 @@ export default {
   border: 1px solid #E0EEFF;
   background-color: #E0EEFF;
   color: #647C97;
+  position: relative;
 }
 
 .areaList-dataBox {
@@ -280,7 +312,6 @@ export default {
   height: 1175px;
   margin: 50px auto 0;
   text-align: left;
-  /*border: 1px solid;*/
 }
 
 .areaList-data {
