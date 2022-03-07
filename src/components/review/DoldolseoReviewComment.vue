@@ -104,10 +104,9 @@
 import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
-import {useRouter} from "vue-router";
+import onError from "../../module/onError";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
-import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoReviewComment",
@@ -125,7 +124,6 @@ export default {
     const URL_REVIEW = inject('doldolseoReview')
     const URL_REVIEW_COMMENT = URL_REVIEW + '/' + props.reviewNo + '/comment'
     const {cookies} = useCookies()
-    const router = useRouter()
     const loginState = ref(localStorage.getItem('loginState'))
     const token = ref(cookies.get('token'))
 
@@ -212,8 +210,8 @@ export default {
         isLoading.value = false
       }).catch((err) => {
         console.log(URL_REVIEW_COMMENT + " 요청 실패")
-        onError.httpErrorException(err)
         isLoading.value = false
+        onError.httpErrorException(err)
       })
     }
 

@@ -3,7 +3,7 @@
 
     <!-- 지역별 배경사진 -->
     <div class="areaList-img">
-      <img :src="imgPath+ '/areaBanner/'+areaImages[sigungu]"
+      <img :src="getImgUrl(imgPath+ '/areaBanner/'+areaImages[sigungu])"
            alt="img"
       />
     </div>
@@ -65,11 +65,11 @@
             <!-- 상세보기로 이동 -->
             <router-link :to="{name: 'areaDetail', params:{name: encodeURIComponent(area.name) }}">
               <img v-if="area.image1 == null"
-                   :src="imgPath+'/areaListData/default.png'"
+                   :src="getImgUrl(imgPath+'/areaListData/default.png')"
                    alt="area_image"
               />
               <img v-else
-                   :src="area.image1"
+                   :src="getImgUrl(area.image1)"
                    alt="image1"
               />
             </router-link>
@@ -122,6 +122,7 @@ export default {
   components: {Loading},
   setup() {
     const isLoading = ref(false);
+    const getImgUrl = inject('getImgUrl')
 
     const route = useRoute()
     const imgPath = inject('contextPath') + '_image/area'
@@ -179,6 +180,7 @@ export default {
 
     return {
       isLoading,
+      getImgUrl,
 
       imgPath,
       areaMenu,

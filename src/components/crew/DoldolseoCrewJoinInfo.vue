@@ -1,92 +1,97 @@
 <template>
   <div class="crewJ-container">
-    <div class="crew-topContainer">
-      <div class="common-top__title">
-        크루 가입서
+    <div class="crewJ-loading">
+      <loading :active="isLoading"
+               :is-full-page="false"
+               :opacity="0.7">
+      </loading>
+      <div class="crew-topContainer">
+        <div class="common-top__title">
+          크루 가입서
+        </div>
       </div>
-    </div>
-    <table class="crewJ-tbl">
-      <tr class="common-tbl__item">
-        <td style="width: 170px; height: 30px">
-          <b>아이디</b>
-        </td>
-        <td>
+      <table class="crewJ-tbl">
+        <tr class="common-tbl__item">
+          <td style="width: 170px; height: 30px">
+            <b>아이디</b>
+          </td>
+          <td>
           <span style="color: green">
             {{ memberId }}
           </span>
-        </td>
-      </tr>
-      <tr class="common-tbl__item">
-        <td style="width: 170px; height: 30px">
-          <b>질문1</b>
-        </td>
-        <td>
+          </td>
+        </tr>
+        <tr class="common-tbl__item">
+          <td style="width: 170px; height: 30px">
+            <b>질문1</b>
+          </td>
+          <td>
           <span style="color: green">
             {{ questionFirst }}
           </span>
-        </td>
-      </tr>
-      <tr class="common-tbl__item">
-        <td>
-          답변
-        </td>
-        <td>
+          </td>
+        </tr>
+        <tr class="common-tbl__item">
+          <td>
+            답변
+          </td>
+          <td>
           <span>
             {{ answerFirst }}
           </span>
-        </td>
-      </tr>
-      <tr v-if="questionSecond.length !== 0"
-          class="common-tbl__item">
-        <td style="width: 170px; height: 30px">
-          <b>질문2</b>
-        </td>
-        <td height="30px">
+          </td>
+        </tr>
+        <tr v-if="questionSecond.length !== 0"
+            class="common-tbl__item">
+          <td style="width: 170px; height: 30px">
+            <b>질문2</b>
+          </td>
+          <td height="30px">
           <span style="color: green;">
             {{ questionSecond }}
           </span>
-        </td>
-      </tr>
-      <tr v-if="questionSecond.length !== 0"
-          class="common-tbl__item">
-        <td>
-          답변
-        </td>
-        <td>
+          </td>
+        </tr>
+        <tr v-if="questionSecond.length !== 0"
+            class="common-tbl__item">
+          <td>
+            답변
+          </td>
+          <td>
           <span>
             {{ answerSecond }}
           </span>
-        </td>
-      </tr>
-      <tr v-if="questionThird.length !== 0"
-          class="common-tbl__item">
-        <td style="width: 170px; height: 30px">
-          <b>질문3</b>
-        </td>
-        <td>
-          <span style="color: green">{{ questionThird }}</span>
-        </td>
-      </tr>
-      <tr v-if="questionThird.length !== 0"
-          class="common-tbl__item">
-        <td>
-          답변
-        </td>
-        <td>
+          </td>
+        </tr>
+        <tr v-if="questionThird.length !== 0"
+            class="common-tbl__item">
+          <td style="width: 170px; height: 30px">
+            <b>질문3</b>
+          </td>
+          <td>
+            <span style="color: green">{{ questionThird }}</span>
+          </td>
+        </tr>
+        <tr v-if="questionThird.length !== 0"
+            class="common-tbl__item">
+          <td>
+            답변
+          </td>
+          <td>
           <span>
             {{ answerThird }}
           </span>
-        </td>
-      </tr>
-    </table>
-    <div class="crewJI-buttonBox">
-      <button class="crew-button"
-              @click="togglePopup()">
-        확인
-      </button>
+          </td>
+        </tr>
+      </table>
+      <div class="crewJI-buttonBox">
+        <button class="crew-button"
+                @click="togglePopup()">
+          확인
+        </button>
+      </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -94,9 +99,12 @@ import {inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
 import onError from "../../module/onError";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoCrewJoinInfo",
+  components: {Loading},
   props: {
     togglePopup: {},
     crewNo: {
@@ -119,9 +127,11 @@ export default {
     },
   },
   setup(props) {
+    const isLoading = ref(false)
+
     const URL_CREW = inject('doldolseoCrew')
     const URL_GET_CREW_MEMBER = URL_CREW + '/member/'
-    const {cookies} =useCookies()
+    const {cookies} = useCookies()
 
     const memberId = ref('')
     const answerFirst = ref('')
@@ -129,6 +139,7 @@ export default {
     const answerThird = ref('')
 
     onMounted(() => {
+      isLoading.value = true
       axios({
         method: 'get',
         url: URL_GET_CREW_MEMBER,
@@ -145,13 +156,17 @@ export default {
         answerFirst.value = resp.data.answerFirst
         answerSecond.value = resp.data.answerSecond
         answerThird.value = resp.data.answerThird
+
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_GET_CREW_MEMBER + " 요청 실패")
         onError.httpErrorException(err)
+        isLoading.value = false
       })
     })
 
     return {
+      isLoading,
       memberId,
       answerFirst,
       answerSecond,
@@ -174,6 +189,10 @@ export default {
   left: 60%;
   transform: translate(-50%, 0);
   /*border: 1pt solid;*/
+}
+
+.crewJ-loading {
+  position: relative;
 }
 
 .crew-topContainer {

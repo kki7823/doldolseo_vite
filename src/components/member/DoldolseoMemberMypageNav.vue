@@ -7,7 +7,7 @@
       <li class="mypageD-listcontainer__li--small">
         <a href="#" class="mypageD-listcontainer__a--blue">
           <img class="mypageD-listcontainer__img--small"
-               :src="imgPath+'person.png'"
+               :src="getImgUrl('mypage/person.png')"
                alt="person"
           />&nbsp;
           개인 정보
@@ -16,7 +16,7 @@
       <li class="mypageD-listcontainer__li--small">
         <a href="#" class="mypageD-listcontainer__a--blue">
           <img class="mypageD-listcontainer__img--small"
-               :src="imgPath+'planner.png'"
+               :src="getImgUrl('mypage/planner.png')"
                alt="planner"
           />&nbsp;&nbsp;
           내 플래너
@@ -32,10 +32,10 @@ import {inject} from "vue";
 export default {
   name: "DoldolseoMemberMypageNav",
   setup() {
-    const imgPath = inject('contextPath') + '_image/mypage/'
+    const getImgUrl = inject('getImgUrl')
 
     return {
-      imgPath,
+      getImgUrl,
     }
   }
 }

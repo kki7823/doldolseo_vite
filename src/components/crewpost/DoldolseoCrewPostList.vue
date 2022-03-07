@@ -1,5 +1,9 @@
 <template>
   <section class="crew-mainContainer">
+    <loading :active="isLoading"
+             :is-full-page="false"
+             :opacity="0.7">
+    </loading>
     <doldolseo-crew-nav/>
 
     <!-- 상단 제목,드릴다운 : 공통 -->
@@ -43,7 +47,8 @@
       </div>
       <router-link :to="{name: 'crewPostInsert'}"
                    style="color: #6E6E6E">
-        <button id="cBoardL-btn--write"
+        <button v-if="areYouJoinedAnyCrew"
+                id="cBoardL-btn--write"
                 class="crew-button">
           글쓰기
         </button>
@@ -62,9 +67,13 @@
 
       <tr v-for="crewPost in crewPosts"
           class="list--item">
-        <td>{{ crewPost.crewNo }}</td>
-        <td>{{ categoryMenu[crewPost.category] }}</td>
-        <td>
+        <td style="width: 130px;">
+          {{ crewPost.crewNo }}
+        </td>
+        <td style="width: 100px;">
+          {{ categoryMenu[crewPost.category] }}
+        </td>
+        <td style="width: 700px">
           <router-link :to="{name: 'crewPostDetail', params:{crewPostNo: crewPost.crewPostNo}}">
             {{ crewPost.title }}
           </router-link>
@@ -110,15 +119,22 @@
 
 <script>
 import DoldolseoCrewNav from "../crew/DoldolseoCrewNav.vue";
-import {inject, ref, watchEffect} from "vue";
+import {inject, onMounted, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import onError from "../../module/onError";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import {useCookies} from "vue3-cookies";
 
 export default {
   name: "DoldolseoCrewPostList",
-  components: {DoldolseoCrewNav},
+  components: {DoldolseoCrewNav, Loading},
   setup() {
+    const isLoading = ref(false)
+    const {cookies} = useCookies()
+
     const URL_CREW_POST = inject('doldolseoCrewPost')
+    const URL_CREW = inject('doldolseoCrew')
     const categoryMenu = inject('crew_categoryMenu')
 
     const crewNo = ref(0)
@@ -130,7 +146,33 @@ export default {
     const endBlockPage = ref(0)
     const totalPages = ref(0)
 
+    const areYouJoinedAnyCrew = ref(false)
+
+    const checkJoinedAnyCrew = () => {
+      const URL = URL_CREW + '/check/member/' + localStorage.getItem('id')
+
+      axios({
+        method: 'get',
+        url: URL,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        },
+      }).then((resp) => {
+        console.log(URL + " - 요청 성공 status : " + resp.status)
+        areYouJoinedAnyCrew.value = resp.data
+      }).catch((err) => {
+        console.log(URL + " - 요청 실패")
+        onError.httpErrorException(err)
+      })
+    }
+
+    onMounted(() => {
+      checkJoinedAnyCrew()
+    })
+
     watchEffect(() => {
+      isLoading.value = true
+
       axios.get(URL_CREW_POST, {
         params: {
           crewNo: crewNo.value,
@@ -143,14 +185,20 @@ export default {
         startBlockPage.value = resp.data.startBlockPage
         endBlockPage.value = resp.data.endBlockPage
         totalPages.value = resp.data.totalPages
+
+        isLoading.value = false
       }).catch((err) => {
         console.log(URL_CREW_POST + " - 요청 실패")
+        isLoading.value = false
         onError.httpErrorException(err)
       })
     })
 
+
     return {
+      isLoading,
       categoryMenu,
+      areYouJoinedAnyCrew,
 
       crewNo,
       category,
@@ -170,6 +218,7 @@ export default {
   text-align: center;
   margin: 0 auto 30px;
   font-size: 0;
+  position: relative;
   /*border: 1pt solid;*/
 }
 

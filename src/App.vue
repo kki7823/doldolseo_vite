@@ -5,21 +5,31 @@
 </template>
 
 <script>
-import DoldolseoHeader from "./components/common/DoldolseoHeader.vue";
-import DoldolseoMain from "./components/main/DoldolseoMain.vue";
-import DoldolseoFooter from "./components/common/DoldolseoFooter.vue";
+import DoldolseoHeader from "/@components/common/DoldolseoHeader.vue";
+import DoldolseoMain from "/@components/main/DoldolseoMain.vue";
+import DoldolseoFooter from "/@components/common/DoldolseoFooter.vue";
 import {provide} from "vue";
+import {useCookies} from "vue3-cookies";
 
 export default {
   name: 'App',
   components: {DoldolseoFooter, DoldolseoMain, DoldolseoHeader},
   setup() {
-    provide('contextPath', 'src/')
+    // provide('contextPath', 'src/')
+    provide('contextPath', '/@/')
     provide('doldolseoArea', '/doldolseo/area')
     provide('doldolseoMember', '/doldolseo/member')
     provide('doldolseoReview', '/doldolseo/review')
     provide('doldolseoCrew', '/doldolseo/crew')
     provide('doldolseoCrewPost', '/doldolseo/crew/post')
+
+
+    //img 태그에 alias경로 binding
+    const getImgUrl = (name) => {
+      return new URL(`/src/_image/${name}`, import.meta.url).href
+    }
+
+    provide('getImgUrl', getImgUrl)
 
     const areaMenu = {
       1: '강남',
@@ -68,6 +78,9 @@ export default {
       4: '자유',
     }
     provide('crew_categoryMenu', crew_categoryMenu)
+
+    const {cookies} = useCookies()
+    provide('cookies', cookies)
   }
 }
 </script>
@@ -105,7 +118,7 @@ table {
   content: attr(data-placeholder);
 }
 
-.ProseMirror p.is-editor-empty:first-child::before{
+.ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
   color: #adb5bd;

@@ -52,7 +52,7 @@ import login from "../../module/login";
 export default {
   name: "DoldolseoHeaderProfile",
   setup() {
-    const {cookies} = useCookies()
+    const cookies = inject('cookies')
     const router = useRouter()
     const PATH_MEMBER_IMG_DEFAULT = inject('contextPath') + '_image/member/default_member.png'
     const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/' + localStorage.getItem('id')

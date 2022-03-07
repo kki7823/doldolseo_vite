@@ -31,7 +31,8 @@
     </div>
 
     <!-- 글 수정 및 삭제 버튼 -->
-    <div class="cBoardD-btnbox-edit">
+    <div v-if="writerId === idLogedIn"
+         class="cBoardD-btnbox-edit">
       <router-link :to="{name: 'crewPostUpdate', params:{ crewPostNo: crewPostNo, }}">
         <button class="crew-button"
                 style="margin-right: 10px;">수정 하기
@@ -42,7 +43,8 @@
         글 삭제
       </button>
     </div>
-
+    <div v-else style="height: 50px">
+    </div>
     <!-- 상세 글 목록  -->
     <table class="cBoardD-tablelayout">
       <!-- 글상단 : 프로필 박스 + 댓글 및 조회수 -->
@@ -52,7 +54,7 @@
           <div class="profilebox">
             <!-- 회원사진 -->
             <div class="profilebox--photo">
-              <img :src="PATH_IMAGE_MEMBER_DEFAULT"
+              <img :src="URL_MEMBER_IMAGES+writerId"
                    alt="profile">
             </div>
             <!-- 닉네임 + 작성날짜 컨테이너 -->
@@ -84,7 +86,7 @@
               </svg>
             </div>
             <div class="iconbox__commentcount">
-              <!-- 댓글 수 -->
+              {{numOfComments}}
             </div>
 
             <div class="iconbox__hit">
@@ -139,30 +141,33 @@
             <div v-if="isClicked_membersWith"
                  class="cBoardD-box-crewMemberList">
               <!-- 추가된 크루원 -->
-              <div v-for="member in membersWith"
+              <div v-for="member in taggedMembers"
                    class="crew-withMember--idbox">
                 <div class="crew-member--photo">
-                  <img :src="PATH_IMAGE_MEMBER_DEFAULT"
+                  <img :src="URL_MEMBER_IMAGES+member.memberId"
                        alt="profile"
                   />
                 </div>
                 <div class="cBoard__nickName">
                   {{ member.memberId }}
-                  <span class='common-deleteMark--x'
-                        @click="deleteMemberData(member.crewMemberWithNo)">&Cross;
+                  <span v-if="writerId === idLogedIn"
+                        class='common-deleteMark--x'
+                        @click="deleteMemberData(member.memberId)">&Cross;
                   </span>
                 </div>
               </div>
-              <div class="crew-withMember--idbox">
+              <div v-if="writerId === idLogedIn"
+                   class="crew-withMember--idbox">
                 <select @change="addMemberData(seletedCrewMember)"
                         v-model="seletedCrewMember"
                         style="width: 200px">
-                  <option selected="selected">
+                  <option selected="selected"
+                          :value="undefined">
                     함께한 크루원 추가
                   </option>
                   <option v-for="crewMember in crewMembers"
-                          :value="crewMember.crewMemberId">
-                    {{ crewMember.crewMemberId }}
+                          :value="crewMember.memberId">
+                    {{ crewMember.memberId }}
                   </option>
                 </select>
               </div>
@@ -179,6 +184,10 @@
           />
         </td>
       </tr>
+      <loading :active="isLoading"
+               :is-full-page="false"
+               :opacity="1.0">
+      </loading>
     </table>
 
     <!-- 댓글 창-->
@@ -200,14 +209,16 @@
 <script>
 import DoldolseoCrewNav from "../crew/DoldolseoCrewNav.vue";
 import DoldolseoCrewPostComment from "./DoldolseoCrewPostComment.vue";
-import {inject, onMounted, ref} from "vue";
+import {inject, onMounted, provide, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
 import onError from "../../module/onError";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoCrewPostDetail",
-  components: {DoldolseoCrewPostComment, DoldolseoCrewNav},
+  components: {DoldolseoCrewPostComment, DoldolseoCrewNav, Loading},
   props: {
     crewPostNo: {
       type: String,
@@ -215,9 +226,16 @@ export default {
     }
   },
   setup(props) {
-    const PATH_IMAGE_MEMBER = inject('contextPath') + '_image/member'
-    const PATH_IMAGE_MEMBER_DEFAULT = PATH_IMAGE_MEMBER + "/default_member.png"
+    const isLoading = ref(false)
+    const toggleLoading = ()=>{
+      isLoading.value = !isLoading.value
+    }
+
+    const cookies = inject('cookies')
+    const URL_MEMBER_IMAGES = inject('doldolseoMember')+'/images/'
     const URL_GET_CREW_POST = inject('doldolseoCrewPost') + '/' + props.crewPostNo
+    const URL_CREW = inject('doldolseoCrew')
+    const URL_CREWPOST = inject('doldolseoCrewPost')
     const categoryMenu = inject('crew_categoryMenu')
     const router = useRouter();
 
@@ -228,129 +246,154 @@ export default {
     const writerId = ref('')
     const imageUUID = ref('')
     const hit = ref('')
-    const membersWith = ref([])
+    const taggedMembers = ref([])
+
+    const numOfComments = ref(0)
+    provide('numOfComments',numOfComments)
 
     const isClicked_membersWith = ref(false)
+    const idLogedIn = ref(localStorage.getItem('id'))
 
     onMounted(() => {
-      getCrewPostData()
+      getCrewPostAndMembers()
     })
 
-    const getCrewPostData = () => {
-      axios({
-        method: 'get',
-        url: URL_GET_CREW_POST,
-        params: {
-          doHit: 'yes'
-        },
-      }).then((resp) => {
-        console.log(URL_GET_CREW_POST + " 요청 성공")
-        crewPostNo.value = resp.data.crewPostDTO.crewPostNo
-        title.value = resp.data.crewPostDTO.title
-        content.value = resp.data.crewPostDTO.content
-        writerId.value = resp.data.crewPostDTO.writerId
-        imageUUID.value = resp.data.crewPostDTO.imageUUID
-        wdate.value = resp.data.crewPostDTO.wdate
-        hit.value = resp.data.crewPostDTO.hit
-        membersWith.value = resp.data.membersWithDTOList
-        getCrewMembersData(resp.data.crewPostDTO.crewNo)
-      }).catch(() => {
-        console.log(URL_GET_CREW_POST + " 요청 실패")
-      })
+    const crewMembers = ref([])
+
+    const getCrewPostAndMembers = async () => {
+      // 크루 게시글 상세 정보 , 크루원정보 request
+      try {
+        await toggleLoading()
+
+        const respCrewPost = await axios({
+          method: 'get',
+          url: URL_GET_CREW_POST,
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token'),
+          },
+          params: {
+            doHit: 'yes'
+          }
+        })
+
+        crewPostNo.value = respCrewPost.data.crewPost.crewPostNo
+        title.value = respCrewPost.data.crewPost.title
+        content.value = respCrewPost.data.crewPost.content
+        writerId.value = respCrewPost.data.crewPost.writerId
+        imageUUID.value = respCrewPost.data.crewPost.imageUUID
+        wdate.value = respCrewPost.data.crewPost.wdate
+        hit.value = respCrewPost.data.crewPost.hit
+        taggedMembers.value = respCrewPost.data.taggedMemberList
+
+        const crewNo = respCrewPost.data.crewPost.crewNo
+
+        const respCrewMember = await axios({
+          method: 'get',
+          url: URL_CREW + '/' + crewNo + '/members',
+          headers: {
+            Authorization: 'Bearer ' + cookies.get('token'),
+          },
+          params: {
+            exceptSelf: "y",
+          }
+        })
+
+        crewMembers.value = respCrewMember.data
+        await toggleLoading()
+
+        const removeAlreadyAddedMember = (crewMembers) => {
+          for (let i = 0; i < crewMembers.length; i++) {
+            for (let j = 0; j < taggedMembers.value.length; j++)
+              if (taggedMembers.value[j].memberId === crewMembers[i].memberId) {
+                crewMembers.splice(i, 1)
+              }
+          }
+        }
+
+        await removeAlreadyAddedMember(crewMembers.value)
+      } catch (err) {
+        onError.httpErrorException(err)
+      }
     }
 
     const deleteCrewPostData = () => {
       if (!confirm("게시글을 삭제 하시겠습니까?")) return
 
-      axios.delete(URL_GET_CREW_POST).then((resp) => {
+      axios({
+        method: 'delete',
+        url: URL_GET_CREW_POST,
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token'),
+        },
+      }).then((resp) => {
         console.log(URL_GET_CREW_POST + ": 게시글 삭제" + resp.status)
         alert("게시글이 삭제 되었습니다.")
         router.replace('/crew/post/').then(() => {
         })
-      }).catch(() => {
-        console.log(URL_GET_CREW_POST + ": 게시글 삭제 실패")
-      })
-    }
-
-    const URL_CREW = inject('doldolseoCrew')
-    const crewMembers = ref([])
-
-    const getCrewMembersData = async (crewNo) => {
-      await axios({
-        method: 'get',
-        url: URL_CREW + '/' + crewNo + '/members'
-      }).then((resp) => {
-        console.log(URL_CREW + '/' + crewNo + '/members' + " 요청 성공" + resp.status)
-        crewMembers.value = resp.data
-        removeAlreadyAddedMember(crewMembers.value)
-      }).catch(() => {
-        console.log(URL_CREW + '/' + crewNo + '/members' + '/members' + " 요청 실패")
-      })
-    }
-
-    const removeAlreadyAddedMember = (crewMembers) => {
-      for (let i = 0; i < crewMembers.length; i++) {
-        for (let j = 0; j < membersWith.value.length; j++)
-          if (membersWith.value[j].memberId === crewMembers[i].crewMemberId) {
-            crewMembers.splice(i, 1)
-          }
-        //세션 구현시 Id 로그인된 세션Id 처리
-        if (crewMembers[i].crewMemberId === 'kki7823') {
-          crewMembers.splice(i, 1)
-        }
-      }
-    }
-
-    const URL_CREW_POST_ADD_MEMBERSWITH = inject('doldolseoCrewPost') + '/' + props.crewPostNo + '/member'
-    const seletedCrewMember = ref('')
-
-    const addMemberData = (memberId) => {
-      if (memberId === '') return
-      axios({
-        method: 'post',
-        url: URL_CREW_POST_ADD_MEMBERSWITH,
-        params: {
-          memberId: memberId
-        },
-      }).then((resp) => {
-        console.log(URL_CREW_POST_ADD_MEMBERSWITH + " 요청 성공" + resp.status)
-        getCrewPostData()
       }).catch((err) => {
-        console.log(URL_CREW_POST_ADD_MEMBERSWITH + " 요청 실패")
+        console.log(URL_GET_CREW_POST + ": 게시글 삭제 실패")
         onError.httpErrorException(err)
       })
     }
 
-    const URL_CREW_POST_DELETE_MEMBERSWITH = inject('doldolseoCrewPost') + '/' + crewPostNo.value + '/member'
-    const deleteMemberData = (membersWithNo) => {
+    const seletedCrewMember = ref('')
+
+    const addMemberData = (memberId) => {
+      if (memberId === '' || memberId === undefined) return
+
       axios({
-        method: 'delete',
-        url: URL_CREW_POST_DELETE_MEMBERSWITH,
+        method: 'post',
+        url: URL_CREWPOST + '/' + crewPostNo.value + '/member',
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token'),
+        },
         params: {
-          membersWithNo: membersWithNo
+          memberId: memberId
         },
       }).then((resp) => {
-        console.log(URL_CREW_POST_DELETE_MEMBERSWITH + " 요청 성공" + resp.status)
-
-        getCrewPostData()
+        console.log(URL_CREWPOST + '/' + crewPostNo.value + '/member' + " 요청 성공" + resp.status)
+        getCrewPostAndMembers()
       }).catch((err) => {
-        console.log(URL_CREW_POST_DELETE_MEMBERSWITH + " 요청 실패")
+        console.log(URL_CREWPOST + '/' + crewPostNo.value + '/member' + " 요청 실패")
+        onError.httpErrorException(err)
+      })
+    }
+
+    const deleteMemberData = (memberId) => {
+      axios({
+        method: 'delete',
+        url: URL_CREWPOST + '/' + crewPostNo.value + '/member',
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token'),
+        },
+        params: {
+          memberId: memberId
+        },
+      }).then((resp) => {
+        console.log(URL_CREWPOST + '/' + crewPostNo.value + '/member', +" 요청 성공" + resp.status)
+        getCrewPostAndMembers()
+      }).catch((err) => {
+        console.log(URL_CREWPOST + '/' + crewPostNo.value + '/member', +" 요청 실패")
         onError.httpErrorException(err)
       })
     }
 
     return {
-      PATH_IMAGE_MEMBER_DEFAULT,
+      isLoading,
+      URL_MEMBER_IMAGES,
       categoryMenu,
+      idLogedIn,
+
       title,
       content,
       writerId,
       wdate,
       hit,
-      membersWith,
+      taggedMembers,
       isClicked_membersWith,
       crewMembers,
 
+      numOfComments,
       deleteCrewPostData,
 
       seletedCrewMember,
@@ -441,16 +484,16 @@ export default {
   width: 1000px;
   text-align: right;
   margin: 10px auto 0;
+  position: relative;
 }
 
 .common-contents {
   width: 100%;
 }
 
-.common-contents >>> img {
-  width: 100%;
+.common-contents :deep(img) {
+  max-width: 100%;
 }
-
 
 .common-tbl__item {
   font-family: 'Nanum Gothic Coding', monospace;
@@ -637,6 +680,7 @@ export default {
   padding: 0 10px 10px 10px;
   box-shadow: 1px 2px #CDCECF;
   text-align: left;
+  z-index: 99;
 }
 
 .crew-withMember--idbox {

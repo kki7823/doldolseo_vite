@@ -28,11 +28,11 @@
       <!--사진-->
       <div class="areaDetail-img">
         <img v-if="areaData.image1 == null"
-             :src="imgPath+'/areaListData/default.png'"
+             :src="getImgUrl(imgPath+'/areaListData/default.png')"
              width="550" height="500" alt="area_image"
         />
         <img v-else
-             :src="areaData.image1"
+             :src="getImgUrl(areaData.image1)"
              width="550" height="500" alt="area_image"
         />
       </div>
@@ -88,6 +88,7 @@ export default {
     const name = ref(route.params.name)
     const URL = inject('doldolseoArea') + '/'
     const areaData = ref({})
+    const getImgUrl = inject('getImgUrl')
     const imgPath = inject('contextPath') + '_image/area'
     const areaMenu = inject('areaMenu')
 
@@ -133,6 +134,7 @@ export default {
 
     return {
       isLoading,
+      getImgUrl,
 
       name,
       areaData,

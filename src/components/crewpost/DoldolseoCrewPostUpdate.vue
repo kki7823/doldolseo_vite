@@ -1,6 +1,10 @@
 <template>
   <!-- 메인 컨테이너 -->
   <section class="common-iuContainer--main">
+    <loading :active="isLoading"
+             :is-full-page="true"
+             :opacity="1.0">
+    </loading>
     <!-- 제목 -->
     <div class="common-iuTop--title">
       글쓰기
@@ -43,7 +47,7 @@
           <doldolseo-text-editor v-if="content !== '' "
                                  ref="focusContent"
                                  :content-before-updating="content"
-                                 :image-uuid="imageUUID"
+                                 :image-url="URL_CREW_POST_IMAGE"
           />
         </td>
       </tr>
@@ -63,15 +67,17 @@
 </template>
 
 <script>
-import {onMounted, inject, ref} from "vue";
+import {onMounted, inject, ref, computed} from "vue";
 import DoldolseoTextEditor from "../common/DoldolseoEditor.vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
 import onError from "../../module/onError";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoCrewPostUpdate",
-  components: {DoldolseoTextEditor},
+  components: {DoldolseoTextEditor, Loading},
   props: {
     crewPostNo: {
       type: String,
@@ -79,11 +85,13 @@ export default {
     },
   },
   setup(props) {
-    const PATH_IMAGE_MEMBER = inject('contextPath') + '_image/member'
-    const PATH_IMAGE_MEMBER_DEFAULT = PATH_IMAGE_MEMBER + "/default_member.png"
+    const isLoading = ref(false)
+
     const URL_GET_CREW_POST = inject('doldolseoCrewPost') + '/' + props.crewPostNo
     const categoryMenu = inject('crew_categoryMenu')
     const router = useRouter()
+    const cookies = inject('cookies')
+    const getImgUrl = inject('getImgUrl')
 
     onMounted(() => {
       getCrewPostData()
@@ -94,6 +102,12 @@ export default {
     const title = ref('')
     const content = ref('')
     const imageUUID = ref('')
+    const URL_CREW_POST_IMAGE = computed(()=>{
+      if(imageUUID.value !== '')
+        return inject('doldolseoCrewPost') + '/images/' + imageUUID.value
+      else
+        return null
+    })
 
     const getCrewPostData = () => {
       axios({
@@ -104,11 +118,11 @@ export default {
         },
       }).then((resp) => {
         console.log(URL_GET_CREW_POST + " 요청 성공")
-        crewPostNo.value = resp.data.crewPostDTO.crewPostNo
-        category.value = resp.data.crewPostDTO.category
-        title.value = resp.data.crewPostDTO.title
-        content.value = resp.data.crewPostDTO.content
-        imageUUID.value = resp.data.crewPostDTO.imageUUID
+        crewPostNo.value = resp.data.crewPost.crewPostNo
+        category.value = resp.data.crewPost.category
+        title.value = resp.data.crewPost.title
+        content.value = resp.data.crewPost.content
+        imageUUID.value = resp.data.crewPost.imageUUID
       }).catch((err) => {
         console.log(URL_GET_CREW_POST + " 요청 실패")
         onError.httpErrorException(err)
@@ -118,18 +132,26 @@ export default {
     const updateCrewPostData = (template) => {
       if (!validParams(template)) return
 
+      isLoading.value = true
+
       const formData = new FormData()
       formData.append('category', category.value)
       formData.append('title', title.value)
       formData.append('content', DoldolseoTextEditor.content.value)
 
-      axios.put(URL_GET_CREW_POST, formData).then((resp) => {
+      axios.put(URL_GET_CREW_POST, formData,{
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token')
+        }
+      }).then((resp) => {
         console.log(URL_GET_CREW_POST + ": 게시글 수정" + resp.status)
         alert("게시글이 수정 되었습니다.")
+        isLoading.value = false
         router.replace('/crew/post/' + crewPostNo.value).then(() => {
         })
       }).catch((err) => {
         console.log(URL_GET_CREW_POST + ": 게시글 수정 실패")
+        isLoading.value = false
         onError.httpErrorException(err)
       })
     }
@@ -149,11 +171,14 @@ export default {
     }
 
     return {
-      PATH_IMAGE_MEMBER_DEFAULT,
+      isLoading,
+      getImgUrl,
+
       categoryMenu,
       category,
       title,
       content,
+      URL_CREW_POST_IMAGE,
       imageUUID,
       updateCrewPostData,
     }

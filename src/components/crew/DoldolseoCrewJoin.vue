@@ -1,5 +1,10 @@
 <template>
   <section class="crewJ-popup">
+    <div class="crewJ-loading">
+      <loading :active="isLoading"
+               :is-full-page="false"
+               :opacity="0.7">
+      </loading>
     <div class="crewJ-top__title">
       크루 가입
     </div>
@@ -93,6 +98,7 @@
         취소
       </button>
     </div>
+    </div>
   </section>
 </template>
 
@@ -101,9 +107,12 @@ import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
 import onError from "../../module/onError";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoCrewJoin",
+  components:{Loading},
   props: {
     togglePopup: {},
     crewNo: {
@@ -122,6 +131,8 @@ export default {
     }
   },
   setup(props) {
+    const isLoading = ref(false)
+
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREW_MEMBER = URL_CREW + '/' + props.crewNo + '/member'
 
@@ -134,6 +145,8 @@ export default {
 
     const sendCrewJoinData = (template) => {
       if (!validParams(template)) return
+
+      isLoading.value = true
       axios({
         method: 'post',
         url: URL_CREW_MEMBER,
@@ -151,13 +164,14 @@ export default {
         },
 
       }).then((resp) => {
-        console.log(URL_CREW_MEMBER + " 테스트 메소드 요청 성공 status : " + resp.status)
-        console.log(resp.data)
+        console.log(URL_CREW_MEMBER + " 요청 성공 status : " + resp.status)
+        isLoading.value = false
         alert('가입 요청되었습니다. 크루원 활동은 요청이 승인 된 후부터 가능합니다. 감사합니다')
         props.togglePopup()
       }).catch((err) => {
-        console.log(URL_CREW_MEMBER + " 테스트 메소드 요청 실패")
+        console.log(URL_CREW_MEMBER + " 요청 실패")
         onError.httpErrorException(err)
+        isLoading.value = false
       })
     }
 
@@ -187,6 +201,7 @@ export default {
     }
 
     return {
+      isLoading,
       answerFirst,
       answerSecond,
       answerThird,
@@ -212,6 +227,11 @@ export default {
   border: 0;
   box-shadow: 1px 1px 5px lightgrey;
 }
+
+.crewJ-loading {
+  position: relative;
+}
+
 
 .crewJ-top__title {
   text-align: center;

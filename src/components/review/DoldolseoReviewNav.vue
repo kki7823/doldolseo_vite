@@ -6,19 +6,19 @@
     <hr class="nav--line__horizon">
     <ul class="nav-list">
       <li class="nav-list__item">
-        <router-link :to="{name: 'reviewList'}" >
+        <router-link :to="{name: 'reviewList'}">
           전체
         </router-link>
       </li>
       <li class="nav-list__item"
           v-for="(item, idx) in areaMenu">
-        <router-link :to="{name: 'reviewList', params:{areaNo: idx }}" >
+        <router-link :to="{name: 'reviewList', params:{areaNo: idx }}">
           {{ item }}
         </router-link>
       </li>
     </ul>
     <div id="nav-backimg">
-      <img :src="imgPath+'navi_image.png'"
+      <img :src="getImgUrl('nav/navi_image.png')"
            alt="deco"
       />
     </div>
@@ -31,11 +31,11 @@ import {inject} from "vue";
 export default {
   name: "DoldolseoReviewNav",
   setup() {
-    const imgPath = inject('contextPath') + '_image/nav/'
+    const getImgUrl = inject('getImgUrl')
     const areaMenu = inject('areaMenu')
 
     return {
-      imgPath,
+      getImgUrl,
       areaMenu,
     }
   }

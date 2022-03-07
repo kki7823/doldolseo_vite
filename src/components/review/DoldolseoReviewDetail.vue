@@ -309,6 +309,11 @@ export default {
   position: relative;
 }
 
+.cBoard-tablelayout tr {
+  /*border: 1pt solid;*/
+}
+
+
 .review-btnBox--reviewEdit {
   width: 100%;
   margin: 0 auto;
@@ -325,11 +330,6 @@ export default {
   border: none;
   padding: 6px 8px 4px 8px;
   cursor: pointer;
-}
-
-.cBoard-tablelayout tr {
-  /*border: 1pt solid;*/
-
 }
 
 #reviewD__title {
@@ -350,11 +350,6 @@ export default {
   width: inherit;
   height: inherit;
   object-fit: cover;
-}
-
-#reviewD-content {
-  font-size: 16px;
-  font-family: 'Nanum Gothic', sans-serif;
 }
 
 #reviewD-comment__banner {

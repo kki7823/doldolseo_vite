@@ -60,7 +60,7 @@
           크루등급 :
           <div class="crew-info__grade">
             <!-- 크루등급별 등급사진 선택 -->
-            <img :src="IMAGEPATH_CREW_GRADE+getCrewGrade(crewPoint)"
+            <img :src="getImgUrl('/crew//grade/'+getCrewGrade(crewPoint))"
                  alt="grade"
             />
           </div>
@@ -120,10 +120,11 @@
             </td>
           </tr>
         </table>
-        <!-- 크루장 -->
         <table class="crew-memberTbl--bottom">
-          <tr class="common-tbl__item">
-            <td>
+          <!-- 크루원 -->
+          <tr v-for="member in members"
+              class="common-tbl__item">
+            <td v-if="member.memberRole === 'CREWLEADER'">
               <div class="crew-master--decorate">
                   <span class="crew-master--decotext">
                     크루장
@@ -133,31 +134,14 @@
                 />
               </div>
             </td>
-            <td>
-              <div class="crew-member--idbox">
-                <div class="crew-member--photo">
-                  <img :src="URL_MEMBER_IMAGE+crewLeader"
-                       alt="profile"
-                  />
-                </div>
-                <div class="crew-memberNickname">
-                  {{ crewLeader }}
-                </div>
-              </div>
-            </td>
-          </tr>
-
-          <!-- 크루원 -->
-          <tr v-for="member in members"
-              class="common-tbl__item">
-            <td>
+            <td v-else>
               <span class="crew-member-decotext">크루원</span>
             </td>
             <td>
               <div class="crew-member--idbox">
                 <div class="crew-member--photo">
                   <img :src="URL_MEMBER_IMAGE+member.memberId"
-                       alt="크루원"
+                       alt="profile"
                   />
                 </div>
                 <div class="crew-memberNickname">
@@ -225,16 +209,15 @@ export default {
   },
   setup(props) {
     const isLoading = ref(false)
+    const getImgUrl = inject('getImgUrl')
 
     const URL_CREW = inject('doldolseoCrew')
     const URL_GET_CREW = URL_CREW + '/' + props.crewNo
     const URL_CREW_IMAGE = URL_CREW + '/images/'
-    const URL_CREW_CHECKMEMBER = URL_CREW + '/member/check'
+    const URL_CREW_CHECKMEMBER = URL_CREW + '/' + props.crewNo + '/check/member/' + localStorage.getItem('id')
     const URL_CREW_GETOUT = URL_CREW + '/' + props.crewNo + '/member/' + localStorage.getItem('id')
     const URL_MEMBER_IMAGE = inject('doldolseoMember') + '/images/'
 
-    const IMAGEPATH_CREW = inject('contextPath') + '/_image/crew/'
-    const IMAGEPATH_CREW_GRADE = IMAGEPATH_CREW + '/grade/'
 
     const areaMenu = inject('areaMenu')
     const memberRole = localStorage.getItem('memberRole')
@@ -264,21 +247,21 @@ export default {
         url: URL_GET_CREW,
       }).then((resp) => {
         console.log(URL_GET_CREW + " 요청 성공")
-        crewName.value = resp.data.crewDTO.crewName
-        areaNoFirst.value = resp.data.crewDTO.areaNoFirst
-        areaNoSecond.value = resp.data.crewDTO.areaNoSecond
-        areaNoThird.value = resp.data.crewDTO.areaNoThird
-        intro.value = resp.data.crewDTO.intro
-        introDetail.value = resp.data.crewDTO.introDetail
-        recruit.value = resp.data.crewDTO.recruit
-        questionFirst.value = resp.data.crewDTO.questionFirst
-        questionSecond.value = resp.data.crewDTO.questionSecond
-        questionThird.value = resp.data.crewDTO.questionThird
-        crewImage.value = resp.data.crewDTO.crewImage
-        crewPoint.value = resp.data.crewDTO.crewPoint
-        cDate.value = resp.data.crewDTO.cdate
-        crewLeader.value = resp.data.crewDTO.crewLeader
-        members.value = resp.data.crewMemberDTO_Joined
+        crewName.value = resp.data.crew.crewName
+        areaNoFirst.value = resp.data.crew.areaNoFirst
+        areaNoSecond.value = resp.data.crew.areaNoSecond
+        areaNoThird.value = resp.data.crew.areaNoThird
+        intro.value = resp.data.crew.intro
+        introDetail.value = resp.data.crew.introDetail
+        recruit.value = resp.data.crew.recruit
+        questionFirst.value = resp.data.crew.questionFirst
+        questionSecond.value = resp.data.crew.questionSecond
+        questionThird.value = resp.data.crew.questionThird
+        crewImage.value = resp.data.crew.crewImage
+        crewPoint.value = resp.data.crew.crewPoint
+        cDate.value = resp.data.crew.cdate
+        crewLeader.value = resp.data.crew.crewLeader
+        members.value = resp.data.crewMember
 
         isLoading.value = false
       }).catch((err) => {
@@ -325,9 +308,6 @@ export default {
         headers: {
           Authorization: 'Bearer ' + cookies.get('token')
         },
-        params: {
-          crewNo: props.crewNo,
-        }
       }).then((resp) => {
         console.log(URL_CREW_CHECKMEMBER + " 요청 성공 status : " + resp.status)
         areYouCrewMember.value = resp.data
@@ -347,22 +327,21 @@ export default {
           Authorization: 'Bearer ' + cookies.get('token')
         },
       }).then((resp) => {
-        console.log(URL_CREW_CHECKMEMBER + " 요청 성공 status : " + resp.status)
+        console.log(URL_CREW_GETOUT, +" 요청 성공 status : " + resp.status)
         alert('탈퇴 되었습니다.')
         router.replace('/crew').then(() => {
         })
       }).catch((err) => {
-        console.log(URL_CREW_CHECKMEMBER + " 테스트 메소드 요청 실패")
+        console.log(URL_CREW_GETOUT, +" 테스트 메소드 요청 실패")
         onError.httpErrorException(err)
       })
     }
 
     return {
       isLoading,
+      getImgUrl,
       URL_CREW_IMAGE,
       URL_MEMBER_IMAGE,
-      IMAGEPATH_CREW,
-      IMAGEPATH_CREW_GRADE,
       areaMenu,
       memberRole,
 

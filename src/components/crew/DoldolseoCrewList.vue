@@ -84,7 +84,9 @@
         <div class="crew-crewProfile__crewnameBox">
           <span class="crew-crewProfile__crewnameBox__name">
             <span class="crew-crewProfile__crewnameBox__grade">
-              <img :src="IMAGEPATH_CREW_GRADE+getCrewGrade(crew.crewPoint)"/>
+              <img :src="getCrewGrade('/crew/grade/'+getCrewGrade(crew.crewPoint))"
+                   alt="grade"
+              />
             </span>
             <router-link :to="{name: 'crewDetail', params:{crewNo: crew.crewNo}}">
               <span class="crew-crewName">
@@ -134,10 +136,9 @@ import {inject, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import DoldolseoCrewNav from "./DoldolseoCrewNav.vue";
 import {useCookies} from "vue3-cookies";
-import {useRouter} from "vue-router";
+import onError from "../../module/onError";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
-import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewList",
@@ -152,10 +153,8 @@ export default {
 
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREW_IMAGE = URL_CREW + '/images/'
-    const IMAGEPATH_CREW_GRADE = inject('contextPath') + '/_image/crew/grade/'
     const areaMenu = inject('areaMenu')
     const {cookies} = useCookies()
-    const router = useRouter()
 
     const crewList = ref([])
     const page = ref(0)
@@ -208,7 +207,6 @@ export default {
       isLoading,
 
       URL_CREW_IMAGE,
-      IMAGEPATH_CREW_GRADE,
       crewList,
       page,
       startBlockPage,
@@ -230,7 +228,7 @@ export default {
   text-align: center;
   margin: 0 auto 30px;
   font-size: 0;
-  position: relative;
+  /*position: relative;*/
   /*border: 1pt solid;*/
 }
 

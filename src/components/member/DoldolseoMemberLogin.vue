@@ -1,7 +1,7 @@
 <template>
   <div class="memberL-container">
     <img class="memberL-container__image--small"
-         :src="imgPath+'/logo.png'"
+         :src="getImgUrl('member/logo.png')"
          alt="logo"/>
     <div>
       <input class="memberL-container__input--big"
@@ -68,21 +68,21 @@ export default {
   components: {Loading},
   setup() {
     const isLoading = ref(false);
+    const getImgUrl = inject('getImgUrl')
     const fullPage = ref(true);
 
     const {cookies} = useCookies()
-    const imgPath = inject('contextPath') + '_image/member'
     const URL_MEMBER_LOGIN = inject('doldolseoMember') + '/login'
 
     const id = ref('')
     const password = ref('')
     const loginMsg = ref('')
 
-    const setLoginMsg = ()=>{
+    const setLoginMsg = () => {
       loginMsg.value = login.loginMsg.value
     }
 
-    const sendLoginData = async (template) =>  {
+    const sendLoginData = async (template) => {
       if (!validateParams(template)) return
       isLoading.value = true;
       await login.doLogin(id.value, password.value, URL_MEMBER_LOGIN);
@@ -107,7 +107,7 @@ export default {
     let loginSuccess = login.loginSuccess
 
     return {
-      imgPath,
+      getImgUrl,
       id,
       password,
       loginMsg,

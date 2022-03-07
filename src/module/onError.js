@@ -1,6 +1,6 @@
-import {useRouter} from "vue-router";
+
 import login from "./login";
-const router = useRouter()
+import {router} from "../router/router.js";
 
 export default {
     httpErrorException: (error) => {
@@ -15,9 +15,7 @@ export default {
         }else if(httpErrorCode === 403){
             alert(errorMsg)
         }else{
-            router.replace('/error').then(() => {
-                login.removeUserInfo()
-            })
+            router.replace('/error:'+httpErrorCode).then()
         }
     }
 }

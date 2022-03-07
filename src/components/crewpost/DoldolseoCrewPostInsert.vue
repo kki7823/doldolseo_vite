@@ -1,6 +1,10 @@
 <template>
   <!-- 메인 컨테이너 -->
   <section class="common-iuContainer--main">
+    <loading :active="isLoading"
+             :is-full-page="true"
+             :opacity="0.7">
+    </loading>
     <!-- 제목 -->
     <div class="common-iuTop--title">
       글쓰기
@@ -70,7 +74,7 @@
         </td>
         <td>
           <select v-model="selectedMember"
-                  @change="pushMember(selectedMember.crewMemberId)">
+                  @change="pushMember(selectedMember.memberId)">
             <option value="">선택안함</option>
             <option v-for="crewMember in crewMembers"
                     :value="crewMember">
@@ -82,7 +86,7 @@
             <div v-for="selectedMember in selectedMemberSet"
                  class='crew-addedMember--idbox'>
               <div class='crew-member--photo'>
-                <img :src="IMAGEPATH_DEFAULT_MEMBER_IMG"
+                <img :src="getImgUrl('/member/default_member.png')"
                      alt="member_img"
                 />
               </div>
@@ -119,20 +123,21 @@ import {v4 as uuidv4} from "uuid";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
-import login from "../../module/login";
 import onError from "../../module/onError";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoCrewPostInsert",
-  components: {DoldolseoTextEditor},
+  components: {DoldolseoTextEditor, Loading},
   setup() {
+    const isLoading = ref(false)
     const router = useRouter()
     const {cookies} = useCookies()
+    const getImgUrl = inject('getImgUrl')
 
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREW_POST = inject('doldolseoCrewPost')
-    const URL_CREW_MEMBERS = URL_CREW + '/members/' + localStorage.getItem('id')
-    const IMAGEPATH_DEFAULT_MEMBER_IMG = inject('contextPath') + '/_image/member/default_member.png'
     const IMAGE_UUID = uuidv4()
     const URL_CREW_POST_IMAGE = inject('doldolseoCrewPost') + '/images/' + IMAGE_UUID
     const title = ref('')
@@ -157,15 +162,19 @@ export default {
     const getCrewData = () => {
       axios({
         method: 'get',
-        url: URL_CREW_MEMBERS,
+        url: URL_CREW,
         headers: {
           Authorization: 'Bearer ' + cookies.get('token'),
         },
+        params: {
+          page: 0,
+          memberId: localStorage.getItem('id')
+        }
       }).then((resp) => {
-        console.log(URL_CREW_MEMBERS + " 요청 성공" + resp.status)
-        crews.value = resp.data
+        console.log(URL_CREW + " 요청 성공" + resp.status)
+        crews.value = resp.data.crewList
       }).catch((err) => {
-        console.log(URL_CREW_MEMBERS + " 요청 실패")
+        console.log(URL_CREW + " 요청 실패")
         onError.httpErrorException(err)
       })
     }
@@ -177,6 +186,9 @@ export default {
           url: URL_CREW + '/' + selectedCrew.value.crewNo + '/members',
           headers: {
             Authorization: 'Bearer ' + cookies.get('token'),
+          },
+          params: {
+            exceptSelf: "y",
           },
         }).then((resp) => {
           console.log(URL_CREW + '/' + selectedCrew.value.crewNo + '/members' + " 요청 성공" + resp.status)
@@ -200,17 +212,22 @@ export default {
       formData.append('imageUUID', IMAGE_UUID)
       formData.append('taggedMembers', JSON.stringify([...selectedMemberSet.value]))
 
+      isLoading.value = true
       axios.post(URL_CREW_POST, formData, {
         headers: {
           Authorization: 'Bearer ' + cookies.get('token'),
         },
       }).then((resp) => {
         console.log(URL_CREW_POST + ": 게시글 저장" + resp.status)
+        isLoading.value = false
+
         router.replace('/crew/post').then(() => {
         })
       }).catch((err) => {
         console.log(URL_CREW_POST + ": 게시글 저장 실패")
         onError.httpErrorException(err)
+
+        isLoading.value = false
       })
     }
 
@@ -240,7 +257,9 @@ export default {
     }
 
     return {
-      IMAGEPATH_DEFAULT_MEMBER_IMG,
+      isLoading,
+      getImgUrl,
+
       URL_CREW_POST_IMAGE,
       title,
       category,

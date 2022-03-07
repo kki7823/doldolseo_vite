@@ -6,7 +6,7 @@
     </loading>
     <div class="memberJ--logobox">
       <img id="logoImg"
-           :src="imgPath+'/logo.png'"
+           :src="getImgUrl('member/logo.png')"
            alt="logo">
     </div>
 
@@ -128,7 +128,7 @@
       <img
           v-if="memberImgUrl == null"
           class="memberJ-imgcontainer__img-small"
-          :src="imgPath+'/default_member.png'"
+          :src="getImgUrl('/member/default_member.png')"
           alt="default_profile"
       />
       <img
@@ -231,12 +231,14 @@ export default {
   name: "DoldolseoMemberJoin",
   components: {DoldolseoMemberRule, DoldolseoMemberPolicy, Loading},
   setup() {
+    const getImgUrl = inject('getImgUrl')
+    const isLoading = ref(false);
+
     const URL_MEMBER = inject('doldolseoMember')
     const URL_MEMBER_CHECK_ID = URL_MEMBER + '/check'
-    const isLoading = ref(false);
     const fullPage = ref(true);
 
-    const imgPath = inject('contextPath') + '_image/member'
+
     let checkValues = {
       id: false,
       password: false,
@@ -294,7 +296,7 @@ export default {
     }
     const password = ref('')
     const pwdValidateMsg = ref('')
-    const pwdLockImgUrl = ref('url(' + imgPath + lockImg[1] + ')')
+    const pwdLockImgUrl = ref('url(' + getImgUrl('member/') + lockImg[1] + ')')
 
     const validatePwd = (pwd) => {
       const pattern1 = /[0-9]/
@@ -303,25 +305,25 @@ export default {
       if (pattern1.test(pwd) && pattern2.test(pwd) && pattern3.test(pwd) && pwd.length > 7 && pwd.length <= 20) {
         checkValues.password = true
         pwdValidateMsg.value = ''
-        pwdLockImgUrl.value = 'url(' + imgPath + lockImg[2] + ')'
+        pwdLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[2] + ')'
       } else {
         pwdValidateMsg.value = "8~20자 영문, 숫자, 특수문자를 사용하세요."
-        pwdLockImgUrl.value = 'url(' + imgPath + lockImg[3] + ')'
+        pwdLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[3] + ')'
       }
     }
 
     const passwordConfirm = ref('')
     const pwdConfirmValidateMsg = ref('')
-    const pwdConfirmLockImgUrl = ref('url(' + imgPath + lockImg[1] + ')')
+    const pwdConfirmLockImgUrl = ref('url(' + getImgUrl('member/') + lockImg[1] + ')')
 
     const confirmPwd = (pwd, pwdConfirm) => {
       if (pwd === pwdConfirm) {
         checkValues.passwordConfirm = true
         pwdConfirmValidateMsg.value = ''
-        pwdConfirmLockImgUrl.value = 'url(' + imgPath + lockImg[2] + ')'
+        pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[2] + ')'
       } else {
         pwdConfirmValidateMsg.value = "비밀번호가 일치하지 않습니다."
-        pwdConfirmLockImgUrl.value = 'url(' + imgPath + lockImg[3] + ')'
+        pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[3] + ')'
       }
     }
 
@@ -527,7 +529,7 @@ export default {
     }
 
     return {
-      imgPath,
+      getImgUrl,
       isLoading,
       fullPage,
 

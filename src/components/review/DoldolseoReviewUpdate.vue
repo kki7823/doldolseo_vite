@@ -69,10 +69,10 @@ import DoldolseoEditor from "../common/DoldolseoEditor.vue";
 import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
-import Loading from 'vue3-loading-overlay';
-import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 import {useCookies} from "vue3-cookies";
 import onError from "../../module/onError";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoReviewUpdate",
@@ -147,8 +147,8 @@ export default {
         })
       }).catch((err) => {
         console.log(URL_GET_OR_UPDATE_REVIEW + ": 게시글 수정 실패")
-        onError.httpErrorException(err)
         isLoading.value = false
+        onError.httpErrorException(err)
       })
     }
 

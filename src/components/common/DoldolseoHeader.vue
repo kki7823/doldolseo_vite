@@ -2,12 +2,12 @@
   <doldolseo-header-widget/>
   <div class="container">
     <div class="imgbox_logo1">
-      <img :src="img_logo1" alt="logo">
+      <img :src="getImgUrl('/header/logo/header_logo1.png')" alt="logo">
     </div>
 
     <div class="imgbox_logo2">
       <router-link to="/">
-        <img :src="img_logo2" alt="logo">
+        <img :src="getImgUrl('/header/logo/header_logo2.png')" alt="logo">
       </router-link>
     </div>
 
@@ -71,10 +71,8 @@ export default {
   components: {DoldolseoHeaderWidget, DoldolseoHeaderProfile},
 
   setup() {
-    const imgPath = inject('contextPath') + '_image/header/logo/'
+    const getImgUrl = inject('getImgUrl')
     const areaMenu = inject('areaMenu')
-    const img_logo1 = imgPath + 'header_logo1.png'
-    const img_logo2 = imgPath + 'header_logo2.png'
 
     const textColorArea = ref('white')
     const textColorReview = ref('white')
@@ -84,9 +82,8 @@ export default {
     const profileRefreshKey = login.refreshKey
 
     return {
+      getImgUrl,
       areaMenu,
-      img_logo1,
-      img_logo2,
       textColorArea,
       textColorReview,
       textColorCrew,

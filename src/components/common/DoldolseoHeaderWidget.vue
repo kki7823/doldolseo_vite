@@ -3,10 +3,10 @@
     <!--로고-->
     <div class="logoBox">
       <img class="logoBox__img1"
-           :src="img_logo1"
+           :src="getImgUrl('/header/logo/header_widget_logo1.png')"
            alt="logo">
       <img class="logoBox__img2"
-           :src="img_logo2"
+           :src="getImgUrl('/header/logo/header_widget_logo2.png')"
            alt="logo">
     </div>
 
@@ -30,7 +30,7 @@
       </div>
       <div class="weatherBox__icon">
         <img v-if="weatherImgsrc.length === 0"
-             :src="img_default_img"
+             :src="getImgUrl('/header/logo/default_weather.png')"
              alt="logo">
         <img v-else
              :src="weatherImgsrc"
@@ -57,10 +57,7 @@ import onError from "../../module/onError";
 export default {
   name: "DoldolseoHeaderWidget",
   setup() {
-    const imgPath = inject('contextPath') + '_image/header/logo/'
-    const img_logo1 = imgPath + 'header_widget_logo1.png'
-    const img_logo2 = imgPath + 'header_widget_logo2.png'
-    const img_default_img = imgPath + 'default_weather.png'
+    const getImgUrl = inject('getImgUrl')
     const weatherDesc = ref('')
     const weatherTmp = ref(0)
     const weatherImgsrc = ref('')
@@ -78,9 +75,7 @@ export default {
     })
 
     return {
-      img_logo1,
-      img_logo2,
-      img_default_img,
+      getImgUrl,
       weatherDesc,
       weatherTmp,
       weatherImgsrc,

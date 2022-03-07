@@ -1,53 +1,59 @@
 <template>
   <div class="crewEJ-popup">
-    <div class="crew-topContainer">
-      <div class="common-top__title">
-        가입 양식 수정
+    <div class="crewJ-loading">
+      <loading :active="isLoading"
+               :is-full-page="false"
+               :opacity="0.7">
+      </loading>
+      <div class="crew-topContainer">
+        <div class="common-top__title">
+          가입 양식 수정
+        </div>
       </div>
-    </div>
-    <div class="crew_popupContainer">
-      <span>가입질문1 :</span>
-      <span>
+      <div class="crew_popupContainer">
+        <span>가입질문1 :</span>
+        <span>
         <input class="crewEJ-input--modify"
                type="text"
                v-model="questionFirst"
                placeholder="-"
         />
       </span>
-    </div>
-    <div class="crew_popupContainer">
-      <span>가입질문2 :</span>
-      <span>
+      </div>
+      <div class="crew_popupContainer">
+        <span>가입질문2 :</span>
+        <span>
       <input class="crewEJ-input--modify"
              type="text"
              v-model="questionSecond"
              placeholder="-"
       />
     </span>
-    </div>
-    <div class="crew_popupContainer">
-      <span>가입질문3 :</span>
-      <span>
+      </div>
+      <div class="crew_popupContainer">
+        <span>가입질문3 :</span>
+        <span>
       <input class="crewEJ-input--modify"
              type="text"
              v-model="questionThird"
              placeholder="-"
       />
     </span>
-    </div>
-    <div class="crewEJ-buttonBox">
-      <button class="crew-button"
-              type="button"
-              @click="updateCrewJoinData()"
-              style="position: relative; right: 20px">
-        수정
-      </button>
-      <button class="crew-button"
-              type="button"
-              @click="togglePopup()"
-              style="position: relative; right: 10px">
-        취소
-      </button>
+      </div>
+      <div class="crewEJ-buttonBox">
+        <button class="crew-button"
+                type="button"
+                @click="updateCrewJoinData()"
+                style="position: relative; right: 20px">
+          수정
+        </button>
+        <button class="crew-button"
+                type="button"
+                @click="togglePopup()"
+                style="position: relative; right: 10px">
+          취소
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -55,9 +61,14 @@
 <script>
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import {useCookies} from "vue3-cookies";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewJoinEdit",
+  components: {Loading},
   props: {
     togglePopup: {},
     crewNo: {
@@ -76,17 +87,24 @@ export default {
     },
   },
   setup(props) {
+    const isLoading = ref(false)
+    const {cookies} = useCookies()
     const URL_CREW = inject('doldolseoCrew')
 
     const crewNo = ref(props.crewNo)
     const questionFirst = ref(props.questionFirst)
     const questionSecond = ref(props.questionSecond)
     const questionThird = ref(props.questionThird)
+    const getCrewData = inject('getCrewData')
 
     const updateCrewJoinData = () => {
+      isLoading.value = true
       axios({
         method: 'put',
-        url: URL_CREW + '/member/' + crewNo.value,
+        url: URL_CREW + '/' + crewNo.value + '/question',
+        headers: {
+          Authorization: 'Bearer ' + cookies.get('token'),
+        },
         data: {
           questionFirst: questionFirst.value,
           questionSecond: questionSecond.value,
@@ -94,13 +112,18 @@ export default {
         }
       }).then((resp) => {
         console.log(URL_CREW + '/member/' + crewNo.value + " 크루 수정" + resp.status)
+        isLoading.value = false
         alert('수정이 완료 되었습니다.')
-      }).catch(() => {
+        getCrewData()
+      }).catch((err) => {
         console.log(URL_CREW + '/member/' + crewNo.value + " 크루 수정 실패")
+        isLoading.value = false
+        onError.httpErrorException(err)
       })
     }
 
     return {
+      isLoading,
       questionFirst,
       questionSecond,
       questionThird,
@@ -125,6 +148,10 @@ export default {
   top: 40%;
   left: 50%;
   transform: translate(-50%, 0);
+}
+
+.crewJ-loading {
+  position: relative;
 }
 
 .crew-topContainer {

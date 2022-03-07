@@ -72,7 +72,7 @@
           크루등급 :
           <div class="crew-info__grade">
             <!-- 크루등급별 등급사진 선택 -->
-            <img :src="IMAGEPATH_CREW_GRADE+getCrewGrade(crewPoint)"
+            <img :src="getCrewGrade('/_image/crew/grade/'+getCrewGrade(crewPoint))"
                  alt="grade"
             />
           </div>
@@ -168,10 +168,12 @@
             <td>멤버</td>
           </tr>
         </table>
-        <!-- 크루장 -->
+
         <table class="crew-memberTbl--bottom">
-          <tr class="common-tbl__item">
-            <td>
+          <!-- 크루원 목록 -->
+          <tr v-for="member in members_joined"
+              class="common-tbl__item">
+            <td v-if="member.memberRole === 'CREWLEADER'">
               <div class="crew-master--decorate">
                 <span class="crew-master--decotext">
                   크루장
@@ -180,23 +182,7 @@
                      alt="crown">
               </div>
             </td>
-            <td>
-              <div class="crew-member--idbox">
-                <div class="crew-member--photo">
-                  <img :src="URL_MEMBER_IMAGES+crewLeader"
-                       alt="profile"
-                  />
-                </div>
-                <div class="crew-member--id">
-                  {{ crewLeader }}
-                </div>
-              </div>
-            </td>
-          </tr>
-          <!-- 크루원 목록 -->
-          <tr v-for="member in members_joined"
-              class="common-tbl__item">
-            <td>
+            <td v-else>
               <span class="crew-member-decotext">
                 크루원
               </span>
@@ -210,17 +196,20 @@
                 </div>
                 <div class="crew-member--id">
                   {{ member.memberId }}
-                  <button type="button"
-                          class="crew-button"
-                          @click="delegateLeader(member.crewMemberNo, member.memberId)">
-                    위임
-                  </button>
-                  <button type="button"
-                          class="crew-button"
-                          style="margin-left: 5px"
-                          @click="kickMember(member.memberId)">
-                    강퇴
-                  </button>
+                  <div v-if="member.memberRole !== 'CREWLEADER'"
+                       class="crew-member--buttonbox">
+                    <button type="button"
+                            class="crew-button"
+                            @click="delegateLeader(member.memberId)">
+                      위임
+                    </button>
+                    <button type="button"
+                            class="crew-button"
+                            style="margin-left: 5px"
+                            @click="kickMember(member.memberId)">
+                      강퇴
+                    </button>
+                  </div>
                 </div>
               </div>
             </td>
@@ -267,7 +256,6 @@
               style="float: right; margin-top: 7px">
         완료
       </button>
-
     </div>
 
     <!-- 가입대기자 정보 -->
@@ -348,11 +336,10 @@
 <script>
 import DoldolseoCrewNav from "./DoldolseoCrewNav.vue";
 import DoldolseoCrewJoinEdit from "./DoldolseoCrewJoinEdit.vue";
-import {inject, onMounted, ref} from "vue";
+import {inject, onMounted, provide, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import DoldolseoCrewJoinInfo from "./DoldolseoCrewJoinInfo.vue";
 import {useCookies} from "vue3-cookies";
-import login from "../../module/login";
 import {useRouter} from "vue-router";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
@@ -370,8 +357,6 @@ export default {
     const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
     const URL_MEMBER = inject('doldolseoMember')
     const URL_MEMBER_REFRESH = URL_MEMBER + '/refresh'
-    const IMAGEPATH_CREW = inject('contextPath') + '/_image/crew'
-    const IMAGEPATH_CREW_GRADE = IMAGEPATH_CREW + '/grade/'
     const areaMenu = inject('areaMenu')
     const {cookies} = useCookies()
     const router = useRouter()
@@ -424,23 +409,23 @@ export default {
         }
       }).then((resp) => {
         console.log(URL_CREW_MANAGE + " 요청 성공")
-        crewNo.value = resp.data.crewDTO.crewNo
-        crewName.value = resp.data.crewDTO.crewName
-        areaNoFirst.value = resp.data.crewDTO.areaNoFirst
-        areaNoSecond.value = resp.data.crewDTO.areaNoSecond
-        areaNoThird.value = resp.data.crewDTO.areaNoThird
-        intro.value = resp.data.crewDTO.intro
-        introDetail.value = resp.data.crewDTO.introDetail
-        recruit.value = resp.data.crewDTO.recruit
-        questionFirst.value = resp.data.crewDTO.questionFirst
-        questionSecond.value = resp.data.crewDTO.questionSecond
-        questionThird.value = resp.data.crewDTO.questionThird
-        crewImage.value = resp.data.crewDTO.crewImage
-        crewPoint.value = resp.data.crewDTO.crewPoint
-        cDate.value = resp.data.crewDTO.cdate
-        crewLeader.value = resp.data.crewDTO.crewLeader
-        members_joined.value = resp.data.crewMemberDTO_Joined
-        members_wating.value = resp.data.crewMemberDTO_Wating
+        crewNo.value = resp.data.crew.crewNo
+        crewName.value = resp.data.crew.crewName
+        areaNoFirst.value = resp.data.crew.areaNoFirst
+        areaNoSecond.value = resp.data.crew.areaNoSecond
+        areaNoThird.value = resp.data.crew.areaNoThird
+        intro.value = resp.data.crew.intro
+        introDetail.value = resp.data.crew.introDetail
+        recruit.value = resp.data.crew.recruit
+        questionFirst.value = resp.data.crew.questionFirst
+        questionSecond.value = resp.data.crew.questionSecond
+        questionThird.value = resp.data.crew.questionThird
+        crewImage.value = resp.data.crew.crewImage
+        crewPoint.value = resp.data.crew.crewPoint
+        cDate.value = resp.data.crew.cdate
+        crewLeader.value = resp.data.crew.crewLeader
+        members_joined.value = resp.data.crewMember
+        members_wating.value = resp.data.crewWatingMember
         isLoading.value = false
       }).catch((err) => {
         console.log(URL_CREW_MANAGE + " 요청 실패")
@@ -448,6 +433,8 @@ export default {
         isLoading.value = false
       })
     }
+
+    provide('getCrewData', getCrewData)
 
     const areaNoToString = (first, second, third) => {
       let areaArray = []
@@ -534,7 +521,7 @@ export default {
       isLoading.value = true
       axios({
         method: 'delete',
-        url: URL_CREW + '/' + crewNo.value + '/member/',
+        url: URL_CREW + '/' + crewNo.value + '/member',
         headers: {
           Authorization: 'Bearer ' + cookies.get('token')
         },
@@ -542,12 +529,12 @@ export default {
           memberId: memberId,
         }
       }).then((resp) => {
-        console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + "크루원 강퇴" + resp.status)
+        console.log(URL_CREW + '/' + crewNo.value + '/member' + " 요청 성공" + resp.status)
         alert('해당 크루원을 강퇴 하였습니다.')
         getCrewData()
         isLoading.value = false
       }).catch((err) => {
-        console.log(URL_CREW + '/' + crewNo.value + '/member/' + memberId + "크루원 가입신청 거절 실패")
+        console.log(URL_CREW + '/' + crewNo.value + '/member' + " 요청 실패")
         onError.httpErrorException(err)
         isLoading.value = false
       })
@@ -556,10 +543,9 @@ export default {
     const agreeJoin = (memberId) => {
       if (!confirm("가입 신청을 승인하시겠습니까?")) return
 
-
       isLoading.value = true
       axios({
-        method: 'put',
+        method: 'post',
         url: URL_CREW + '/' + crewNo.value + '/member/' + memberId,
         headers: {
           Authorization: 'Bearer ' + cookies.get('token')
@@ -583,7 +569,7 @@ export default {
       isLoading.value = true
       axios({
         method: 'delete',
-        url: URL_CREW + '/' + crewNo.value + '/member',
+        url: URL_CREW + '/' + crewNo.value + '/member/wating',
         headers: {
           Authorization: 'Bearer ' + cookies.get('token')
         },
@@ -604,7 +590,7 @@ export default {
     }
 
     const delegateLeader = async (memberId) => {
-      if (!confirm("권한을 위임하면 해당 크루에 대한 관리자 권한이 사라집니다. 위임 하시겠습니까?")) return
+      if (!confirm("권한을 위임하면 해당 크루에 대한 관리자 권한이 사라지며, 해당 크루에서 자동으로 탈퇴됩니다. 위임 하시겠습니까?")) return
 
       try {
         isLoading.value = true
@@ -618,6 +604,7 @@ export default {
 
         if (checkAlreadyLeader.data) {
           alert("해당 멤버는 이미 크루장 입니다.")
+          isLoading.value = false
           return
         }
 
@@ -645,8 +632,9 @@ export default {
 
         console.log(URL_MEMBER_REFRESH + " 요청 성공 status : " + responseMember.status)
         localStorage.setItem('memberRole', responseMember.data) //Refesh role
+
         isLoading.value = false
-        router.replace('/crew').then(() => {
+        router.push('/crew').then(() => {
         })
 
       } catch (err) {
@@ -700,8 +688,6 @@ export default {
 
       URL_CREW_IMAGE,
       URL_MEMBER_IMAGES,
-      IMAGEPATH_CREW,
-      IMAGEPATH_CREW_GRADE,
       areaMenu,
 
       crewNo,
@@ -905,6 +891,10 @@ export default {
   position: absolute;
   right: 2px;
   bottom: 2px;
+}
+
+.crew-member--buttonbox {
+  display: inline-block;
 }
 
 .crew-info__pointbar--holder {

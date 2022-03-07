@@ -154,9 +154,10 @@ const routes = [
         beforeEnter: isLogined
     },
     {
-        path: '/error',
+        path: '/error:errorCode',
         name: 'Error',
         component: Error,
+        props: true
     },
     {
         path: '/:catchAll(.*)+',

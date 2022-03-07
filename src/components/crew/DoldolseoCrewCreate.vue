@@ -23,12 +23,7 @@
         <td rowspan="2"
             class="common-td__border">
           <div class="crew-logobox">
-            <img v-if="crewImgUrl == null"
-                 :src="IMAGEPATH_CREW_LOGO_DEFAULT"
-                 alt="crew-logo"
-            />
-            <img v-else
-                 id="crewI_img"
+            <img id="crewI_img"
                  :src="crewImgUrl"
                  alt="crew-logo"
             />
@@ -201,7 +196,6 @@ export default {
     const URL_CREW = inject('doldolseoCrew')
     const URL_MEMBER = inject('doldolseoMember')
     const URL_MEMBER_REFRESH = URL_MEMBER + '/refresh'
-    const IMAGEPATH_CREW_LOGO_DEFAULT = inject('contextPath') + '/_image/crew/logo/default_crew.png'
     const {cookies} = useCookies()
     const router = useRouter()
     const crewName = ref('')
@@ -395,7 +389,6 @@ export default {
     return {
       isLoading,
 
-      IMAGEPATH_CREW_LOGO_DEFAULT,
       crewName,
       checkedArea,
       intro,
