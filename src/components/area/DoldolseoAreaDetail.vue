@@ -1,5 +1,10 @@
 <template>
   <section class="areaDetail-container">
+    <!-- 로딩 창 -->
+    <loading :active="isLoading"
+             :is-full-page="false"
+             :opacity="0.7">
+    </loading>
     <div class="areaDetail-topContainer">
       <div class="common-top__title" style="color: #0080c0;">
         지역게시판
@@ -23,7 +28,7 @@
       <!--사진-->
       <div class="areaDetail-img">
         <img v-if="areaData.image1 == null"
-             :src="imgPath+'/areaListData/default.png'"
+             :src="getImgUrl('area/areaListData/default.png')"
              width="550" height="500" alt="area_image"
         />
         <img v-else
@@ -34,16 +39,18 @@
 
       <!--정보 : append -->
       <div class="areaDetail-info">
-        <p class="areaDetail-overview">
-          {{ overview }}
+        <p class="areaDetail-overview"
+           v-html="overview">
         </p>
       </div>
 
       <hr style="width: 1200px; color: #495c75; "/>
-
-      <!--지도-->
+        <!--지도-->
       <div class="areaDetail-map">
-        <kakao-map :x="areaData.x" :y="areaData.y" />
+        <kakao-map
+                   :x="areaData.x"
+                   :y="areaData.y"
+        />
       </div>
 
       <!-- 주소 -->
@@ -66,13 +73,19 @@
 <script>
 import {useRoute} from "vue-router";
 import {axios} from "@bundled-es-modules/axios";
-import {inject, ref} from "vue";
+import {inject, onMounted, ref} from "vue";
 import KakaoMap from "./KakaoMap.vue";
+import Loading from "vue3-loading-overlay";
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoAreaDetail",
-  components: {KakaoMap},
+  components: {KakaoMap, Loading},
   setup() {
+    const isLoading = ref(false);
+    const getImgUrl = inject('getImgUrl')
+
     const route = useRoute()
     const name = ref(route.params.name)
     const URL = inject('doldolseoArea') + '/'
@@ -81,30 +94,49 @@ export default {
     const areaMenu = inject('areaMenu')
 
     const overview = ref('')
+    const contentId = ref(0)
+
+    onMounted(() => {
+      getAreaData()
+    })
 
     const getAreaData = async () => {
-      let contentId = ref(0)
+      isLoading.value = true
+
       await axios.post(URL + name.value).then((resp) => {
         console.log(URL + ": 요청 성공 status : " + resp.status)
         areaData.value = resp.data
-        contentId = resp.data.contentId
-      }).catch(() => {
+        contentId.value = resp.data.contentId
+      }).catch((err) => {
         console.log(URL + ": 요청 실패")
+        onError.httpErrorException(err)
       })
 
       const key = "P3TbC5uJmBCIyJ5XyNE96Iggnml%2FE7YpEPLGKNQAG6P1Pg36WbbyZPeOkl%2BjZa9JsjLoIwO0saCVPxy48P5nMQ%3D%3D"
-      const URL_overview = "http://api.visitkorea.or.kr/openapi/service/rest/KorService/detailCommon?ServiceKey=" + key + "&contentTypeId=&contentId=" + contentId + "&MobileOS=ETC&MobileApp=TourAPI3.0_Guide&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y&transGuideYN=Y"
+      const URL_overview =
+          "http://api.visitkorea.or.kr/openapi/service/rest/KorService/detailCommon?ServiceKey="
+          + key
+          + "&contentTypeId=&contentId="
+          + contentId.value
+          + "&MobileOS=ETC&MobileApp=TourAPI3.0_Guide&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y&transGuideYN=Y"
+
       await axios.get(URL_overview).then((resp) => {
         console.log(URL_overview + "-> 요청 성공 status : " + resp.status)
         overview.value = resp.data.response.body.items.item.overview;
-      }).catch(() => {
+        isLoading.value = false
+      }).catch((err) => {
         console.log(URL_overview + "-> 요청 실패")
+        isLoading.value = false
+        onError.httpErrorException(err)
       })
     }
 
     getAreaData()
 
     return {
+      isLoading,
+      getImgUrl,
+
       name,
       areaData,
       areaMenu,
@@ -120,6 +152,7 @@ export default {
   background-color: white;
   width: 1500px;
   margin: 0 auto 40px;
+  position: relative;
   /*border: 1px solid;*/
 }
 
@@ -196,6 +229,10 @@ export default {
   border-color: #647C97;
   border-radius: 10px;
   padding: 10px 30px 10px 30px;
+}
+
+.areaDetail-overview {
+  text-align: center;
 }
 
 .areaDetail-info__table th, td {

@@ -4,6 +4,10 @@
 
     <!-- 마이페이지 상세 -->
     <div class="mypageD-container">
+      <loading :active="isLoading"
+               :is-full-page="false"
+               :opacity="0.7">
+      </loading>
       <div class="mypageD-titlecontainer">
         <span class="mypageD-titlecontainer__span--big">내 정보</span>
         <span class="mypageD_span"> (*) : 수정 가능</span>
@@ -154,332 +158,6 @@
           </div>
         </div>
       </div>
-      <!-- // 개인 정보 수정-->
-
-      <!-- 내 크루 크루 + 리뷰 완료 후 작업  -->
-      <!--      <div class="mypageD-crewcontainer">-->
-      <!--        <span class="mypageD-crewcontainer__span&#45;&#45;big">내 크루</span>-->
-
-      <!--        <div class="mypageD-crewbox">-->
-      <!--          &lt;!&ndash;          <c:if test="${crewDTO == null && crewMemberDTO.size() == 0}">&ndash;&gt;-->
-      <!--          <div class="mypageD-crewlistbox">-->
-      <!--            <span class="mypageD-crewlistbox__span&#45;&#45;none">가입된 크루가 존재하지 않습니다.</span>-->
-      <!--          </div>-->
-      <!--          &lt;!&ndash;          </c:if>&ndash;&gt;-->
-
-      <!--          &lt;!&ndash;          <c:if test="${crewDTO != null}">&ndash;&gt;-->
-      <!--          <div class="mypageD-crewlistbox">-->
-      <!--            <span class="mypageD-crewlistbox__span&#45;&#45;big">${crewDTO.crewName}</span>-->
-      <!--            <a href="${pageContext.request.contextPath}/crewD?crewNo=${crewDTO.crewNo}"-->
-      <!--               class="mypageD-crewlistbox__a&#45;&#45;big"><img-->
-      <!--                src="${pageContext.request.contextPath}/_image/crew/logo/${crewDTO.crewImage}"-->
-      <!--                class="mypageD-crewlistbox__img&#45;&#45;big"></a>-->
-      <!--            <button class="mypageD-crewlistbox__button&#45;&#45;blue"-->
-      <!--                    onclick="location.href='${pageContext.request.contextPath}/crewD?crewNo=${crewDTO.crewNo}'">내 크루-->
-      <!--              보기-->
-      <!--            </button>-->
-      <!--          </div>-->
-      <!--          &lt;!&ndash;          </c:if>&ndash;&gt;-->
-
-      <!--          &lt;!&ndash;          <c:forEach items="${crewMemberDTO}" var="crewMember">&ndash;&gt;-->
-      <!--          <div class="mypageD-crewlistbox">-->
-      <!--            <span class="mypageD-crewlistbox__span&#45;&#45;big">${crewMember.crew.crewName}</span>-->
-      <!--            <a href="${pageContext.request.contextPath}/crewD?crewNo=${crewMember.crew.crewNo}"-->
-      <!--               class="mypageD-crewlistbox__a&#45;&#45;big"><img-->
-      <!--                src="${pageContext.request.contextPath}/_image/crew/logo/${crewMember.crew.crewImage}"-->
-      <!--                class="mypageD-crewlistbox__img&#45;&#45;big"></a>-->
-      <!--            <button class="mypageD-crewlistbox__button&#45;&#45;blue"-->
-      <!--                    onclick="location.href='${pageContext.request.contextPath}/crewD?crewNo=${crewMember.crew.crewNo}'">-->
-      <!--              내 크루 보기-->
-      <!--            </button>-->
-      <!--          </div>-->
-      <!--          &lt;!&ndash;          </c:forEach>&ndash;&gt;-->
-
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--      &lt;!&ndash; // 내 크루 &ndash;&gt;-->
-
-      <!--&lt;!&ndash;       내가 쓴 글 / 컨트롤러에게 값 받아서 글 부분 c:forEach 사용 &ndash;&gt;-->
-      <!--      <div class="mypageD-boardcontainer">-->
-      <!--        <span class="mypageD-boardcontainer__span&#45;&#45;big">내가 쓴 글</span>-->
-
-      <!--        <div class="mypageD-boardbox">-->
-      <!--          <table class="mypageD-boardbox__table&#45;&#45;big">-->
-      <!--            <tr class="mypageD-boardbox__tr&#45;&#45;blue">-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;num">번호</th>-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;title">제목</th>-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;date">날짜</th>-->
-      <!--            </tr>-->
-
-      <!--            &lt;!&ndash;            <c:if test="${reviewList.hasContent() == false}">&ndash;&gt;-->
-      <!--            <tr class="mypageD-boardbox__tr&#45;&#45;white">-->
-      <!--              <td colspan="3" class="mypageD-boardbox__td&#45;&#45;none">작성한 글이 존재하지 않습니다.</td>-->
-      <!--            </tr>-->
-      <!--            &lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--            &lt;!&ndash;            <c:forEach items="${reviewList.content}" var="reviewList" varStatus="status">&ndash;&gt;-->
-      <!--            <tr class="mypageD-boardbox__tr&#45;&#45;white">-->
-      <!--              <td class="mypageD-boardbox__td&#45;&#45;white">${reviewList.reviewNo}</td>-->
-      <!--              <td class="mypageD-boardbox__td&#45;&#45;white"><a-->
-      <!--                  href="${pageContext.request.contextPath}/review/${reviewList.reviewNo}"-->
-      <!--                  class="mypageD-boardbox__a&#45;&#45;white">${reviewList.title}</a></td>-->
-      <!--              <td class="mypageD-boardbox__td&#45;&#45;white">-->
-      <!--                &lt;!&ndash;                  <fmt:parseDate value="${reviewList.WDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate" type="both"/>&ndash;&gt;-->
-      <!--                &lt;!&ndash;                  <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd"/>&ndash;&gt;-->
-      <!--              </td>-->
-      <!--            </tr>-->
-      <!--            &lt;!&ndash;            </c:forEach>&ndash;&gt;-->
-      <!--          </table>-->
-
-      <!--          <ul class="mypageD-boardpage">-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=0"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&laquo;</a>-->
-      <!--            </li>-->
-
-      <!--            &lt;!&ndash;            <c:if test="${startBlockPage ne 1}">&ndash;&gt;-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${startBlockPage-2}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&lt;</a>-->
-      <!--            </li>-->
-      <!--            &lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--            &lt;!&ndash;            <c:forEach begin="${startBlockPage}" end="${endBlockPage}" var="status">&ndash;&gt;-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${status-1}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">${status}</a>-->
-      <!--            </li>-->
-      <!--            &lt;!&ndash;            </c:forEach>&ndash;&gt;-->
-
-      <!--            &lt;!&ndash;            <c:if test="${endBlockPage ne reviewList.totalPages}">&ndash;&gt;-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${endBlockPage}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&gt;</a>-->
-      <!--            </li>-->
-      <!--            &lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${reviewList.totalPages-1}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&raquo;</a>-->
-      <!--            </li>-->
-      <!--          </ul>-->
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--      &lt;!&ndash; / 내가 쓴 글 &ndash;&gt;-->
-
-      <!--      &lt;!&ndash; 내가 쓴 크루 활동글 / 컨트롤러에게 값 받아서 글 부분 c:forEach 사용 &ndash;&gt;-->
-      <!--      <div class="mypageD-crewpostcontainer">-->
-      <!--        <span class="mypageD-boardcontainer__span&#45;&#45;big">내가 쓴 크루 활동글</span>-->
-
-      <!--        <div class="mypageD-boardbox">-->
-      <!--          <table class="mypageD-boardbox__table&#45;&#45;big">-->
-      <!--            <tr class="mypageD-boardbox__tr&#45;&#45;blue">-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;num">번호</th>-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;title">제목</th>-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;date">날짜</th>-->
-      <!--            </tr>-->
-
-      <!--            &lt;!&ndash;            <c:if test="${crewPostList.hasContent() == false}">&ndash;&gt;-->
-      <!--            <tr class="mypageD-boardbox__tr&#45;&#45;white">-->
-      <!--              <td colspan="3" class="mypageD-boardbox__td&#45;&#45;none">작성한 크루 활동글이 존재하지 않습니다.</td>-->
-      <!--            </tr>-->
-      <!--            &lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--            &lt;!&ndash;            <c:forEach items="${crewPostList.content}" var="crewPostList" varStatus="status">&ndash;&gt;-->
-      <!--            <tr class="mypageD-boardbox__tr&#45;&#45;white">-->
-      <!--              <td class="mypageD-boardbox__td&#45;&#45;white">${crewPostList.postNo}</td>-->
-      <!--              <td class="mypageD-boardbox__td&#45;&#45;white"><a-->
-      <!--                  href="${pageContext.request.contextPath}/crew/board/${crewPostList.postNo}"-->
-      <!--                  class="mypageD-boardbox__a&#45;&#45;white">${crewPostList.title}</a></td>-->
-      <!--              <td class="mypageD-boardbox__td&#45;&#45;white">-->
-      <!--                &lt;!&ndash;                  <fmt:parseDate value="${crewPostList.WDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate"&ndash;&gt;-->
-      <!--                &lt;!&ndash;                                 type="both"/>&ndash;&gt;-->
-      <!--                &lt;!&ndash;                  <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd"/>&ndash;&gt;-->
-      <!--              </td>-->
-      <!--            </tr>-->
-      <!--            &lt;!&ndash;            </c:forEach>&ndash;&gt;-->
-      <!--          </table>-->
-
-      <!--          <ul class="mypageD-boardpage">-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=0"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&laquo;</a>-->
-      <!--            </li>-->
-
-      <!--            &lt;!&ndash;            <c:if test="${crewPost_startBlockPage ne 1}">&ndash;&gt;-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${crewPost_startBlockPage-2}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&lt;</a>-->
-      <!--            </li>-->
-      <!--            &lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--            &lt;!&ndash;            <c:forEach begin="${crewPost_startBlockPage}" end="${crewPost_endBlockPage}" var="status">&ndash;&gt;-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${status-1}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">${status}</a>-->
-      <!--            </li>-->
-      <!--            &lt;!&ndash;            </c:forEach>&ndash;&gt;-->
-
-      <!--            &lt;!&ndash;            <c:if test="${crewPost_endBlockPage ne crewPostList.totalPages}">&ndash;&gt;-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${crewPost_endBlockPage}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&gt;</a>-->
-      <!--            </li>-->
-      <!--            &lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${crewPostList.totalPages-1}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&raquo;</a>-->
-      <!--            </li>-->
-      <!--          </ul>-->
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--      &lt;!&ndash; / 내가 쓴 크루 활동글 &ndash;&gt;-->
-
-
-      <!--      &lt;!&ndash; 내가 쓴 댓글 / 컨트롤러에게 값 받아서 댓글 부분 c:forEach 사용 &ndash;&gt;-->
-      <!--      <div class="mypageD-commentcontainer">-->
-      <!--        <span class="mypageD-boardcontainer__span&#45;&#45;big">내가 쓴 댓글</span>-->
-
-      <!--        <div class="mypageD-boardbox">-->
-      <!--          <table class="mypageD-boardbox__table&#45;&#45;big">-->
-      <!--            <tr class="mypageD-boardbox__tr&#45;&#45;blue">-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;num">번호</th>-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;title">제목</th>-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;date">날짜</th>-->
-      <!--            </tr>-->
-
-      <!--&lt;!&ndash;            <c:if test="${commentList.hasContent() == false}">&ndash;&gt;-->
-      <!--              <tr class="mypageD-boardbox__tr&#45;&#45;white">-->
-      <!--                <td colspan="3" class="mypageD-boardbox__td&#45;&#45;none">작성한 댓글이 존재하지 않습니다.</td>-->
-      <!--              </tr>-->
-      <!--&lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--&lt;!&ndash;            <c:forEach items="${commentList.content}" var="commentList" varStatus="status">&ndash;&gt;-->
-      <!--              <tr class="mypageD-boardbox__tr&#45;&#45;white">-->
-      <!--                <td class="mypageD-boardbox__td&#45;&#45;white">${commentList.commentNo}</td>-->
-      <!--                <td class="mypageD-boardbox__td&#45;&#45;white"><a-->
-      <!--                    href="${pageContext.request.contextPath}/review/${commentList.review.reviewNo}"-->
-      <!--                    class="mypageD-boardbox__a&#45;&#45;white">${commentList.content}</a></td>-->
-      <!--                <td class="mypageD-boardbox__td&#45;&#45;white">-->
-      <!--&lt;!&ndash;                  <fmt:parseDate value="${commentList.WDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate"&ndash;&gt;-->
-      <!--&lt;!&ndash;                                 type="both"/>&ndash;&gt;-->
-      <!--&lt;!&ndash;                  <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd"/>&ndash;&gt;-->
-      <!--                </td>-->
-      <!--              </tr>-->
-      <!--&lt;!&ndash;            </c:forEach>&ndash;&gt;-->
-
-      <!--          </table>-->
-
-      <!--          <ul class="mypageD-boardpage">-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=0"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&laquo;</a>-->
-      <!--            </li>-->
-
-      <!--&lt;!&ndash;            <c:if test="${c_startBlockPage ne 1}">&ndash;&gt;-->
-      <!--              <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--                <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${c_startBlockPage-2}"-->
-      <!--                   class="mypageD-boardpage__a&#45;&#45;num">&lt;</a>-->
-      <!--              </li>-->
-      <!--&lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--&lt;!&ndash;            <c:forEach begin="${c_startBlockPage}" end="${c_endBlockPage}" var="status">&ndash;&gt;-->
-      <!--              <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--                <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${status-1}"-->
-      <!--                   class="mypageD-boardpage__a&#45;&#45;num">${status}</a>-->
-      <!--              </li>-->
-      <!--&lt;!&ndash;            </c:forEach>&ndash;&gt;-->
-
-      <!--&lt;!&ndash;            <c:if test="${c_endBlockPage ne commentList.totalPages}">&ndash;&gt;-->
-      <!--              <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--                <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${c_endBlockPage}"-->
-      <!--                   class="mypageD-boardpage__a&#45;&#45;num">&gt;</a>-->
-      <!--              </li>-->
-      <!--&lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${commentList.totalPages-1}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&raquo;</a>-->
-      <!--            </li>-->
-      <!--          </ul>-->
-
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--      &lt;!&ndash; // 내가 쓴 댓글 &ndash;&gt;-->
-
-
-      <!--      &lt;!&ndash; 내가 쓴 내가 쓴 크루활동 댓글  &ndash;&gt;-->
-      <!--      <div class="mypageD-crewcommentcontainer">-->
-      <!--        <span class="mypageD-boardcontainer__span&#45;&#45;big">내가 쓴 크루 활동 댓글</span>-->
-
-      <!--        <div class="mypageD-boardbox">-->
-      <!--          <table class="mypageD-boardbox__table&#45;&#45;big">-->
-      <!--            <tr class="mypageD-boardbox__tr&#45;&#45;blue">-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;num">번호</th>-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;title">제목</th>-->
-      <!--              <th class="mypageD-boardbox__td&#45;&#45;date">날짜</th>-->
-      <!--            </tr>-->
-
-      <!--&lt;!&ndash;            <c:if test="${crewCommentList.hasContent() == false}">&ndash;&gt;-->
-      <!--              <tr class="mypageD-boardbox__tr&#45;&#45;white">-->
-      <!--                <td colspan="3" class="mypageD-boardbox__td&#45;&#45;none">작성한 크루 활동 댓글이 존재하지 않습니다.</td>-->
-      <!--              </tr>-->
-      <!--&lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--&lt;!&ndash;            <c:forEach items="${crewCommentList.content}" var="crewCommentList" varStatus="status">&ndash;&gt;-->
-      <!--              <tr class="mypageD-boardbox__tr&#45;&#45;white">-->
-      <!--                <td class="mypageD-boardbox__td&#45;&#45;white">${crewCommentList.commentNo}</td>-->
-      <!--                <td class="mypageD-boardbox__td&#45;&#45;white"><a-->
-      <!--                    href="${pageContext.request.contextPath}/crew/board/${commentList.crewPost.postNo}"-->
-      <!--                    class="mypageD-boardbox__a&#45;&#45;white">${crewCommentList.content}</a></td>-->
-      <!--                <td class="mypageD-boardbox__td&#45;&#45;white">-->
-      <!--&lt;!&ndash;                  <fmt:parseDate value="${crewCommentList.WDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate"&ndash;&gt;-->
-      <!--&lt;!&ndash;                                 type="both"/>&ndash;&gt;-->
-      <!--&lt;!&ndash;                  <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd"/>&ndash;&gt;-->
-      <!--                </td>-->
-      <!--              </tr>-->
-      <!--&lt;!&ndash;            </c:forEach>&ndash;&gt;-->
-
-      <!--          </table>-->
-
-      <!--          <ul class="mypageD-boardpage">-->
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=0"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&laquo;</a>-->
-      <!--            </li>-->
-
-      <!--&lt;!&ndash;            <c:if test="${c_startBlockPage ne 1}">&ndash;&gt;-->
-      <!--              <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--                <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${crewComment_startBlockPage-2}"-->
-      <!--                   class="mypageD-boardpage__a&#45;&#45;num">&lt;</a>-->
-      <!--              </li>-->
-      <!--&lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--&lt;!&ndash;            <c:forEach begin="${crewComment_startBlockPage}" end="${crewComment_endBlockPage}" var="status">&ndash;&gt;-->
-      <!--              <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--                <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${status-1}"-->
-      <!--                   class="mypageD-boardpage__a&#45;&#45;num">${status}</a>-->
-      <!--              </li>-->
-      <!--&lt;!&ndash;            </c:forEach>&ndash;&gt;-->
-
-      <!--&lt;!&ndash;            <c:if test="${crewComment_endBlockPage ne crewCommentList.totalPages}">&ndash;&gt;-->
-      <!--              <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--                <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${crewComment_endBlockPage}"-->
-      <!--                   class="mypageD-boardpage__a&#45;&#45;num">&gt;</a>-->
-      <!--              </li>-->
-      <!--&lt;!&ndash;            </c:if>&ndash;&gt;-->
-
-      <!--            <li class="mypageD-boardpage__li&#45;&#45;link">-->
-      <!--              <a href="${pageContext.request.contextPath}/mypageD?id=${member.id}&page=${crewCommentList.totalPages-1}"-->
-      <!--                 class="mypageD-boardpage__a&#45;&#45;num">&raquo;</a>-->
-      <!--            </li>-->
-      <!--          </ul>-->
-
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--      &lt;!&ndash; // 내가 쓴 크루활동 댓글 &ndash;&gt;-->
-
     </div>
   </div>
   <!-- // 마이페이지 상세 -->
@@ -488,28 +166,36 @@
 
 <script>
 import DoldolseoMemberMypageNav from "./DoldolseoMemberMypageNav.vue";
-import {inject, ref} from "vue";
+import {computed, inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
-import {router} from "../../router/router";
+import {useRouter} from "vue-router";
 import login from "../../module/login";
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoMemberMypage",
-  components: {DoldolseoMemberMypageNav},
+  components: {DoldolseoMemberMypageNav, Loading},
+
   setup() {
+    const isLoading = ref(false);
     const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
+    const router = useRouter()
+
     const id = localStorage.getItem('id')
     const password = ref(null)
     const passwordConfirm = ref(null)
     const name = localStorage.getItem('name')
     const nickname = localStorage.getItem('nickname')
-    const memberImg = localStorage.getItem('memberImg')
     const birth = localStorage.getItem('birth')
     const gender = ref(localStorage.getItem('gender'))
     const email = ref(localStorage.getItem('email'))
     const phone = ref(localStorage.getItem('phone'))
-    const isCrewLeader = localStorage.getItem('isCrewLeader')
+    const isCrewLeader = computed(() => {
+      return localStorage.getItem('role') === 'CREWLEADER';
+    })
     let birth_yy = ''
     let birth_mm = ''
     let birth_dd = ''
@@ -519,14 +205,13 @@ export default {
       birth_dd = birth.split('-')[2].substring(0, 2)
     }
 
-    const memberImgUrl = ref(URL_MEMBER_IMAGES + memberImg)
+    const memberImgUrl = ref(URL_MEMBER_IMAGES + id)
     let memberImgFile = null
 
     const setMemberImg = (e) => {
       memberImgFile = e.target.files[0]
       memberImgUrl.value = URL.createObjectURL(memberImgFile)
     }
-
 
     const validatePwd = () => {
       const pwd = password.value
@@ -577,13 +262,14 @@ export default {
       formData.append('email', email.value)
       formData.append('phone', phone.value)
 
-      axios.put(URL_MEMBER+'/'+id , formData, {
+      isLoading.value = true
+      axios.put(URL_MEMBER + '/' + id, formData, {
         headers: {
           Authorization: 'Bearer ' + cookies.get('token'),
           'Content-Type': 'multipart/form-data',
         },
       }).then((resp) => {
-        console.log(URL_MEMBER+'/'+id + " 요청 성공 status : " + resp.status)
+        console.log(URL_MEMBER + '/' + id + " 요청 성공 status : " + resp.status)
         console.log(resp.data)
         localStorage.setItem('gender', resp.data.gender)
         localStorage.setItem('email', resp.data.email)
@@ -592,24 +278,31 @@ export default {
         template.$forceUpdate()
         location.reload();
         alert('회원정보 수정이 완료 되었습니다.')
-      }).catch(() => {
-        console.log(URL_MEMBER+'/'+id  + " 요청 실패")
+
+        isLoading.value = false
+      }).catch((err) => {
+        console.log(URL_MEMBER + '/' + id + " 요청 실패")
+        onError.httpErrorException(err)
+        isLoading.value = false
       })
     }
 
     const deleteData = () => {
-      if(isCrewLeader){
+
+      if (isCrewLeader) {
         alert("크루장인 경우, 탈퇴가 불가합니다. 크루장을 위임해주시길 바랍니다.");
-      }else{
-        if(!confirm("탈퇴하시면 복구할 수 없습니다. 정말로 탈퇴하시겠습니까?")){
+      } else {
+        if (!confirm("탈퇴하시면 복구할 수 없습니다. 정말로 탈퇴하시겠습니까?")) {
           return false;
-        }else{
-          axios.delete(URL_MEMBER+'/'+id , {
+        } else {
+          isLoading.value = true
+
+          axios.delete(URL_MEMBER + '/' + id, {
             headers: {
               Authorization: 'Bearer ' + cookies.get('token'),
             },
           }).then((resp) => {
-            console.log(URL_MEMBER+'/'+id  + " 요청 성공 status : " + resp.status)
+            console.log(URL_MEMBER + '/' + id + " 요청 성공 status : " + resp.status)
             localStorage.setItem('loginState', 'resign')
             localStorage.removeItem('id')
             localStorage.removeItem('nickname')
@@ -619,20 +312,26 @@ export default {
             localStorage.removeItem('email')
             localStorage.removeItem('phone')
             localStorage.removeItem('isCrewLeader')
-            router.replace('/main').then(() => {
-              alert("탈퇴처리가 완료되었습니다. </br> 이용해주셔서 감사합니다.")
-            })
             cookies.remove('token')
-            location.reload()
             login.refreshKey++
-          }).catch(() => {
-            console.log(URL_MEMBER+'/'+id  + " 요청 실패")
+
+            router.replace('/main').then(() => {
+              isLoading.value = false
+              alert("탈퇴처리가 완료되었습니다. 이용해주셔서 감사합니다.")
+              location.reload()
+            })
+          }).catch((err) => {
+            console.log(URL_MEMBER + '/' + id + " 요청 실패")
+            onError.httpErrorException(err)
+            isLoading.value = false
           })
         }
       }
     }
 
     return {
+      isLoading,
+
       id,
       password,
       passwordConfirm,

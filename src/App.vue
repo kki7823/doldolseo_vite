@@ -5,18 +5,31 @@
 </template>
 
 <script>
-import DoldolseoHeader from "./components/common/DoldolseoHeader.vue";
-import DoldolseoMain from "./components/main/DoldolseoMain.vue";
-import DoldolseoFooter from "./components/common/DoldolseoFooter.vue";
+import DoldolseoHeader from "/@components/common/DoldolseoHeader.vue";
+import DoldolseoMain from "/@components/main/DoldolseoMain.vue";
+import DoldolseoFooter from "/@components/common/DoldolseoFooter.vue";
 import {provide} from "vue";
+import {useCookies} from "vue3-cookies";
 
 export default {
   name: 'App',
   components: {DoldolseoFooter, DoldolseoMain, DoldolseoHeader},
   setup() {
-    provide('contextPath', 'src/')
-    provide('doldolseoArea', '/doldolseo/area')
-    provide('doldolseoMember', '/doldolseo/member')
+    // provide('contextPath', 'src/')
+    provide('contextPath', '/@/')
+    provide('doldolseoArea', 'http://34.64.123.102:9999/doldolseo/area')
+    provide('doldolseoMember', 'http://34.64.123.102:9999/doldolseo/member')
+    provide('doldolseoReview', 'http://34.64.123.102:9999/doldolseo/review')
+    provide('doldolseoCrew', 'http://34.64.123.102:9999/doldolseo/crew')
+    provide('doldolseoCrewPost', 'http://34.64.123.102:9999/doldolseo/crew/post')
+
+
+    //img 태그에 alias경로 binding
+    const getImgUrl = (name) => {
+      return new URL(`/src/_image/${name}`, import.meta.url).href
+    }
+
+    provide('getImgUrl', getImgUrl)
 
     const areaMenu = {
       1: '강남',
@@ -57,6 +70,17 @@ export default {
       },
     ]
     provide('contentMenu', contentMenu)
+
+    const crew_categoryMenu = {
+      1: '맛집',
+      2: '쇼핑',
+      3: '문화',
+      4: '자유',
+    }
+    provide('crew_categoryMenu', crew_categoryMenu)
+
+    const {cookies} = useCookies()
+    provide('cookies', cookies)
   }
 }
 </script>
@@ -85,4 +109,22 @@ table {
   /*border: 1pt solid;*/
   border-collapse: collapse;
 }
+
+/* tiptap */
+.ProseMirror {
+  height: 100%;
+  width: 100%;
+  outline: none;
+  content: attr(data-placeholder);
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+  width: 500px;
+}
+
 </style>

@@ -1,8 +1,12 @@
 <template>
   <div class="memberJ-container">
+    <loading :active="isLoading"
+             :is-full-page="false"
+             :opacity="0.7">
+    </loading>
     <div class="memberJ--logobox">
       <img id="logoImg"
-           :src="imgPath+'/logo.png'"
+           :src="getImgUrl('member/logo.png')"
            alt="logo">
     </div>
 
@@ -14,8 +18,8 @@
              maxlength="20"
              ref="focusId"
              v-model="id"
-             @focusin="validateId(id)"
              @input="validateId(id)"
+             @focusout="checkDuplicateId(id)"
       />
       <p class="msg" :style="{color: idMsgColor}">
         {{ idValidateMsg }}
@@ -69,8 +73,9 @@
              v-model="nickname"
              ref="focusNickname"
              maxlength="20"
-             @focusin="validateNickname(nickname)"
+             @focusin="checkDuplicateNickname(nickname)"
              @input="validateNickname(nickname)"
+             @focusout="checkDuplicateNickname(nickname)"
       />
       <p class="msg">
         {{ nicknameValidateMsg }}
@@ -123,7 +128,7 @@
       <img
           v-if="memberImgUrl == null"
           class="memberJ-imgcontainer__img-small"
-          :src="imgPath+'/sample.png'"
+          :src="getImgUrl('/member/default_member.png')"
           alt="default_profile"
       />
       <img
@@ -172,16 +177,21 @@
       </p>
     </div>
 
-    <!-- 이용약관 체크 여부 -->
     <div class="memberJ-rulecontainer">
       <button type="button"
-              onclick="window.open('${pageContext.request.contextPath}/memberP')">
+              @click="popupVal_Policy = !popupVal_Policy">
         이용방침
       </button>
+      <doldolseo-member-policy v-if="popupVal_Policy"
+                               :toggle-popup="togglePopup_Policy"
+      />
       <button type="button"
-              onclick="window.open('${pageContext.request.contextPath}/memberR')">
+              @click="popupVal_Rule = !popupVal_Rule">
         가입약관
       </button>
+      <doldolseo-member-rule v-if="popupVal_Rule"
+                             :toggle-popup="togglePopup_Rule"
+      />
       <br/>
       <label class="memberJ-rulecontainer__label--move">
         <input type="checkbox"
@@ -190,13 +200,12 @@
                ref="focusAgreeTerms"
                @change="agreeTermMsg = ''"
         />
-        이용약관 체크 여부
+        위 내용에 동의합니다.
       </label>
       <p class="msg">
         {{ agreeTermMsg }}
       </p>
     </div>
-    <!-- // 이용약관 체크 여부 -->
 
     <div class="memberJ-buttoncontainer">
       <input type="submit"
@@ -211,11 +220,25 @@
 <script>
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import {useRouter} from "vue-router";
+import DoldolseoMemberPolicy from "./DoldolseoMemberPolicy.vue";
+import DoldolseoMemberRule from "./DoldolseoMemberRule.vue";
+import Loading from "vue3-loading-overlay";
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoMemberJoin",
+  components: {DoldolseoMemberRule, DoldolseoMemberPolicy, Loading},
   setup() {
-    const imgPath = inject('contextPath') + '_image/member'
+    const getImgUrl = inject('getImgUrl')
+    const isLoading = ref(false);
+
+    const URL_MEMBER = inject('doldolseoMember')
+    const URL_MEMBER_CHECK_ID = URL_MEMBER + '/check'
+    const fullPage = ref(true);
+
+
     let checkValues = {
       id: false,
       password: false,
@@ -231,6 +254,7 @@ export default {
 
     const validateId = (id) => {
       idMsgColor.value = 'red'
+      checkValues.id = false
       const pattern = /^([a-z0-9]){4,20}$/
       if (id.length === 0) {
         idValidateMsg.value = "필수정보 입니다.";
@@ -243,6 +267,28 @@ export default {
       }
     }
 
+    const checkDuplicateId = (id) => {
+      axios({
+        method: 'post',
+        url: URL_MEMBER_CHECK_ID,
+        params: {
+          id: id,
+        }
+      }).then((resp) => {
+        console.log(URL_MEMBER_CHECK_ID + " 요청 성공 status : " + resp.status)
+        const isExist = resp.data
+
+        if (isExist) {
+          idValidateMsg.value = "이미 사용중인 ID 입니다"
+          idMsgColor.value = 'red'
+          checkValues.id = false
+        }
+      }).catch((err) => {
+        console.log(URL_MEMBER_CHECK_ID + " 요청 실패 status : " + err.response)
+        onError.httpErrorException(err)
+      })
+    }
+
     const lockImg = {
       1: '/lock/lock_basic.png',
       2: '/lock/lock_blue.png',
@@ -250,7 +296,7 @@ export default {
     }
     const password = ref('')
     const pwdValidateMsg = ref('')
-    const pwdLockImgUrl = ref('url(' + imgPath + lockImg[1] + ')')
+    const pwdLockImgUrl = ref('url(' + getImgUrl('member/') + lockImg[1] + ')')
 
     const validatePwd = (pwd) => {
       const pattern1 = /[0-9]/
@@ -259,25 +305,25 @@ export default {
       if (pattern1.test(pwd) && pattern2.test(pwd) && pattern3.test(pwd) && pwd.length > 7 && pwd.length <= 20) {
         checkValues.password = true
         pwdValidateMsg.value = ''
-        pwdLockImgUrl.value = 'url(' + imgPath + lockImg[2] + ')'
+        pwdLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[2] + ')'
       } else {
         pwdValidateMsg.value = "8~20자 영문, 숫자, 특수문자를 사용하세요."
-        pwdLockImgUrl.value = 'url(' + imgPath + lockImg[3] + ')'
+        pwdLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[3] + ')'
       }
     }
 
     const passwordConfirm = ref('')
     const pwdConfirmValidateMsg = ref('')
-    const pwdConfirmLockImgUrl = ref('url(' + imgPath + lockImg[1] + ')')
+    const pwdConfirmLockImgUrl = ref('url(' + getImgUrl('member/') + lockImg[1] + ')')
 
     const confirmPwd = (pwd, pwdConfirm) => {
       if (pwd === pwdConfirm) {
         checkValues.passwordConfirm = true
         pwdConfirmValidateMsg.value = ''
-        pwdConfirmLockImgUrl.value = 'url(' + imgPath + lockImg[2] + ')'
+        pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[2] + ')'
       } else {
         pwdConfirmValidateMsg.value = "비밀번호가 일치하지 않습니다."
-        pwdConfirmLockImgUrl.value = 'url(' + imgPath + lockImg[3] + ')'
+        pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[3] + ')'
       }
     }
 
@@ -305,6 +351,27 @@ export default {
       }
     }
 
+    const checkDuplicateNickname = (nickname) => {
+      axios({
+        method: 'post',
+        url: URL_MEMBER_CHECK_ID,
+        params: {
+          nickName: nickname,
+        }
+      }).then((resp) => {
+        console.log(URL_MEMBER_CHECK_ID + " 요청 성공 status : " + resp.status)
+        const isExist = resp.data
+
+        if (isExist) {
+          nicknameValidateMsg.value = "이미 사용중인 닉네임 입니다"
+          checkValues.nickname = false
+        }
+      }).catch((err) => {
+        console.log(URL_MEMBER_CHECK_ID + " 요청 실패 status : " + err.response)
+        onError.httpErrorException(err)
+      })
+    }
+
     const year = ref('')
     const month = ref('')
     const day = ref('')
@@ -330,7 +397,32 @@ export default {
 
     const setMemberImg = (e) => {
       memberImgFile = e.target.files[0]
+
+      if (!checkExt(memberImgFile)) return;
+      if (!checkFileSize(memberImgFile)) return
+
       memberImgUrl.value = URL.createObjectURL(memberImgFile)
+    }
+
+    const checkFileSize = (file) => {
+      if (file.size > 500000) {
+        alert("이미지 사이즈는 500Kb 이내로 첨부 가능합니다. ")
+        return false
+      }
+      return true
+    }
+
+    const checkExt = (file) => {
+      const fileName = file.name
+      const extList = ['jpg', 'jpeg', 'png', 'gif']
+      const extIdx = fileName.lastIndexOf(".")
+      const ext = fileName.substring(extIdx + 1, fileName.length).toLowerCase()
+
+      if (extList.indexOf(ext) === -1) {
+        alert("이미지 파일만 첨부 가능합니다.")
+        return false
+      }
+      return true
     }
 
     const email = ref('')
@@ -359,9 +451,11 @@ export default {
     const agreeTerm = ref(false)
     const agreeTermMsg = ref('')
 
-    const URL_MEMBER = inject('doldolseoMember')
+    const router = useRouter()
 
     const sendJoinData = (template) => {
+      isLoading.value = true;
+
       if (!validParams(template)) return
 
       const formData = new FormData()
@@ -375,15 +469,21 @@ export default {
       formData.append('email', email.value)
       formData.append('phone', phone.value)
 
+
       axios.post(URL_MEMBER, formData, {
         header: {
-          'Content-Type' : 'multipart/form-data'
+          'Content-Type': 'multipart/form-data'
         }
       }).then((resp) => {
         console.log(URL_MEMBER + " 요청 성공 status : " + resp.status)
-        console.log(resp.data)
-      }).catch(() => {
+        alert("회원가입이 완료 되었습니다.")
+        isLoading.value = false
+        router.replace('/member/login').then(() => {
+        })
+      }).catch((err) => {
         console.log(URL_MEMBER + " 요청 실패")
+        onError.httpErrorException(err)
+        isLoading.value = false
       })
     }
 
@@ -418,12 +518,26 @@ export default {
       return true
     }
 
+    const popupVal_Policy = ref(false)
+    const togglePopup_Policy = () => {
+      popupVal_Policy.value = !popupVal_Policy.value
+    }
+
+    const popupVal_Rule = ref(false)
+    const togglePopup_Rule = () => {
+      popupVal_Rule.value = !popupVal_Rule.value
+    }
+
     return {
-      imgPath,
+      getImgUrl,
+      isLoading,
+      fullPage,
+
       id,
       idMsgColor,
       idValidateMsg,
       validateId,
+      checkDuplicateId,
       password,
       pwdValidateMsg,
       pwdLockImgUrl,
@@ -438,6 +552,7 @@ export default {
       nickname,
       nicknameValidateMsg,
       validateNickname,
+      checkDuplicateNickname,
       year,
       month,
       day,
@@ -456,6 +571,10 @@ export default {
       agreeTermMsg,
       URL_MEMBER,
       sendJoinData,
+      popupVal_Policy,
+      togglePopup_Policy,
+      popupVal_Rule,
+      togglePopup_Rule,
     }
   }
 }
@@ -463,7 +582,7 @@ export default {
 
 <style scoped>
 .memberJ-container {
-  width: 1300px;
+  min-width: 1300px;
   margin: auto;
   text-align: center;
   display: flex;
@@ -472,6 +591,7 @@ export default {
   background-color: #f2f2f2;
   padding-top: 50px;
   padding-bottom: 40px;
+  position: relative;
 }
 
 .memberJ-container h4 {

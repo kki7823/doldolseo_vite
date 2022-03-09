@@ -1,7 +1,7 @@
 <template>
   <div class="memberL-container">
     <img class="memberL-container__image--small"
-         :src="imgPath+'/logo.png'"
+         :src="getImgUrl('member/logo.png')"
          alt="logo"/>
     <div>
       <input class="memberL-container__input--big"
@@ -41,33 +41,53 @@
              value="로그인"
              @click="sendLoginData(this)"
       />
-      <input type="button" value="회원가입" onclick="location.href='${pageContext.request.contextPath}/memberJ'">
-      <input type="button" value="테스트버튼" @click="testMethod()">{{ loginSuccess }}
+      <router-link :to="{name: 'memberJoin'}">
+        <input type="button"
+               value="회원가입"
+        />
+      </router-link>
     </div>
+  </div>
+  <div class="vld-parent">
+    <loading :active="isLoading"
+             :is-full-page="fullPage">
+    </loading>
   </div>
 </template>
 
 <script>
+import Loading from 'vue3-loading-overlay';
+import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+
 import {inject, ref} from "vue";
-import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies"
 import login from "../../module/login";
 
 export default {
   name: "DoldolseoMemberLogin",
+  components: {Loading},
   setup() {
+    const isLoading = ref(false);
+    const getImgUrl = inject('getImgUrl')
+    const fullPage = ref(true);
+
     const {cookies} = useCookies()
-    const imgPath = inject('contextPath') + '_image/member'
     const URL_MEMBER_LOGIN = inject('doldolseoMember') + '/login'
 
     const id = ref('')
     const password = ref('')
     const loginMsg = ref('')
 
-    const sendLoginData = (template) => {
-      if (!validateParams(template)) return
-      login.doLogin(id.value, password.value, URL_MEMBER_LOGIN);
+    const setLoginMsg = () => {
       loginMsg.value = login.loginMsg.value
+    }
+
+    const sendLoginData = async (template) => {
+      if (!validateParams(template)) return
+      isLoading.value = true;
+      await login.doLogin(id.value, password.value, URL_MEMBER_LOGIN);
+      isLoading.value = false
+      await setLoginMsg()
     }
 
     const validateParams = (template) => {
@@ -84,34 +104,18 @@ export default {
       return true
     }
 
-    const testMethod = () => {
-      axios({
-        method: 'get',
-        url: '/doldolseo/testtest',
-        params: {
-          id: id.value,
-        },
-        headers: {
-          Authorization: 'Bearer ' + cookies.get('token')
-        },
-      }).then((resp) => {
-        console.log("테스트 메소드 요청 성공 status : " + resp.status)
-        console.log(resp.data)
-      }).catch(() => {
-        console.log("테스트 메소드 요청 실패")
-      })
-    }
-
     let loginSuccess = login.loginSuccess
 
     return {
-      imgPath,
+      getImgUrl,
       id,
       password,
       loginMsg,
       sendLoginData,
-      testMethod,
       loginSuccess,
+
+      isLoading,
+      fullPage,
     }
   }
 }

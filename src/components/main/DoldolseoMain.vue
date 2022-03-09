@@ -2,7 +2,7 @@
   <div class="main_container">
     <!--배경사진-->
     <div class="main_img--seoul">
-      <img :src="imgPath + '/seoul/seoul2.png'" alt="seoul">
+      <img :src="getImgUrl('main/seoul/seoul2.png') " alt="seoul">
     </div>
     <hr/>
 
@@ -15,9 +15,9 @@
             d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z">
         </path>
       </svg>
-      <img :src="imgPath+'/testCourse/'+imgSelector[Math.abs(counter) % 3]" alt="img1"/>
-      <img :src="imgPath+'/testCourse/'+imgSelector[(Math.abs(counter)+1) % 3]" alt="img2"/>
-      <img :src="imgPath+'/testCourse/'+imgSelector[(Math.abs(counter)+2) % 3]" alt="img3"/>
+      <img :src="getImgUrl('main/testCourse/'+imgSelector[Math.abs(counter) % 3])" alt="img1"/>
+      <img :src="getImgUrl('main/testCourse/'+imgSelector[(Math.abs(counter)+1) % 3])" alt="img2"/>
+      <img :src="getImgUrl('main/testCourse/'+imgSelector[(Math.abs(counter)+2) % 3])" alt="img3"/>
       <svg @click="counter++" xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="#495c75"
            style="vertical-align: top; padding-top: 80px" class="bi bi-caret-right" viewBox="0 0 16 16">
         <path
@@ -32,7 +32,7 @@
       <p>SEOUL AREA</p>
     </div>
     <div class="main_map">
-      <img class="map" :src="imgPath+'/seoul/map-fi-c-1.png'" usemap="#image-map" alt="map"/>
+      <img class="map" :src="getImgUrl('main/seoul/map-fi-c-1.png')" usemap="#image-map" alt="map"/>
       <map name="image-map">
         <area target="" alt="광화문" title="광화문" href="${pageContext.request.contextPath}/areaL?sigungu=3"
               coords="337,150,58" shape="circle"/>
@@ -79,7 +79,8 @@
             </svg>
 
             <div class="main_crew--bc--photo">
-              <img :src="imgPath+'/bestCrew/'+Object.keys(imgCrew)[Math.abs(crewCounter) % 5]" alt="crew_logo">
+              <img :src="getImgUrl('main/bestCrew/'+Object.keys(imgCrew)[Math.abs(crewCounter) % 5])"
+                   alt="crew_logo">
             </div>
 
             <svg xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +151,7 @@ import {inject, ref} from "vue";
 export default {
   name: "DoldolseoMain",
   setup() {
-    const imgPath = inject('contextPath') + '_image/main'
+    const imgPath = inject('contextPath') + '/_image/main'
     const counter = ref(0)
     const imgSelector = ['course1.png', 'course2.png', 'course3.png']
     const crewCounter = ref(0)
@@ -162,12 +163,14 @@ export default {
       '5.png': '돌고래와 춤을5',
     }
 
+    const getImgUrl = inject('getImgUrl')
     return {
       imgPath,
       counter,
       imgSelector,
       crewCounter,
       imgCrew,
+      getImgUrl,
     }
   }
 }

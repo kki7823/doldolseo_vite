@@ -1,21 +1,49 @@
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
+import path from 'path'
 
-// https://vitejs.dev/config/
+// const URL_DLDOLSEO_GW = "http://127.0.0.1:62110"
+const URL_DOLDOLSEO_GW = "http://192.168.49.2:30088"
+
 export default defineConfig({
     plugins: [vue()],
-    server: {
-        proxy: {
-            '/doldolseo/area': {
-                target: 'http://localhost:53990',
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
-            '/doldolseo/member': {
-                target: 'http://localhost:8080',
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
+    resolve: {
+        alias: {
+            vue: 'vue/dist/vue.esm-bundler.js',
+            '/@': path.resolve(__dirname, './src'),
+            '/@components': path.resolve(__dirname, './src/components'),
+            // '/@router': path.resolve(__dirname, './src/router'),
         },
-    }
+        extensions: [".js"],
+    },
+
+    // server: {
+    //     proxy: {
+    //         '/doldolseo/area': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //         '/doldolseo/member': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //         '/doldolseo/review': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //         '/doldolseo/crew/post': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //         '/doldolseo/crew': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //     },
+    // },
 })

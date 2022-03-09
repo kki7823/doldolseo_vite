@@ -2,12 +2,12 @@
   <doldolseo-header-widget/>
   <div class="container">
     <div class="imgbox_logo1">
-      <img :src="img_logo1" alt="logo">
+      <img :src="getImgUrl('header/logo/header_logo1.png')" alt="logo">
     </div>
 
     <div class="imgbox_logo2">
       <router-link to="/">
-        <img :src="img_logo2" alt="logo">
+        <img :src="getImgUrl('header/logo/header_logo2.png')" alt="logo">
       </router-link>
     </div>
 
@@ -23,7 +23,7 @@
           </a>
         </li>
         <li>
-          <router-link to="/review">
+          <router-link :to="{name: 'reviewList', params:{areaNo: ''}}">
             <span @mouseover="textColorReview = '#F4B7B4'"
                   @mouseleave="textColorReview = 'white'"
                   :style="{color: textColorReview}">
@@ -32,13 +32,13 @@
           </router-link>
         </li>
         <li>
-          <a href="${pageContext.request.contextPath}/crewL">
+          <router-link :to="{name: 'crewList'}">
             <span @mouseover="textColorCrew = '#FF8000'"
                   @mouseleave="textColorCrew = 'white'"
                   :style="{color: textColorCrew}">
               CREW
             </span>
-          </a>
+          </router-link>
         </li>
       </ul>
     </div>
@@ -51,7 +51,9 @@
          @mouseleave="isMouseover = false">
       <ul>
         <li v-for="(areaName, sigungu) in areaMenu">
-          <router-link :to="{name: 'areaList', query:{sigungu: sigungu}}">{{ areaName }}</router-link>
+          <router-link :to="{name: 'areaList', query:{sigungu: sigungu}}">
+            {{ areaName }}
+          </router-link>
         </li>
       </ul>
     </div>
@@ -69,10 +71,8 @@ export default {
   components: {DoldolseoHeaderWidget, DoldolseoHeaderProfile},
 
   setup() {
-    const imgPath = inject('contextPath') + '_image/header/logo/'
+    const getImgUrl = inject('getImgUrl')
     const areaMenu = inject('areaMenu')
-    const img_logo1 = imgPath + 'header_logo1.png'
-    const img_logo2 = imgPath + 'header_logo2.png'
 
     const textColorArea = ref('white')
     const textColorReview = ref('white')
@@ -82,9 +82,8 @@ export default {
     const profileRefreshKey = login.refreshKey
 
     return {
+      getImgUrl,
       areaMenu,
-      img_logo1,
-      img_logo2,
       textColorArea,
       textColorReview,
       textColorCrew,

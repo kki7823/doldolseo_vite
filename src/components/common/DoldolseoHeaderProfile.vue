@@ -1,10 +1,10 @@
 <template>
   <div class="miniprofile">
     <!-- After Login -->
-    <div v-if="cookies.get('token') != null && loginState === 'login'"
+    <div v-if="areYouLogedIn"
          class="miniprofileBox">
       <div class="miniprofile__photo">
-        <img :src="URL_MEMBER_IMAGES+memberImg"
+        <img :src="URL_MEMBER_IMAGES"
              alt="profile2">
       </div>
       <div class="miniprofile__info">
@@ -17,7 +17,7 @@
 
       <div class="miniprofile__button">
         <button type="button"
-                @click="logout(this)">
+                @click="logout(this, URL_MEMBER_LOGOUT)">
           LOGOUT
         </button>
         <router-link :to="{name: 'memberMypage'}">
@@ -45,32 +45,37 @@
 <script>
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
-import {inject, ref} from "vue";
+import {computed, inject, ref} from "vue";
 import login from "../../module/login";
 
 
 export default {
   name: "DoldolseoHeaderProfile",
   setup() {
-    const {cookies} = useCookies()
+    const cookies = inject('cookies')
     const router = useRouter()
-    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
-
-    const loginState = ref(localStorage.getItem('loginState'))
+    const PATH_MEMBER_IMG_DEFAULT = inject('contextPath') + '_image/member/default_member.png'
+    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/' + localStorage.getItem('id')
+    const URL_MEMBER_LOGOUT = inject('doldolseoMember') +'/logout/' +localStorage.getItem('id')
     const memberNickname = localStorage.getItem('nickname')
-    const memberImg = localStorage.getItem('memberImg')
 
-    const logout = (component) => {
-      login.doLogout(component)
+    const areYouLogedIn = computed(() => {
+      return cookies.get('token') != null && localStorage.getItem('loginState') === 'login';
+    })
+
+    const logout = (component, URL_MEMBER_LOGOUT) => {
+      login.doLogout(component, URL_MEMBER_LOGOUT)
     }
 
     return {
       router,
       cookies,
-      loginState,
-      memberNickname,
-      memberImg,
+      PATH_MEMBER_IMG_DEFAULT,
       URL_MEMBER_IMAGES,
+      URL_MEMBER_LOGOUT,
+
+      areYouLogedIn,
+      memberNickname,
       logout,
     }
   }

@@ -2,8 +2,12 @@
   <div class="widgetContainer">
     <!--로고-->
     <div class="logoBox">
-      <img class="logoBox__img1" :src="img_logo1" alt="logo">
-      <img class="logoBox__img2" :src="img_logo2" alt="logo">
+      <img class="logoBox__img1"
+           :src="getImgUrl('header/logo/header_widget_logo1.png')"
+           alt="logo">
+      <img class="logoBox__img2"
+           :src="getImgUrl('header/logo/header_widget_logo2.png')"
+           alt="logo">
     </div>
 
     <!--검색창-->
@@ -25,10 +29,17 @@
         <h4>Seoul,KR</h4>
       </div>
       <div class="weatherBox__icon">
-        <img :src="weatherImgsrc" alt="logo">
+        <img v-if="weatherImgsrc.length === 0"
+             :src="getImgUrl('header/logo/default_weather.png')"
+             alt="logo">
+        <img v-else
+             :src="weatherImgsrc"
+             alt="logo">
       </div>
       <div class="weatherBox__text">
-        {{ weatherDesc }}
+        <span>
+          {{ weatherDesc }}
+        </span>
       </div>
       <div id="weatherTmp" class="weatherBox__tmp">
         <i id="wi wi-thermometer"></i>
@@ -41,13 +52,12 @@
 <script>
 import {inject, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
+import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoHeaderWidget",
   setup() {
-    const imgPath = inject('contextPath') + '_image/header/logo/'
-    const img_logo1 = imgPath + 'header_widget_logo1.png'
-    const img_logo2 = imgPath + 'header_widget_logo2.png'
+    const getImgUrl = inject('getImgUrl')
     const weatherDesc = ref('')
     const weatherTmp = ref(0)
     const weatherImgsrc = ref('')
@@ -58,14 +68,14 @@ export default {
       weatherDesc.value = resp.data.weather[0].description
       weatherTmp.value = Math.floor(resp.data.main.temp - 273.15);
       weatherImgsrc.value = "http://openweathermap.org/img/wn/" + resp.data.weather[0].icon + "@2x.png";
-
-    }).catch(() => {
+      console.log("http://openweathermap.org/img/wn/" + resp.data.weather[0].icon + "@2x.png")
+    }).catch((err) => {
       console.log(URL + "요청 실패")
+      onError.httpErrorException(err)
     })
 
     return {
-      img_logo1,
-      img_logo2,
+      getImgUrl,
       weatherDesc,
       weatherTmp,
       weatherImgsrc,
@@ -129,10 +139,10 @@ export default {
   vertical-align: bottom;
 }
 
-.searchBox svg{
+.searchBox svg {
   width: 18px;
   height: 18px;
-  fill:white;
+  fill: white;
 }
 
 .weatherBox {
@@ -176,15 +186,21 @@ export default {
 
 
 .weatherBox__text {
-  height: 60px;
+  height: 53px;
   width: 80px;
   display: inline-block;
   font-family: 'Jua', sans-serif;
   color: #1b3067;
-  vertical-align: top;
-  padding-top: 11px;
+  position: relative;
   text-align: center;
-  line-height: 15px;
+  /*border: 1px solid;*/
+}
+
+.weatherBox__text span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   /*border: 1px solid;*/
 }
 
@@ -197,6 +213,8 @@ export default {
   color: #B40404;
   font-size: 18px;
   text-align: center;
+  vertical-align: top;
+  line-height: 20px;
   /*border: 1px solid;*/
 }
 
