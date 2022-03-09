@@ -3,10 +3,10 @@
     <!--로고-->
     <div class="logoBox">
       <img class="logoBox__img1"
-           :src="getImgUrl('/header/logo/header_widget_logo1.png')"
+           :src="getImgUrl('header/logo/header_widget_logo1.png')"
            alt="logo">
       <img class="logoBox__img2"
-           :src="getImgUrl('/header/logo/header_widget_logo2.png')"
+           :src="getImgUrl('header/logo/header_widget_logo2.png')"
            alt="logo">
     </div>
 
@@ -30,7 +30,7 @@
       </div>
       <div class="weatherBox__icon">
         <img v-if="weatherImgsrc.length === 0"
-             :src="getImgUrl('/header/logo/default_weather.png')"
+             :src="getImgUrl('header/logo/default_weather.png')"
              alt="logo">
         <img v-else
              :src="weatherImgsrc"

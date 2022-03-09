@@ -2,12 +2,12 @@
   <doldolseo-header-widget/>
   <div class="container">
     <div class="imgbox_logo1">
-      <img :src="getImgUrl('/header/logo/header_logo1.png')" alt="logo">
+      <img :src="getImgUrl('header/logo/header_logo1.png')" alt="logo">
     </div>
 
     <div class="imgbox_logo2">
       <router-link to="/">
-        <img :src="getImgUrl('/header/logo/header_logo2.png')" alt="logo">
+        <img :src="getImgUrl('header/logo/header_logo2.png')" alt="logo">
       </router-link>
     </div>
 

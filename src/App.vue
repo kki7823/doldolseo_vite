@@ -17,11 +17,11 @@ export default {
   setup() {
     // provide('contextPath', 'src/')
     provide('contextPath', '/@/')
-    provide('doldolseoArea', '/doldolseo/area')
-    provide('doldolseoMember', '/doldolseo/member')
-    provide('doldolseoReview', '/doldolseo/review')
-    provide('doldolseoCrew', '/doldolseo/crew')
-    provide('doldolseoCrewPost', '/doldolseo/crew/post')
+    provide('doldolseoArea', 'http://34.64.123.102:9999/doldolseo/area')
+    provide('doldolseoMember', 'http://34.64.123.102:9999/doldolseo/member')
+    provide('doldolseoReview', 'http://34.64.123.102:9999/doldolseo/review')
+    provide('doldolseoCrew', 'http://34.64.123.102:9999/doldolseo/crew')
+    provide('doldolseoCrewPost', 'http://34.64.123.102:9999/doldolseo/crew/post')
 
 
     //img 태그에 alias경로 binding

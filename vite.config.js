@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
 // const URL_DLDOLSEO_GW = "http://127.0.0.1:62110"
-const URL_DOLDOLSEO_GW = "http://192.0.0.1:30088"
+const URL_DOLDOLSEO_GW = "http://192.168.49.2:30088"
 
 export default defineConfig({
     plugins: [vue()],
@@ -17,33 +17,33 @@ export default defineConfig({
         extensions: [".js"],
     },
 
-    server: {
-        proxy: {
-            '/doldolseo/area': {
-                target: URL_DOLDOLSEO_GW,
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
-            '/doldolseo/member': {
-                target: URL_DOLDOLSEO_GW,
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
-            '/doldolseo/review': {
-                target: URL_DOLDOLSEO_GW,
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
-            '/doldolseo/crew/post': {
-                target: URL_DOLDOLSEO_GW,
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
-            '/doldolseo/crew': {
-                target: URL_DOLDOLSEO_GW,
-                changeOrigin: true,
-                rewrite: (path) => path.replace('^/', '')
-            },
-        },
-    },
+    // server: {
+    //     proxy: {
+    //         '/doldolseo/area': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //         '/doldolseo/member': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //         '/doldolseo/review': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //         '/doldolseo/crew/post': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //         '/doldolseo/crew': {
+    //             target: URL_DOLDOLSEO_GW,
+    //             changeOrigin: true,
+    //             rewrite: (path) => path.replace('^/', '')
+    //         },
+    //     },
+    // },
 })

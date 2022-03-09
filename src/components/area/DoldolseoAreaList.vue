@@ -3,7 +3,7 @@
 
     <!-- 지역별 배경사진 -->
     <div class="areaList-img">
-      <img :src="getImgUrl(imgPath+ '/areaBanner/'+areaImages[sigungu])"
+      <img :src="getImgUrl('area/areaBanner/'+areaImages[sigungu])"
            alt="img"
       />
     </div>
@@ -65,7 +65,7 @@
             <!-- 상세보기로 이동 -->
             <router-link :to="{name: 'areaDetail', params:{name: encodeURIComponent(area.name) }}">
               <img v-if="area.image1 == null"
-                   :src="getImgUrl(imgPath+'/areaListData/default.png')"
+                   :src="getImgUrl('area/areaListData/default.png')"
                    alt="area_image"
               />
               <img v-else
@@ -125,7 +125,6 @@ export default {
     const getImgUrl = inject('getImgUrl')
 
     const route = useRoute()
-    const imgPath = inject('contextPath') + '_image/area'
     const areaImages = {
       1: 'areaImage_gangnam.png',
       2: 'areaImage_gangbuk.png',
@@ -163,7 +162,7 @@ export default {
           page: page.value,
         }
       }).then((resp) => {
-        console.log(URL + "요청 성공 status : " + resp.status)
+        console.log(URL + "요청 성공 status : " + resp)
 
         areaList.value = resp.data.areaList
         startBlockPage.value = resp.data.startBlockPage
@@ -182,7 +181,6 @@ export default {
       isLoading,
       getImgUrl,
 
-      imgPath,
       areaMenu,
       areaImages,
       contentMenu,

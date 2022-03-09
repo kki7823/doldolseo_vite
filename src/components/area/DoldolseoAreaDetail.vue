@@ -28,11 +28,11 @@
       <!--사진-->
       <div class="areaDetail-img">
         <img v-if="areaData.image1 == null"
-             :src="getImgUrl(imgPath+'/areaListData/default.png')"
+             :src="getImgUrl('area/areaListData/default.png')"
              width="550" height="500" alt="area_image"
         />
         <img v-else
-             :src="getImgUrl(areaData.image1)"
+             :src="areaData.image1"
              width="550" height="500" alt="area_image"
         />
       </div>
@@ -84,11 +84,12 @@ export default {
   components: {KakaoMap, Loading},
   setup() {
     const isLoading = ref(false);
+    const getImgUrl = inject('getImgUrl')
+
     const route = useRoute()
     const name = ref(route.params.name)
     const URL = inject('doldolseoArea') + '/'
     const areaData = ref({})
-    const getImgUrl = inject('getImgUrl')
     const imgPath = inject('contextPath') + '_image/area'
     const areaMenu = inject('areaMenu')
 
