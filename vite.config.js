@@ -7,6 +7,7 @@ const URL_DOLDOLSEO_GW = "http://192.168.49.2:30088"
 
 export default defineConfig({
     plugins: [vue()],
+    base: '/doldolseo-vite/',
     resolve: {
         alias: {
             vue: 'vue/dist/vue.esm-bundler.js',
@@ -46,4 +47,5 @@ export default defineConfig({
     //         },
     //     },
     // },
+
 })
