@@ -62,13 +62,13 @@ export default {
     const weatherTmp = ref(0)
     const weatherImgsrc = ref('')
 
-    const URL = 'http://api.openweathermap.org/data/2.5/weather?q=Seoul,kr&appid=876eb9965cb5694a2644df701fa197dd'
+    const URL = 'https://api.openweathermap.org/data/2.5/weather?q=Seoul,kr&appid=876eb9965cb5694a2644df701fa197dd'
     axios.get(URL).then((resp) => {
       console.log(URL + "요청 성공 status : " + resp.status)
       weatherDesc.value = resp.data.weather[0].description
       weatherTmp.value = Math.floor(resp.data.main.temp - 273.15);
       weatherImgsrc.value = "http://openweathermap.org/img/wn/" + resp.data.weather[0].icon + "@2x.png";
-      console.log("http://openweathermap.org/img/wn/" + resp.data.weather[0].icon + "@2x.png")
+      console.log("https://openweathermap.org/img/wn/" + resp.data.weather[0].icon + "@2x.png")
     }).catch((err) => {
       console.log(URL + "요청 실패")
       onError.httpErrorException(err)

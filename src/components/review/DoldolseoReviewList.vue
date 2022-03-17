@@ -112,6 +112,7 @@ export default {
     const totalPages = ref(0)
 
     const URL_REVIEW = inject('doldolseoReview')
+    const URL_MEMBER = inject('doldolseoMember')
 
     watchEffect(() => {
       isLoading.value = true
@@ -136,6 +137,19 @@ export default {
       })
     })
 
+    const getMemberNickName = async (id) => {
+      const URL_MEMBER_NICKNAME = URL_MEMBER + '/nickname/' + id
+
+      try {
+        const {data: resp} = await axios.get(URL_MEMBER_NICKNAME)
+        return resp
+      } catch (err) {
+        onError.httpErrorException(err)
+      }
+    }
+
+    const nickName = ref('')
+
     return {
       isLoading,
 
@@ -146,6 +160,9 @@ export default {
       startBlockPage,
       endBlockPage,
       totalPages,
+
+      getMemberNickName,
+      nickName,
     }
   }
 }

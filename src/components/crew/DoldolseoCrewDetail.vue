@@ -60,21 +60,33 @@
           크루등급 :
           <div class="crew-info__grade">
             <!-- 크루등급별 등급사진 선택 -->
-            <img :src="getImgUrl('/crew//grade/'+getCrewGrade(crewPoint))"
+            <img :src="getImgUrl('crew/grade/'+getCrewGrade(crewPoint))"
                  alt="grade"
             />
           </div>
           <button class="crew-button"
-                  style="height: 30px">
+                  style="height: 30px"
+                  @click="togglePopup_grede()">
             등급안내
           </button>
+          <doldolseo-crew-grade-info v-if="popupVal_grede"
+                                     :toggle-popup="togglePopup_grede"
+          />
         </div>
 
         <div class="crew-info__item">
           크루포인트 :
           <div class="crew-info__pointbar--holder">
-            <div class="crew-info__pointbar--bar">
-              {{ crewPoint }}
+            <div v-if="crewPoint >= 100000"
+                 class="crew-info__pointbar--text">
+              &nbsp;{{ crewPoint +'p'}}
+            </div>
+            <div v-else
+                 class="crew-info__pointbar--text">
+              [&nbsp; {{ crewPoint + 'p' }}&nbsp; / &nbsp; {{ getCrewGradeRange(crewPoint) + 'p' }} &nbsp;]
+              &nbsp;{{ getCrewGradePercent(crewPoint) }}%
+            </div>
+            <div class="crew-info__pointbar--bar" :style="{width: getCrewGradePercent(crewPoint)+'%' }">
             </div>
           </div>
         </div>
@@ -129,7 +141,7 @@
                   <span class="crew-master--decotext">
                     크루장
                   </span>
-                <img :src="IMAGEPATH_CREW+'crew_master_crown.png'"
+                <img :src="getImgUrl('crew/crew_master_crown.png')"
                      alt="crown"
                 />
               </div>
@@ -189,18 +201,19 @@
 <script>
 import DoldolseoCrewNav from "./DoldolseoCrewNav.vue";
 import DoldolseoCrewJoin from "./DoldolseoCrewJoin.vue";
-import {computed, inject, onMounted, ref} from "vue";
-import {axios} from "@bundled-es-modules/axios";
+import DoldolseoCrewGradeInfo from "./DoldolseoCrewGradeInfo.vue";
 import login from "../../module/login";
-import {useCookies} from "vue3-cookies";
-import {useRouter} from "vue-router";
+import onError from "../../module/onError";
+import {computed, inject, onMounted, ref} from "vue";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
-import onError from "../../module/onError";
+import {axios} from "@bundled-es-modules/axios";
+import {useCookies} from "vue3-cookies";
+import {useRouter} from "vue-router";
 
 export default {
   name: "DoldolseoCrewDetail",
-  components: {DoldolseoCrewNav, DoldolseoCrewJoin, Loading},
+  components: {DoldolseoCrewGradeInfo, DoldolseoCrewNav, DoldolseoCrewJoin, Loading},
   props: {
     crewNo: {
       type: String,
@@ -217,7 +230,6 @@ export default {
     const URL_CREW_CHECKMEMBER = URL_CREW + '/' + props.crewNo + '/check/member/' + localStorage.getItem('id')
     const URL_CREW_GETOUT = URL_CREW + '/' + props.crewNo + '/member/' + localStorage.getItem('id')
     const URL_MEMBER_IMAGE = inject('doldolseoMember') + '/images/'
-
 
     const areaMenu = inject('areaMenu')
     const memberRole = localStorage.getItem('memberRole')
@@ -281,15 +293,34 @@ export default {
     }
 
     const getCrewGrade = (crewPoint) => {
-      if (crewPoint >= 1000) return 'crew_grade_4.png'
-      else if (crewPoint >= 700) return 'crew_grade_3.png'
-      else if (crewPoint >= 300) return 'crew_grade_2.png'
+      if (crewPoint >= 100000) return 'crew_grade_4.png'
+      else if (crewPoint >= 10000) return 'crew_grade_3.png'
+      else if (crewPoint >= 1000) return 'crew_grade_2.png'
       else return 'crew_grade_1.png'
+    }
+
+    const getCrewGradeRange = (crewPoint) => {
+      if (crewPoint >= 100000) return null
+      else if (crewPoint >= 10000) return 99999
+      else if (crewPoint >= 1000) return 9999
+      else return 999
+    }
+
+    const getCrewGradePercent = (crewPoint) => {
+      if (crewPoint >= 100000) return 100
+      else if (crewPoint >= 10000) return ((crewPoint - 10000) / 99999 * 100).toFixed(2)
+      else if (crewPoint >= 1000) return ((crewPoint - 1000) / 9999 * 100).toFixed(2)
+      else return (crewPoint / 999 * 100).toFixed(2)
     }
 
     const popupVal = ref(false)
     const togglePopup = () => {
       popupVal.value = !popupVal.value
+    }
+
+    const popupVal_grede = ref(false)
+    const togglePopup_grede = () => {
+      popupVal_grede.value = !popupVal_grede.value
     }
 
     const {cookies} = useCookies()
@@ -366,9 +397,13 @@ export default {
 
       areaNoToString,
       getCrewGrade,
+      getCrewGradeRange,
+      getCrewGradePercent,
 
       popupVal,
-      togglePopup
+      popupVal_grede,
+      togglePopup,
+      togglePopup_grede,
     }
   }
 }
@@ -505,18 +540,26 @@ export default {
 
 .crew-info__pointbar--bar {
   display: inline-block;
-  width: 85.12%;
+  position: absolute;
   height: 100%;
   background-image: linear-gradient(60deg, #3d3393 0%, #2b76b9 37%, #2cacd1 65%, #35eb93 100%);
-  line-height: 15px;
   /*vertical-align: top;*/
   border-radius: 20px;
-  position: absolute;
   top: 0;
   text-align: center;
+}
+
+.crew-info__pointbar--text {
+  display: inline-block;
+  width: 100%;
+  position: absolute;
+  z-index: 99;
+  line-height: 15px;
   font-size: 10px;
   font-family: 'Jua', sans-serif;
-  color: white;
+  color: black;
+  text-align: center;
+  /*border: 1px solid;*/
 }
 
 .crew-info__introbox {

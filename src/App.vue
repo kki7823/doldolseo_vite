@@ -8,21 +8,25 @@
 import DoldolseoHeader from "/@components/common/DoldolseoHeader.vue";
 import DoldolseoMain from "/@components/main/DoldolseoMain.vue";
 import DoldolseoFooter from "/@components/common/DoldolseoFooter.vue";
-import {provide} from "vue";
+import {provide, ref} from "vue";
 import {useCookies} from "vue3-cookies";
+import {axios} from "@bundled-es-modules/axios";
+import onError from "./module/onError";
 
 export default {
   name: 'App',
   components: {DoldolseoFooter, DoldolseoMain, DoldolseoHeader},
   setup() {
-    // provide('contextPath', 'src/')
     provide('contextPath', '/@/')
-    provide('doldolseoArea', 'http://34.64.123.102:9999/doldolseo/area')
-    provide('doldolseoMember', 'http://34.64.123.102:9999/doldolseo/member')
-    provide('doldolseoReview', 'http://34.64.123.102:9999/doldolseo/review')
-    provide('doldolseoCrew', 'http://34.64.123.102:9999/doldolseo/crew')
-    provide('doldolseoCrewPost', 'http://34.64.123.102:9999/doldolseo/crew/post')
 
+    const url_base = 'https://doldolseo.com:62390'
+    // const url_base = 'https://127.0.0.1:9000'
+
+    provide('doldolseoArea', url_base + '/doldolseo/area')
+    provide('doldolseoMember', url_base + '/doldolseo/member')
+    provide('doldolseoReview', url_base + '/doldolseo/review')
+    provide('doldolseoCrew', url_base + '/doldolseo/crew')
+    provide('doldolseoCrewPost', url_base + '/doldolseo/crew/post')
 
     //img 태그에 alias경로 binding
     const getImgUrl = (name) => {
@@ -30,6 +34,32 @@ export default {
     }
 
     provide('getImgUrl', getImgUrl)
+
+    const getMemberNickName = async (id) => {
+      const URL_MEMBER_NICKNAME = url_base + '/doldolseo/member/nickname/' + id
+
+      try {
+        const {data:resp} = await axios.get(URL_MEMBER_NICKNAME)
+        return resp
+      }catch (err){
+        onError.httpErrorException(err)
+      }
+    }
+    provide('getMemberNickName', getMemberNickName)
+
+    const getCrewName = async (crewNo) => {
+      const URL_CREW_NAME = url_base + '/doldolseo/crew/' + crewNo + '/name'
+      try {
+        const resp = axios.get(URL_CREW_NAME)
+        return resp.data
+      } catch (err) {
+        onError.httpErrorException(err)
+        return '[Error]'
+      }
+    }
+
+    provide('getCrewName', getCrewName)
+
 
     const areaMenu = {
       1: '강남',

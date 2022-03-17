@@ -6,6 +6,65 @@
     </div>
     <hr/>
 
+    <!--지도-->
+    <div class="main_map--text">
+      <p>SEOUL AREA</p>
+    </div>
+    <div class="main_map">
+      <img class="map" :src="getImgUrl('main/seoul/map-fi-c-1.png')" usemap="#image-map" alt="map"/>
+      <map name="image-map">
+        <router-link :to="{name: 'areaList', query:{sigungu: 3}}">
+          <area alt="광화문"
+                coords="337,150,58"
+                shape="circle"
+          />
+        </router-link>
+        <router-link :to="{name: 'areaList', query:{sigungu: 7}}">
+          <area alt="홍대"
+                title="홍대"
+                coords="350,260,52"
+                shape="circle"
+          />
+        </router-link>
+        <router-link :to="{name: 'areaList', query:{sigungu: 1}}">
+          <area alt="강남"
+                title="강남"
+                coords="510,400,51"
+                shape="circle"
+          />
+        </router-link>
+        <router-link :to="{name: 'areaList', query:{sigungu: 5}}">
+          <area alt="여의도"
+                title="여의도"
+                coords="225,300,62"
+                shape="circle"
+          />
+        </router-link>
+        <router-link :to="{name: 'areaList', query:{sigungu: 6}}">
+          <area alt="잠실"
+                title="잠실"
+                coords="615,350,52"
+                shape="circle"
+          />
+        </router-link>
+        <router-link :to="{name: 'areaList', query:{sigungu: 4}}">
+          <area alt="명동"
+                title="명동"
+                coords="460,156,420,300"
+                shape="rect"
+          />
+        </router-link>
+        <router-link :to="{name: 'areaList', query:{sigungu: 2}}">
+          <area alt="강북"
+                title="강북"
+                coords="480,77,54"
+                shape="circle"
+          />
+        </router-link>
+      </map>
+    </div>
+    <hr/>
+
     <!--추천코스-->
     <div class="main_bestcourse">
       <p>BEST COURSE</p>
@@ -24,31 +83,6 @@
             d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z">
         </path>
       </svg>
-    </div>
-    <hr/>
-
-    <!--지도-->
-    <div class="main_map--text">
-      <p>SEOUL AREA</p>
-    </div>
-    <div class="main_map">
-      <img class="map" :src="getImgUrl('main/seoul/map-fi-c-1.png')" usemap="#image-map" alt="map"/>
-      <map name="image-map">
-        <area target="" alt="광화문" title="광화문" href="${pageContext.request.contextPath}/areaL?sigungu=3"
-              coords="337,150,58" shape="circle"/>
-        <area target="" alt="홍대" title="홍대" href="${pageContext.request.contextPath}/areaL?sigungu=7"
-              coords="350,260,52" shape="circle">
-        <area target="" alt="강남" title="강남" href="${pageContext.request.contextPath}/areaL?sigungu=1"
-              coords="510,400,51" shape="circle">
-        <area target="" alt="여의도" title="여의도" href="${pageContext.request.contextPath}/areaL?sigungu=5"
-              coords="225,300,62" shape="circle">
-        <area target="" alt="잠실" title="잠실" href="${pageContext.request.contextPath}/areaL?sigungu=6"
-              coords="615,350,52" shape="circle">
-        <area target="" alt="명동" title="명동" href="${pageContext.request.contextPath}/areaL?sigungu=4"
-              coords="460,156,420,300" shape="rect"/>
-        <area target="" alt="강북" title="강북" href="${pageContext.request.contextPath}/areaL?sigungu=2" coords="480,77,54"
-              shape="circle">
-      </map>
     </div>
     <hr/>
 

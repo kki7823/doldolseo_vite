@@ -84,7 +84,7 @@
         <div class="crew-crewProfile__crewnameBox">
           <span class="crew-crewProfile__crewnameBox__name">
             <span class="crew-crewProfile__crewnameBox__grade">
-              <img :src="getCrewGrade('/crew/grade/'+getCrewGrade(crew.crewPoint))"
+              <img :src="getImgUrl('crew/grade/'+getCrewGrade(crew.crewPoint))"
                    alt="grade"
               />
             </span>
@@ -150,6 +150,7 @@ export default {
   },
   setup(props) {
     const isLoading = ref(false)
+    const getImgUrl = inject('getImgUrl')
 
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREW_IMAGE = URL_CREW + '/images/'
@@ -205,6 +206,7 @@ export default {
 
     return {
       isLoading,
+      getImgUrl,
 
       URL_CREW_IMAGE,
       crewList,

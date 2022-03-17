@@ -125,17 +125,9 @@
     <!-- 프로필 사진 등록 -->
     <div class="memberJ-imgcontainer">
       <h4>프로필 사진 (선택)</h4>
-      <img
-          v-if="memberImgUrl == null"
-          class="memberJ-imgcontainer__img-small"
-          :src="getImgUrl('/member/default_member.png')"
-          alt="default_profile"
-      />
-      <img
-          v-else
-          class="memberJ-imgcontainer__img-small"
-          :src="memberImgUrl"
-          alt="profile"
+      <img class="memberJ-imgcontainer__img-small"
+           :src="memberImgUrl"
+           alt="profile"
       />
       <label id="my_img_label"
              class="memberJ-imgcontainer__label-blue"
@@ -289,14 +281,9 @@ export default {
       })
     }
 
-    const lockImg = {
-      1: '/lock/lock_basic.png',
-      2: '/lock/lock_blue.png',
-      3: '/lock/lock_red.png'
-    }
     const password = ref('')
     const pwdValidateMsg = ref('')
-    const pwdLockImgUrl = ref('url(' + getImgUrl('member/') + lockImg[1] + ')')
+    const pwdLockImgUrl = ref('url(' + getImgUrl('member/lock/lock_basic.png') + ')')
 
     const validatePwd = (pwd) => {
       const pattern1 = /[0-9]/
@@ -305,25 +292,25 @@ export default {
       if (pattern1.test(pwd) && pattern2.test(pwd) && pattern3.test(pwd) && pwd.length > 7 && pwd.length <= 20) {
         checkValues.password = true
         pwdValidateMsg.value = ''
-        pwdLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[2] + ')'
+        pwdLockImgUrl.value = 'url(' + getImgUrl('member/lock/lock_blue.png') + ')'
       } else {
         pwdValidateMsg.value = "8~20자 영문, 숫자, 특수문자를 사용하세요."
-        pwdLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[3] + ')'
+        pwdLockImgUrl.value = 'url(' + getImgUrl('member/lock/lock_red.png') + ')'
       }
     }
 
     const passwordConfirm = ref('')
     const pwdConfirmValidateMsg = ref('')
-    const pwdConfirmLockImgUrl = ref('url(' + getImgUrl('member/') + lockImg[1] + ')')
+    const pwdConfirmLockImgUrl = ref('url(' + getImgUrl('member/lock/lock_basic.png') + ')')
 
     const confirmPwd = (pwd, pwdConfirm) => {
       if (pwd === pwdConfirm) {
         checkValues.passwordConfirm = true
         pwdConfirmValidateMsg.value = ''
-        pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[2] + ')'
+        pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/lock/lock_blue.png') + ')'
       } else {
         pwdConfirmValidateMsg.value = "비밀번호가 일치하지 않습니다."
-        pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/') + lockImg[3] + ')'
+        pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/lock/lock_red.png') + ')'
       }
     }
 
@@ -392,7 +379,7 @@ export default {
 
     const gender = ref('')
 
-    const memberImgUrl = ref(null)
+    const memberImgUrl = ref(getImgUrl('member/default_member.png'))
     let memberImgFile = null;
 
     const setMemberImg = (e) => {

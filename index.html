@@ -1,29 +1,39 @@
 <!DOCTYPE html>
 <html lang="kr">
+<script type="text/javascript"
+        src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js">
+</script>
+<script type="text/javascript"
+        src="https://davidlynch.org/projects/maphilight/jquery.maphilight.min.js">
+</script>
 <head>
     <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0"
+    />
     <title>MAIN</title>
-    <!-- Map Hilighter -->
-<!--    <script type="text/javascript">-->
-<!--        $(function () {-->
-<!--            $.fn.maphilight.defaults = {-->
-<!--                fill: true,-->
-<!--                fillColor: '000000',-->
-<!--                fillOpacity: 0.2,-->
-<!--                stroke: true,-->
-<!--                strokeColor: '495c75',-->
-<!--                strokeOpacity: 1,-->
-<!--                strokeWidth: 1.2,-->
-<!--                fade: true,-->
-<!--                alwaysOn: false-->
-<!--            }-->
-<!--            $('.map').maphilight();-->
-<!--        });-->
-<!--    </script>-->
+<!--    Map Hilighter-->
+    <script type="text/javascript">
+        $(function () {
+            $.fn.maphilight.defaults = {
+                fill: true,
+                fillColor: '000000',
+                fillOpacity: 0.2,
+                stroke: true,
+                strokeColor: '495c75',
+                strokeOpacity: 1,
+                strokeWidth: 1.2,
+                fade: true,
+                alwaysOn: false
+            }
+            $('.map').maphilight();
+        });
+    </script>
 </head>
 <body>
     <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+    <script type="module"
+            src="/src/main.js">
+    </script>
 </body>
 </html>

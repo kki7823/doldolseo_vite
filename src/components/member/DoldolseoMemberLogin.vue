@@ -4,23 +4,26 @@
          :src="getImgUrl('member/logo.png')"
          alt="logo"/>
     <div>
-      <input class="memberL-container__input--big"
-             type="text"
-             maxlength="20"
-             ref="focusId"
-             v-model="id"
-             placeholder="아이디"
-             @click="loginMsg=''"
-      />
-      <br/>
-      <input class="memberL-container__input--big"
-             type="password"
-             ref="focusPw"
-             v-model="password"
-             maxlength="30"
-             placeholder="비밀번호"
-             @click="loginMsg=''"
-      />
+      <form>
+        <input class="memberL-container__input--big"
+               type="text"
+               maxlength="20"
+               ref="focusId"
+               v-model="id"
+               placeholder="아이디"
+               @click="loginMsg=''"
+        />
+        <br/>
+        <input class="memberL-container__input--big"
+               type="password"
+               ref="focusPw"
+               v-model="password"
+               maxlength="30"
+               placeholder="비밀번호"
+               @click="loginMsg=''"
+               autocomplete="no"
+        />
+      </form>
       <br/>
     </div>
 
@@ -62,6 +65,8 @@ import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 import {inject, ref} from "vue";
 import {useCookies} from "vue3-cookies"
 import login from "../../module/login";
+import {axios} from "@bundled-es-modules/axios";
+import {router} from "../../router/router";
 
 export default {
   name: "DoldolseoMemberLogin",
@@ -84,9 +89,11 @@ export default {
 
     const sendLoginData = async (template) => {
       if (!validateParams(template)) return
+
       isLoading.value = true;
       await login.doLogin(id.value, password.value, URL_MEMBER_LOGIN);
       isLoading.value = false
+
       await setLoginMsg()
     }
 

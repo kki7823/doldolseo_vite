@@ -192,12 +192,14 @@ export default {
   components: {Loading},
   setup() {
     const isLoading = ref(false)
+    const getImgUrl = inject('getImgUrl')
+    const {cookies} = useCookies()
+    const router = useRouter()
 
     const URL_CREW = inject('doldolseoCrew')
     const URL_MEMBER = inject('doldolseoMember')
     const URL_MEMBER_REFRESH = URL_MEMBER + '/refresh'
-    const {cookies} = useCookies()
-    const router = useRouter()
+
     const crewName = ref('')
     const checkedArea = ref([])
     const intro = ref('')
@@ -207,7 +209,7 @@ export default {
     const questionSecond = ref('')
     const questionThird = ref('')
 
-    const crewImgUrl = ref(null)
+    const crewImgUrl = ref(getImgUrl('crew/crew-logo-default.jpeg'))
     let imageFile = null;
     const areaMenu = inject('areaMenu')
 

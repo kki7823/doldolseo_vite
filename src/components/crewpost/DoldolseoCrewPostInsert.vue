@@ -86,7 +86,7 @@
             <div v-for="selectedMember in selectedMemberSet"
                  class='crew-addedMember--idbox'>
               <div class='crew-member--photo'>
-                <img :src="getImgUrl('/member/default_member.png')"
+                <img :src="URL_MEMBER_IMAGES+selectedMember"
                      alt="member_img"
                 />
               </div>
@@ -140,6 +140,8 @@ export default {
     const URL_CREW_POST = inject('doldolseoCrewPost')
     const IMAGE_UUID = uuidv4()
     const URL_CREW_POST_IMAGE = inject('doldolseoCrewPost') + '/images/' + IMAGE_UUID
+    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
+
     const title = ref('')
     const category = ref('')
     const categoryMenu = inject('crew_categoryMenu')
@@ -261,6 +263,8 @@ export default {
       getImgUrl,
 
       URL_CREW_POST_IMAGE,
+      URL_MEMBER_IMAGES,
+
       title,
       category,
       categoryMenu,

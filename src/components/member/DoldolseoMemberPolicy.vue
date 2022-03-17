@@ -179,8 +179,6 @@
 </template>
 
 <script>
-import {ref} from "vue";
-
 export default {
   name: "DoldolseoMemberPolicy",
   props: {
@@ -208,7 +206,7 @@ export default {
   /*border: 1pt solid;*/
 }
 
-.memberP-title{
+.memberP-title {
   text-align: center;
   color: #5882fa;
 }

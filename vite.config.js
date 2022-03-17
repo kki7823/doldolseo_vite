@@ -2,12 +2,10 @@ import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
-// const URL_DLDOLSEO_GW = "http://127.0.0.1:62110"
-const URL_DOLDOLSEO_GW = "http://192.168.49.2:30088"
+const URL_DOLDOLSEO_GW = "http://34.64.123.102:9999"
 
 export default defineConfig({
     plugins: [vue()],
-    base: '/doldolseo-vite/',
     resolve: {
         alias: {
             vue: 'vue/dist/vue.esm-bundler.js',

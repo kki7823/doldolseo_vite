@@ -69,7 +69,7 @@
                    alt="area_image"
               />
               <img v-else
-                   :src="getImgUrl(area.image1)"
+                   :src="area.image1"
                    alt="image1"
               />
             </router-link>
