@@ -17,7 +17,7 @@
           </div>
           <div class="profilebox--container--sub">
             <div class="profilebox--nickname">
-              {{ comment.id }}
+              <doldolseo-get-nickname :id="comment.id"/>
             </div>
             <div class="profilebox--wdate">
               {{
@@ -97,6 +97,7 @@
 </template>
 
 <script>
+import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
 import {computed, inject, onMounted, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import onError from "../../module/onError";
@@ -105,7 +106,7 @@ import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoCrewPostComment",
-  components: {Loading},
+  components: {DoldolseoGetNickname, Loading},
   props: {
     crewPostNo: {
       type: String,

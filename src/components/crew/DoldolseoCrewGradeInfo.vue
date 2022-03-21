@@ -101,7 +101,7 @@ export default {
   background: white;
   box-shadow: 1px 1px 5px lightgrey;
   border-radius: 10px;
-  z-index: 99;
+  z-index: 100;
   top: 25%;
   left: 47%;
   transform: translate(-50%, 0);

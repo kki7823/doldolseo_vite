@@ -45,11 +45,11 @@
       </div>
 
       <hr style="width: 1200px; color: #495c75; "/>
-        <!--지도-->
+      <!--지도-->
       <div class="areaDetail-map">
         <kakao-map
-                   :x="areaData.x"
-                   :y="areaData.y"
+            :x="areaData.x"
+            :y="areaData.y"
         />
       </div>
 
@@ -114,7 +114,7 @@ export default {
 
       const key = "P3TbC5uJmBCIyJ5XyNE96Iggnml%2FE7YpEPLGKNQAG6P1Pg36WbbyZPeOkl%2BjZa9JsjLoIwO0saCVPxy48P5nMQ%3D%3D"
       const URL_overview =
-          "http://api.visitkorea.or.kr/openapi/service/rest/KorService/detailCommon?ServiceKey="
+          "http://api.visitkorea.or.kr:80/openapi/service/rest/KorService/detailCommon?ServiceKey="
           + key
           + "&contentTypeId=&contentId="
           + contentId.value

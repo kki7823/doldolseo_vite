@@ -47,7 +47,22 @@
     </div>
     <!-- 상세 글 목록  -->
     <table class="cBoardD-tablelayout">
-      <!-- 글상단 : 프로필 박스 + 댓글 및 조회수 -->
+      <!-- 크루이름 -->
+      <tr class="common-tbl__item">
+        <td>
+          <div class="profilebox-crew">
+            <div class="profilebox-crew--photo">
+              <img :src="URL_CREW_IMAGES+crewNo"
+                   alt="logo">
+            </div>
+          </div>
+          <div class="profilebox--crewname">
+            <doldolseo-get-crew-name v-if="crewNo !== 0"
+                                     :crew-no="crewNo"
+            />
+          </div>
+        </td>
+      </tr>
       <tr class="common-tbl__item">
         <td>
           <!-- 프로필 박스 : 회원사진, 닉네임, 작성날짜-->
@@ -61,7 +76,8 @@
             <div class="profilebox--container--sub">
               <!-- 닉네임 -->
               <div class="profilebox--nickname">
-                {{ writerId }}
+                <doldolseo-get-nickname v-if="writerId.length !== 0"
+                                        :id="writerId"/>
               </div>
               <!-- 작성날짜 -->
               <div class="profilebox--wdate">
@@ -86,7 +102,7 @@
               </svg>
             </div>
             <div class="iconbox__commentcount">
-              {{numOfComments}}
+              {{ numOfComments }}
             </div>
 
             <div class="iconbox__hit">
@@ -149,7 +165,7 @@
                   />
                 </div>
                 <div class="cBoard__nickName">
-                  {{ member.memberId }}
+                  <doldolseo-get-nickname :id="member.memberId"/>
                   <span v-if="writerId === idLogedIn"
                         class='common-deleteMark--x'
                         @click="deleteMemberData(member.memberId)">&Cross;
@@ -167,7 +183,7 @@
                   </option>
                   <option v-for="crewMember in crewMembers"
                           :value="crewMember.memberId">
-                    {{ crewMember.memberId }}
+                    <doldolseo-get-nickname :id="crewMember.memberId"/>
                   </option>
                 </select>
               </div>
@@ -200,7 +216,6 @@
     </div>
     <hr class="line--horizon" style="width:1000px ">
 
-    <!-- 댓글 구현 -->
     <doldolseo-crew-post-comment :crew-post-no="crewPostNo"/>
 
   </section>
@@ -209,6 +224,8 @@
 <script>
 import DoldolseoCrewNav from "../crew/DoldolseoCrewNav.vue";
 import DoldolseoCrewPostComment from "./DoldolseoCrewPostComment.vue";
+import DoldolseoGetCrewName from "../common/DoldolseoGetCrewName.vue";
+import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
 import {inject, onMounted, provide, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRouter} from "vue-router";
@@ -218,7 +235,7 @@ import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 export default {
   name: "DoldolseoCrewPostDetail",
-  components: {DoldolseoCrewPostComment, DoldolseoCrewNav, Loading},
+  components: {DoldolseoGetCrewName, DoldolseoGetNickname, DoldolseoCrewPostComment, DoldolseoCrewNav, Loading},
   props: {
     crewPostNo: {
       type: String,
@@ -227,12 +244,13 @@ export default {
   },
   setup(props) {
     const isLoading = ref(false)
-    const toggleLoading = ()=>{
+    const toggleLoading = () => {
       isLoading.value = !isLoading.value
     }
 
     const cookies = inject('cookies')
-    const URL_MEMBER_IMAGES = inject('doldolseoMember')+'/images/'
+    const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
+    const URL_CREW_IMAGES = inject('doldolseoCrew') + '/images/'
     const URL_GET_CREW_POST = inject('doldolseoCrewPost') + '/' + props.crewPostNo
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREWPOST = inject('doldolseoCrewPost')
@@ -240,6 +258,7 @@ export default {
     const router = useRouter();
 
     const crewPostNo = ref(0)
+    const crewNo = ref(0)
     const title = ref('')
     const wdate = ref([])
     const content = ref('')
@@ -249,7 +268,7 @@ export default {
     const taggedMembers = ref([])
 
     const numOfComments = ref(0)
-    provide('numOfComments',numOfComments)
+    provide('numOfComments', numOfComments)
 
     const isClicked_membersWith = ref(false)
     const idLogedIn = ref(localStorage.getItem('id'))
@@ -277,6 +296,7 @@ export default {
         })
 
         crewPostNo.value = respCrewPost.data.crewPost.crewPostNo
+        crewNo.value = respCrewPost.data.crewPost.crewNo
         title.value = respCrewPost.data.crewPost.title
         content.value = respCrewPost.data.crewPost.content
         writerId.value = respCrewPost.data.crewPost.writerId
@@ -285,11 +305,9 @@ export default {
         hit.value = respCrewPost.data.crewPost.hit
         taggedMembers.value = respCrewPost.data.taggedMemberList
 
-        const crewNo = respCrewPost.data.crewPost.crewNo
-
         const respCrewMember = await axios({
           method: 'get',
-          url: URL_CREW + '/' + crewNo + '/members',
+          url: URL_CREW + '/' + crewNo.value + '/members',
           headers: {
             Authorization: 'Bearer ' + cookies.get('token'),
           },
@@ -381,9 +399,11 @@ export default {
     return {
       isLoading,
       URL_MEMBER_IMAGES,
+      URL_CREW_IMAGES,
       categoryMenu,
       idLogedIn,
 
+      crewNo,
       title,
       content,
       writerId,
@@ -552,6 +572,41 @@ export default {
   width: inherit;
   height: inherit;
   object-fit: cover;
+}
+
+.profilebox-crew {
+  display: inline-block;
+  float: left;
+  /*border: 1pt solid;*/
+}
+
+.profilebox-crew--photo {
+  width: 40px;
+  height: 40px;
+  float: left;
+  margin: 3px 3px 3px 5px;
+  overflow: hidden;
+  border-radius: 5px;
+  border: 1pt solid #E6E6E6;
+  /*box-shadow: 1px 1px #CDCECF;*/
+}
+
+.profilebox-crew--photo > img {
+  width: inherit;
+  height: inherit;
+  object-fit: cover;
+}
+
+.profilebox--crewname {
+  display: inline-block;
+  margin: 3px;
+  width: 300px;
+  height: 33px;
+  line-height: 40px;
+  font-size: 18px;
+  font-family: 'Jua', sans-serif;
+  padding-top: 2px;
+  /*border: 1pt solid;*/
 }
 
 /* 프로필 박스 : 닉네임 + 작성시간 */

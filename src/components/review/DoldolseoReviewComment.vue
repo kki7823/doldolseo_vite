@@ -17,7 +17,7 @@
           </div>
           <div class="profilebox--container--sub">
             <div class="profilebox--nickname">
-              {{ comment.id }}
+              <doldolseo-get-nickname :id="comment.id"/>
             </div>
             <div class="profilebox--wdate">
               {{
@@ -107,10 +107,11 @@ import {useCookies} from "vue3-cookies";
 import onError from "../../module/onError";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
 
 export default {
   name: "DoldolseoReviewComment",
-  components: {Loading},
+  components: {DoldolseoGetNickname, Loading},
   props: {
     reviewNo: {
       type: String,

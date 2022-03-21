@@ -58,7 +58,9 @@
               <div class="profilebox--container--sub">
                 <!-- 닉네임 -->
                 <div class="profilebox--nickname">
-                  {{ id }}
+                  <doldolseo-get-nickname v-if="id.length !== 0"
+                                          :id="id"
+                  />
                 </div>
                 <!-- 작성날짜 -->
                 <div class="profilebox--wdate">
@@ -82,7 +84,7 @@
                 </svg>
               </div>
               <div class="iconbox__commentcount">
-                {{numOfComments}}
+                {{ numOfComments }}
               </div>
 
               <div class="iconbox__hit">
@@ -167,10 +169,11 @@ import {useCookies} from "vue3-cookies";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 import onError from "../../module/onError";
+import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
 
 export default {
   name: "DoldolseoReviewDetail",
-  components: {DoldolseoReviewComment, DoldolseoReviewNav, Loading},
+  components: {DoldolseoGetNickname, DoldolseoReviewComment, DoldolseoReviewNav, Loading},
   props: {
     reviewNo: {
       type: String,
@@ -188,7 +191,7 @@ export default {
     const URL_MEMBER_IMG = inject('doldolseoMember') + '/images/'
 
     const numOfComments = ref(0)
-    provide('numOfComments',numOfComments)
+    provide('numOfComments', numOfComments)
 
     const wdate = ref([])
     const title = ref('')

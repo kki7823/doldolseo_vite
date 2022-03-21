@@ -5,22 +5,19 @@
         마이 페이지
       </li>
       <li class="mypageD-listcontainer__li--small">
-        <a href="#" class="mypageD-listcontainer__a--blue">
           <img class="mypageD-listcontainer__img--small"
                :src="getImgUrl('mypage/person.png')"
                alt="person"
           />&nbsp;
           개인 정보
-        </a>
       </li>
-      <li class="mypageD-listcontainer__li--small">
-        <a href="#" class="mypageD-listcontainer__a--blue">
+      <li class="mypageD-listcontainer__li--small"
+          @click="alertForPlanner()">
           <img class="mypageD-listcontainer__img--small"
                :src="getImgUrl('mypage/planner.png')"
                alt="planner"
           />&nbsp;&nbsp;
           내 플래너
-        </a>
       </li>
     </ul>
   </div>
@@ -34,8 +31,13 @@ export default {
   setup() {
     const getImgUrl = inject('getImgUrl')
 
+    const alertForPlanner = () =>{
+      alert("해당 기능은 개인프로젝트 에선 구현하지 않았습니다.")
+    }
+
     return {
       getImgUrl,
+      alertForPlanner,
     }
   }
 }

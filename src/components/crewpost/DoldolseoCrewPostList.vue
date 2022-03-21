@@ -68,7 +68,7 @@
       <tr v-for="crewPost in crewPosts"
           class="list--item">
         <td style="width: 130px;">
-          {{ crewPost.crewNo }}
+          <doldolseo-get-crew-name :crew-no="crewPost.crewNo"/>
         </td>
         <td style="width: 100px;">
           {{ categoryMenu[crewPost.category] }}
@@ -78,7 +78,10 @@
             {{ crewPost.title }}
           </router-link>
         </td>
-        <td>{{ crewPost.writerId }}</td>
+        <td>
+          <doldolseo-get-nickname
+              :id="crewPost.writerId"/>
+        </td>
         <td>{{ crewPost.wdate[0] + '-' + crewPost.wdate[1] + '-' + crewPost.wdate[2] }}</td>
         <td>{{ crewPost.hit }}</td>
       </tr>
@@ -119,6 +122,8 @@
 
 <script>
 import DoldolseoCrewNav from "../crew/DoldolseoCrewNav.vue";
+import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
+import DoldolseoGetCrewName from "../common/DoldolseoGetCrewName.vue";
 import {inject, onMounted, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import onError from "../../module/onError";
@@ -128,7 +133,7 @@ import {useCookies} from "vue3-cookies";
 
 export default {
   name: "DoldolseoCrewPostList",
-  components: {DoldolseoCrewNav, Loading},
+  components: {DoldolseoGetCrewName, DoldolseoGetNickname, DoldolseoCrewNav, Loading},
   setup() {
     const isLoading = ref(false)
     const {cookies} = useCookies()

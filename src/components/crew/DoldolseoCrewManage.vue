@@ -89,7 +89,7 @@
           <div class="crew-info__pointbar--holder">
             <div v-if="crewPoint >= 100000"
                  class="crew-info__pointbar--text">
-              &nbsp;{{ crewPoint +'p'}}
+              &nbsp;{{ crewPoint + 'p' }}
             </div>
             <div v-else
                  class="crew-info__pointbar--text">
@@ -203,7 +203,7 @@
                   />
                 </div>
                 <div class="crew-member--id">
-                  {{ member.memberId }}
+                  <doldolseo-get-nickname :id="member.memberId"/>
                   <div v-if="member.memberRole !== 'CREWLEADER'"
                        class="crew-member--buttonbox">
                     <button type="button"
@@ -303,7 +303,7 @@
                   />
                 </div>
                 <div class="crew-member--id">
-                  {{ member.memberId }}
+                  <doldolseo-get-nickname :id="member.memberId"/>
                 </div>
                 <span class="crewM-member--idbox__btnbox">
                   <doldolseo-crew-join-info v-if="idx === selectIdx && popupVal_JoinInfo"
@@ -344,6 +344,7 @@
 <script>
 import DoldolseoCrewNav from "./DoldolseoCrewNav.vue";
 import DoldolseoCrewJoinEdit from "./DoldolseoCrewJoinEdit.vue";
+import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
 import {inject, onMounted, provide, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import DoldolseoCrewJoinInfo from "./DoldolseoCrewJoinInfo.vue";
@@ -355,7 +356,7 @@ import onError from "../../module/onError";
 
 export default {
   name: "DoldolseoCrewManagement",
-  components: {DoldolseoCrewJoinInfo, DoldolseoCrewJoinEdit, DoldolseoCrewNav, Loading},
+  components: {DoldolseoGetNickname, DoldolseoCrewJoinInfo, DoldolseoCrewJoinEdit, DoldolseoCrewNav, Loading},
   setup() {
     const isLoading = ref(false)
     const getImgUrl = inject('getImgUrl')

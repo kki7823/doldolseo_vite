@@ -97,9 +97,9 @@
         </div>
         <div class="crew-crewProfile__master">
           <span class="crew-label--crewmaster">
-            크루장
+            크루장:
           </span>
-          {{ crew.crewLeader }}
+          <doldolseo-get-nickname :id="crew.crewLeader"/>
         </div>
         <div class="crew-crewProfile__region">
           <span style="color: #5882FA">
@@ -139,10 +139,11 @@ import {useCookies} from "vue3-cookies";
 import onError from "../../module/onError";
 import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
 
 export default {
   name: "DoldolseoCrewList",
-  components: {DoldolseoCrewNav, DoldolseoPagenation, Loading},
+  components: {DoldolseoGetNickname, DoldolseoCrewNav, DoldolseoPagenation, Loading},
   props: {
     memberId: {
       type: String,

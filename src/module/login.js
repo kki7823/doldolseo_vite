@@ -47,40 +47,6 @@ export default {
             refreshKey.value++
         }
     },
-    doLogin2: (id, password, URL_MEMBER_LOGIN) => {
-        try {
-            const resp = axios({
-                method: 'post',
-                url: URL_MEMBER_LOGIN,
-                data: {
-                    id: id,
-                    password: password
-                },
-            })
-            localStorage.setItem('loginState', 'login')
-            localStorage.setItem('id', resp.data.id)
-            localStorage.setItem('name', resp.data.name)
-            localStorage.setItem('nickname', resp.data.nickname)
-            localStorage.setItem('memberImg', resp.data.memberImg)
-            localStorage.setItem('birth', resp.data.birth)
-            localStorage.setItem('gender', resp.data.gender)
-            localStorage.setItem('email', resp.data.email)
-            localStorage.setItem('phone', resp.data.phone)
-            localStorage.setItem('memberRole', resp.data.memberRole)
-            refreshKey.value++
-
-            router.replace('/main').then(() => {
-            })
-            memberData.value = resp.data
-        } catch
-            (err) {
-            console.log(URL_MEMBER_LOGIN + " 요청 실패: " + err)
-            loginMsg.value = "로그인에 실패 하였습니다. 아이디 또는 비밀번호를 확인해 주세요. "
-
-            localStorage.setItem('loginState', 'fail')
-            refreshKey.value++
-        }
-    },
     doLogout: (component) => {
         localStorage.setItem('loginState', 'logout')
         localStorage.removeItem('id')

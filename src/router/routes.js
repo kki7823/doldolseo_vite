@@ -18,9 +18,11 @@ import CrewPostDetail from "../components/crewpost/DoldolseoCrewPostDetail.vue";
 import CrewPostUpdate from "../components/crewpost/DoldolseoCrewPostUpdate.vue";
 import PageNotFound from "../components/exception/DoldolseoNotFound.vue";
 import Error from "../components/exception/DoldolseoError.vue";
-import {defineComponent} from "vue";
+import {defineComponent, inject} from "vue";
 import {useCookies} from "vue3-cookies";
 import {router} from "./router";
+import {axios} from "@bundled-es-modules/axios";
+import onError from "../module/onError";
 
 const NotFound = defineComponent({
     template: '<div>Not Found</div>',
@@ -33,6 +35,32 @@ const isLogined = (to, from, next) => {
         return next();
     }
     router.replace('/member/login').then(() => {
+    })
+}
+
+const isLoginedAndJoinedCrew = (to, from, next) => {
+    if (localStorage.loginState === "login" && cookies.get('token') !== "") {
+        isJoinedCrew(to, from, next)
+        return next();
+    }
+    router.replace('/member/login').then(() => {
+    })
+}
+
+const isJoinedCrew = (to, from, next) => {
+    const URL = inject('doldolseoCrew') + '/check/member/' + localStorage.getItem('id')
+
+    axios({
+        method: 'get',
+        url: URL,
+        headers: {
+            Authorization: 'Bearer ' + cookies.get('token')
+        },
+    }).then((resp) => {
+        console.log(URL + " - 요청 성공 status : " + resp.status)
+        return next();
+    }).catch((err) => {
+        alert('크루 게시글 쓰기기능은 한개이상의 크루에 가입된 상태에서 이용하실 수 있습니다.')
     })
 }
 

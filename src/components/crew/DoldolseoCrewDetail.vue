@@ -79,7 +79,7 @@
           <div class="crew-info__pointbar--holder">
             <div v-if="crewPoint >= 100000"
                  class="crew-info__pointbar--text">
-              &nbsp;{{ crewPoint +'p'}}
+              &nbsp;{{ crewPoint + 'p' }}
             </div>
             <div v-else
                  class="crew-info__pointbar--text">
@@ -124,7 +124,7 @@
       <div class="crew-memberContainer">
         <table class="crew-memberTbl--top">
           <tr class="crew-memberTbl__header">
-            <td style="width: 160px">
+            <td style="width: 143px">
               멤버등급
             </td>
             <td>
@@ -157,7 +157,7 @@
                   />
                 </div>
                 <div class="crew-memberNickname">
-                  {{ member.memberId }}
+                  <doldolseo-get-nickname :id="member.memberId"/>
                 </div>
               </div>
             </td>
@@ -210,10 +210,11 @@ import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
 import {useRouter} from "vue-router";
+import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
 
 export default {
   name: "DoldolseoCrewDetail",
-  components: {DoldolseoCrewGradeInfo, DoldolseoCrewNav, DoldolseoCrewJoin, Loading},
+  components: {DoldolseoGetNickname, DoldolseoCrewGradeInfo, DoldolseoCrewNav, DoldolseoCrewJoin, Loading},
   props: {
     crewNo: {
       type: String,
@@ -632,7 +633,6 @@ export default {
   /*border: 1px #CDCECF solid;*/
 }
 
-/*왜 두개임 */
 .crew-master--decorate {
   width: 70px;
   height: 36px;
@@ -661,10 +661,9 @@ export default {
 }
 
 .crew-member--idbox {
-  text-align: left;
+  text-align: center;
   width: 270px;
   display: inline-block;
-  padding-left: 30px;
   /*border: 1pt solid;*/
 }
 

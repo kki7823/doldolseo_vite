@@ -48,7 +48,9 @@
               {{ review.title }}
             </router-link>
           </td>
-          <td>{{ review.id }}</td>
+          <td>
+            <doldolseo-get-nickname :id="review.id"/>
+          </td>
           <td>{{ review.wdate[0] + '-' + review.wdate[1] + '-' + review.wdate[2] }}</td>
           <td>{{ review.hit }}</td>
         </tr>
@@ -96,10 +98,11 @@ import DoldolseoPagenation from "../common/DoldolseoPagenation.vue";
 import Loading from "vue3-loading-overlay";
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 import onError from "../../module/onError";
+import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
 
 export default {
   name: "DoldolseoReviewList",
-  components: {DoldolseoPagenation, DoldolseoReviewNav, Loading},
+  components: {DoldolseoGetNickname, DoldolseoPagenation, DoldolseoReviewNav, Loading},
   setup() {
     const isLoading = ref(false);
     const route = useRoute()
@@ -114,39 +117,43 @@ export default {
     const URL_REVIEW = inject('doldolseoReview')
     const URL_MEMBER = inject('doldolseoMember')
 
-    watchEffect(() => {
-      isLoading.value = true
+    watchEffect(async () => {
+          isLoading.value = true
+          const tempFunction = (respReview) => {
+            console.log(URL_REVIEW + " - 요청 성공 status : " + respReview.status)
+            reviewList.value = respReview.data.reviewList
+            startBlockPage.value = respReview.data.startBlockPage
+            endBlockPage.value = respReview.data.endBlockPage
+            totalPages.value = respReview.data.totalPages
+          }
 
-      axios.get(URL_REVIEW, {
-        params: {
-          areaNo: areaNo.value,
-          page: page.value,
+          const tempFunction2 = (reviewList) => {
+            for (let i = 0; i < reviewList.value.length; i++) {
+              const respMember = axios.get(URL_MEMBER + '/nickname/' + reviewList.value[i].id)
+              reviewList.value[i].add("nickName", respMember.data)
+            }
+          }
+
+          try {
+            const respReview = await axios.get(URL_REVIEW, {
+              params: {
+                areaNo: areaNo.value,
+                page: page.value,
+              }
+            })
+
+            await tempFunction(respReview)
+            await tempFunction2(respReview)
+
+            isLoading.value = false
+          } catch
+              (err) {
+            console.log(URL_REVIEW + " - 요청 실패")
+            isLoading.value = false
+            onError.httpErrorException(err)
+          }
         }
-      }).then((resp) => {
-        console.log(URL_REVIEW + " - 요청 성공 status : " + resp.status)
-        reviewList.value = resp.data.reviewList
-        startBlockPage.value = resp.data.startBlockPage
-        endBlockPage.value = resp.data.endBlockPage
-        totalPages.value = resp.data.totalPages
-
-        isLoading.value = false
-      }).catch((err) => {
-        console.log(URL_REVIEW + " - 요청 실패")
-        isLoading.value = false
-        onError.httpErrorException(err)
-      })
-    })
-
-    const getMemberNickName = async (id) => {
-      const URL_MEMBER_NICKNAME = URL_MEMBER + '/nickname/' + id
-
-      try {
-        const {data: resp} = await axios.get(URL_MEMBER_NICKNAME)
-        return resp
-      } catch (err) {
-        onError.httpErrorException(err)
-      }
-    }
+    )
 
     const nickName = ref('')
 
@@ -160,9 +167,6 @@ export default {
       startBlockPage,
       endBlockPage,
       totalPages,
-
-      getMemberNickName,
-      nickName,
     }
   }
 }
