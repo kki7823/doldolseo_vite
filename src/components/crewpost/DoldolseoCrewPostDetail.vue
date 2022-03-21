@@ -50,13 +50,8 @@
       <!-- 크루이름 -->
       <tr class="common-tbl__item">
         <td>
-          <div class="profilebox-crew">
-            <div class="profilebox-crew--photo">
-              <img :src="URL_CREW_IMAGES+crewNo"
-                   alt="logo">
-            </div>
-          </div>
           <div class="profilebox--crewname">
+            크루>
             <doldolseo-get-crew-name v-if="crewNo !== 0"
                                      :crew-no="crewNo"
             />
@@ -250,7 +245,6 @@ export default {
 
     const cookies = inject('cookies')
     const URL_MEMBER_IMAGES = inject('doldolseoMember') + '/images/'
-    const URL_CREW_IMAGES = inject('doldolseoCrew') + '/images/'
     const URL_GET_CREW_POST = inject('doldolseoCrewPost') + '/' + props.crewPostNo
     const URL_CREW = inject('doldolseoCrew')
     const URL_CREWPOST = inject('doldolseoCrewPost')
@@ -399,7 +393,6 @@ export default {
     return {
       isLoading,
       URL_MEMBER_IMAGES,
-      URL_CREW_IMAGES,
       categoryMenu,
       idLogedIn,
 
@@ -574,35 +567,12 @@ export default {
   object-fit: cover;
 }
 
-.profilebox-crew {
-  display: inline-block;
-  float: left;
-  /*border: 1pt solid;*/
-}
-
-.profilebox-crew--photo {
-  width: 40px;
-  height: 40px;
-  float: left;
-  margin: 3px 3px 3px 5px;
-  overflow: hidden;
-  border-radius: 5px;
-  border: 1pt solid #E6E6E6;
-  /*box-shadow: 1px 1px #CDCECF;*/
-}
-
-.profilebox-crew--photo > img {
-  width: inherit;
-  height: inherit;
-  object-fit: cover;
-}
-
 .profilebox--crewname {
   display: inline-block;
   margin: 3px;
   width: 300px;
-  height: 33px;
-  line-height: 40px;
+  height: 20px;
+  line-height: 25px;
   font-size: 18px;
   font-family: 'Jua', sans-serif;
   padding-top: 2px;
