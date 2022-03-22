@@ -22,7 +22,8 @@
             </svg>
           </button>
           <div class="editor--fontlistbox">
-            <ul class="editor--fontlist" v-if="isClicked_font">
+            <ul class="editor--fontlist"
+                v-if="isClicked_font">
               <li v-for="font in fontList"
                   @click="editor.chain().focus().setFontFamily(font).run(); isClicked_font = !isClicked_font"
                   :class="{ 'is-active': editor.isActive('textStyle', { fontFamily: font }) }"
@@ -257,7 +258,8 @@ import {Color} from '@tiptap/extension-color'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
-import {ref} from "vue";
+import {HardBreak} from "@tiptap/extension-hard-break";
+import {onBeforeUnmount, ref} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useCookies} from "vue3-cookies";
 import {useRouter} from "vue-router";
@@ -288,6 +290,7 @@ export default {
         TextStyle,
         Color,
         FontFamily,
+        HardBreak,
         Image.configure({
           inline: true,
         }),
@@ -339,7 +342,7 @@ export default {
     const setImage = (e) => {
       const file = e.target.files[0]
 
-      if(!checkExt(file)) return;
+      if (!checkExt(file)) return;
       if (!checkFileSize(file)) return
 
       const formData = new FormData()
@@ -354,10 +357,14 @@ export default {
         console.log(imageURL + '/' + resp.data)
         editor.value.chain().focus().setImage({src: imageURL + '/' + resp.data}).run()
       }).catch((err) => {
-        console.log(imageURL + " 이미지 가져오기 실패 "+err.response.status)
+        console.log(imageURL + " 이미지 가져오기 실패 " + err.response.status)
         onError.httpErrorException(err)
       })
     }
+
+    onBeforeUnmount(() => {
+      this.editor.destroy()
+    })
 
     const checkFileSize = (file) => {
       if (file.size > 500000) {
@@ -369,16 +376,17 @@ export default {
 
     const checkExt = (file) => {
       const fileName = file.name
-      const extList = ['jpg','jpeg','png','gif']
+      const extList = ['jpg', 'jpeg', 'png', 'gif']
       const extIdx = fileName.lastIndexOf(".")
-      const ext = fileName.substring(extIdx+1,fileName.length).toLowerCase()
+      const ext = fileName.substring(extIdx + 1, fileName.length).toLowerCase()
 
-      if(extList.indexOf(ext) === -1){
+      if (extList.indexOf(ext) === -1) {
         alert("이미지 파일만 첨부 가능합니다.")
         return false
       }
       return true
     }
+
 
     return {
       editor,
@@ -398,6 +406,7 @@ export default {
   width: 1050px;
   margin-top: 5px;
   margin-bottom: 5px;
+  font-family: "Nanum Gothic", sans-serif;
 }
 
 .editor--menubar {

@@ -395,6 +395,7 @@ export default {
 }
 
 .common-contents {
+  font-family: 'Nanum Gothic', monospace;
   width: 100%;
 }
 

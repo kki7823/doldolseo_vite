@@ -49,7 +49,7 @@
           등급 순
         </button>
         <button class="crew-button"
-                @click="sort = ''">
+                @click="sort = 'cDate,desc'">
           최근 순
         </button>
       </div>
@@ -177,18 +177,21 @@ export default {
     const endBlockPage = ref(0)
     const totalPages = ref(0)
 
-    const sort = ref('')
+    const sort = ref('cDate,desc')
 
     const token = ref(cookies.get('token'))
     const memberRole = ref(localStorage.getItem('memberRole'))
 
     const areaNoToString = (first, second, third) => {
       let areaArray = []
-      areaArray.push(areaMenu[first])
-      areaArray.push(areaMenu[second])
-      areaArray.push(areaMenu[third])
+      if (first !== null)
+        areaArray.push(areaMenu[first])
+      if (second !== null)
+        areaArray.push(areaMenu[second])
+      if (third !== null)
+        areaArray.push(areaMenu[third])
 
-      return areaArray.toString().slice(0, -1)
+      return areaArray.toString()
     }
 
     watchEffect(() => {
@@ -362,12 +365,9 @@ export default {
   width: 100%;
   margin: 1px auto 0;
   text-align: left;
-  /*position: relative;*/
+  position: relative;
+  left: 4%;
   /*border: 1pt solid;*/
-}
-
-.crew-crewProfile--container {
-  text-align: center;
 }
 
 .crew-crewProfile {

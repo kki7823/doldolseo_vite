@@ -450,11 +450,14 @@ export default {
 
     const areaNoToString = (first, second, third) => {
       let areaArray = []
-      areaArray.push(areaMenu[first])
-      areaArray.push(areaMenu[second])
-      areaArray.push(areaMenu[third])
+      if (first !== null)
+        areaArray.push(areaMenu[first])
+      if (second !== null)
+        areaArray.push(areaMenu[second])
+      if (third !== null)
+        areaArray.push(areaMenu[third])
 
-      return areaArray.toString().slice(0, -1)
+      return areaArray.toString()
     }
 
     const getCrewGrade = (crewPoint) => {

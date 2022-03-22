@@ -104,11 +104,11 @@
         <div class="crew-info__item"
              style="border: none">
             <span>
-              크루소개 :
+              크루소개 :<br/><br/>
             </span>
-          <span class="crew-infolabel">
-              {{ introDetail }}
-            </span>
+          <textarea class="crew-infolabel"
+                    readonly="readonly">{{ introDetail }}
+            </textarea>
         </div>
       </div>
     </div>
@@ -192,9 +192,9 @@
                              :question-third="questionThird"
         />
       </div>
-      <div class="crew-recruitContainer">
-        {{ recruit }}
-      </div>
+      <textarea class="crew-recruitContainer"
+      readonly="readonly">{{ recruit }}
+      </textarea>
     </div>
   </section>
 </template>
@@ -287,11 +287,14 @@ export default {
 
     const areaNoToString = (first, second, third) => {
       let areaArray = []
-      areaArray.push(areaMenu[first])
-      areaArray.push(areaMenu[second])
-      areaArray.push(areaMenu[third])
+      if (first !== null)
+        areaArray.push(areaMenu[first])
+      if (second !== null)
+        areaArray.push(areaMenu[second])
+      if (third !== null)
+        areaArray.push(areaMenu[third])
 
-      return areaArray.toString().slice(0, -1)
+      return areaArray.toString()
     }
 
     const getCrewGrade = (crewPoint) => {
@@ -484,6 +487,17 @@ export default {
   border-bottom: 1px solid #CDCECF;
   line-height: 29px;
   margin-top: 20px;
+}
+
+.crew-infolabel {
+  resize: none;
+  border: none;
+  outline: none;
+  width: 100%;
+  height: 400px;
+  font-family: 'Nanum Gothic', sans-serif;
+  /*font-weight: bold;*/
+  font-size: 21px;
 }
 
 .crew-logobox {
@@ -723,6 +737,8 @@ export default {
   font-family: 'Nanum Gothic', sans-serif;
   font-size: 17px;
   padding: 30px 10px 30px 10px;
+  outline: none;
+  resize: none;
 }
 
 .common-tbl__item {
