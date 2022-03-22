@@ -107,7 +107,7 @@
               크루소개 :
             </span>
           <span class="crew-infolabel">
-              {{ intro }}
+              {{ introDetail }}
             </span>
         </div>
       </div>
@@ -118,7 +118,7 @@
            style="top:45px; font-size: 32px">
           <span>
             크루원 정보
-            </span>
+          </span>
       </div>
       <!-- 크루 멤버 컨테이너 -->
       <div class="crew-memberContainer">
@@ -157,7 +157,8 @@
                   />
                 </div>
                 <div class="crew-memberNickname">
-                  <doldolseo-get-nickname :id="member.memberId"/>
+                  <doldolseo-get-nickname :key="member.memberId"
+                                          :id="member.memberId"/>
                 </div>
               </div>
             </td>

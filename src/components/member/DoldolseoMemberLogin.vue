@@ -131,7 +131,7 @@ export default {
 <style scoped>
 /* memberLogin */
 .memberL-container {
-  width: 1500px;
+  width: 100%;
   margin: 100px auto;
   text-align: center;
   display: flex;

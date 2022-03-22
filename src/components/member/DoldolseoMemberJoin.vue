@@ -294,6 +294,7 @@ export default {
         pwdValidateMsg.value = ''
         pwdLockImgUrl.value = 'url(' + getImgUrl('member/lock/lock_blue.png') + ')'
       } else {
+        checkValues.password = false
         pwdValidateMsg.value = "8~20자 영문, 숫자, 특수문자를 사용하세요."
         pwdLockImgUrl.value = 'url(' + getImgUrl('member/lock/lock_red.png') + ')'
       }
@@ -309,6 +310,7 @@ export default {
         pwdConfirmValidateMsg.value = ''
         pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/lock/lock_blue.png') + ')'
       } else {
+        checkValues.passwordConfirm = false
         pwdConfirmValidateMsg.value = "비밀번호가 일치하지 않습니다."
         pwdConfirmLockImgUrl.value = 'url(' + getImgUrl('member/lock/lock_red.png') + ')'
       }
@@ -441,10 +443,9 @@ export default {
     const router = useRouter()
 
     const sendJoinData = (template) => {
-      isLoading.value = true;
-
       if (!validParams(template)) return
 
+      isLoading.value = true;
       const formData = new FormData()
       formData.append('id', id.value)
       formData.append('password', password.value)

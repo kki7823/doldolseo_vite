@@ -1,7 +1,7 @@
 <template>
   <section class="crew-mainContainer">
     <loading :active="isLoading"
-             :is-full-page="false"
+             :is-full-page="true"
              :opacity="1.0">
     </loading>
     <doldolseo-crew-nav/>
@@ -44,8 +44,14 @@
     <!-- 상단 정렬버튼 + 검색창 -->
     <div class="crew-topContainer__sub">
       <div class="crew-topContainer__subBtnbox">
-        <button class="crew-button">등급 순</button>
-        <button class="crew-button">최근 순</button>
+        <button class="crew-button"
+                @click="sort = 'crewPoint,desc'">
+          등급 순
+        </button>
+        <button class="crew-button"
+                @click="sort = ''">
+          최근 순
+        </button>
       </div>
 
       <!-- 검색창 -->
@@ -74,14 +80,15 @@
 
     <!-- 크루 목록 -->
     <div class="crew-listContainer">
-      <!-- 크루프로필 start -->
-      <div v-for="crew in crewList"
-           class="crew-crewProfile">
-        <div class="crew-crewProfile__logo">
-          <img :src="URL_CREW_IMAGE+crew.crewImage"
-               alt="crew_logo">
-        </div>
-        <div class="crew-crewProfile__crewnameBox">
+      <div class="crew-crewProfile--container">
+        <!-- 크루프로필 start -->
+        <div v-for="crew in crewList"
+             class="crew-crewProfile">
+          <div class="crew-crewProfile__logo">
+            <img :src="URL_CREW_IMAGE+crew.crewImage"
+                 alt="crew_logo">
+          </div>
+          <div class="crew-crewProfile__crewnameBox">
           <span class="crew-crewProfile__crewnameBox__name">
             <span class="crew-crewProfile__crewnameBox__grade">
               <img :src="getImgUrl('crew/grade/'+getCrewGrade(crew.crewPoint))"
@@ -94,24 +101,27 @@
               </span>
             </router-link>
           </span>
-        </div>
-        <div class="crew-crewProfile__master">
+          </div>
+          <div class="crew-crewProfile__master">
           <span class="crew-label--crewmaster">
             크루장:
           </span>
-          <doldolseo-get-nickname :id="crew.crewLeader"/>
-        </div>
-        <div class="crew-crewProfile__region">
+            <doldolseo-get-nickname :key="crew.crewLeader"
+                                    :id="crew.crewLeader"
+            />
+          </div>
+          <div class="crew-crewProfile__region">
           <span style="color: #5882FA">
             지역
           </span>
-          > {{ areaNoToString(crew.areaNoFirst, crew.areaNoSecond, crew.areaNoThird) }}
+            > {{ areaNoToString(crew.areaNoFirst, crew.areaNoSecond, crew.areaNoThird) }}
+          </div>
+          <div class="crew-crewProfile__intro">
+            {{ crew.intro }}
+          </div>
         </div>
-        <div class="crew-crewProfile__intro">
-          {{ crew.intro }}
-        </div>
+        <!-- 크루프로필 end -->
       </div>
-      <!-- 크루프로필 end -->
 
     </div>
     <!-- 페이지네이션 및 검색창-->
@@ -120,7 +130,7 @@
       <div id="crewL-bottom__pagination">
         <doldolseo-pagenation
             v-if="totalPages > 1"
-            :page="page"
+            :set-page="setPage"
             :start-block-page="startBlockPage"
             :end-block-page="endBlockPage"
             :total-pages="totalPages"
@@ -160,9 +170,14 @@ export default {
 
     const crewList = ref([])
     const page = ref(0)
+    const setPage = (pageNumber) => {
+      page.value = pageNumber
+    }
     const startBlockPage = ref(0)
     const endBlockPage = ref(0)
     const totalPages = ref(0)
+
+    const sort = ref('')
 
     const token = ref(cookies.get('token'))
     const memberRole = ref(localStorage.getItem('memberRole'))
@@ -182,7 +197,8 @@ export default {
       axios.get(URL_CREW, {
         params: {
           page: page.value,
-          memberId: props.memberId
+          memberId: props.memberId,
+          sort: sort.value
         }
       }).then((resp) => {
         console.log(URL_CREW + " - 요청 성공 status : " + resp.status)
@@ -199,9 +215,9 @@ export default {
     })
 
     const getCrewGrade = (crewPoint) => {
-      if (crewPoint >= 1000) return 'crew_grade_4.png'
-      else if (crewPoint >= 700) return 'crew_grade_3.png'
-      else if (crewPoint >= 300) return 'crew_grade_2.png'
+      if (crewPoint >= 100000) return 'crew_grade_4.png'
+      else if (crewPoint >= 10000) return 'crew_grade_3.png'
+      else if (crewPoint >= 1000) return 'crew_grade_2.png'
       else return 'crew_grade_1.png'
     }
 
@@ -211,10 +227,14 @@ export default {
 
       URL_CREW_IMAGE,
       crewList,
+
       page,
+      setPage,
       startBlockPage,
       endBlockPage,
       totalPages,
+      sort,
+
       areaNoToString,
       getCrewGrade,
       token,
@@ -231,7 +251,6 @@ export default {
   text-align: center;
   margin: 0 auto 30px;
   font-size: 0;
-  /*position: relative;*/
   /*border: 1pt solid;*/
 }
 
@@ -340,19 +359,21 @@ export default {
 }
 
 .crew-listContainer {
-  width: 1400px;
+  width: 100%;
   margin: 1px auto 0;
   text-align: left;
-  left: 50px;
-  position: relative;
+  /*position: relative;*/
   /*border: 1pt solid;*/
+}
+
+.crew-crewProfile--container {
+  text-align: center;
 }
 
 .crew-crewProfile {
   display: inline-block;
   width: 270px;
   height: 180px;
-  /*margin: 1px;*/
   margin: 18px 25px 18px 25px;
   position: relative;
   box-shadow: 1px 2px 5px #CDCECF;
@@ -368,14 +389,14 @@ export default {
   top: 10px;
   left: 15px;
   overflow: hidden;
-  box-shadow: 1px 2px 5px #CDCECF;
-  border: 1pt solid #CDCECF;
+  border: 1px solid #CDCECF;
 }
 
 .crew-crewProfile__logo > img {
-  width: inherit;
-  height: inherit;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  overflow: hidden;
 }
 
 .crew-crewName {

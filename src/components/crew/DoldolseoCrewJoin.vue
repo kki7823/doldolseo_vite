@@ -232,7 +232,6 @@ export default {
   position: relative;
 }
 
-
 .crewJ-top__title {
   text-align: center;
   font-family: 'Jua', sans-serif;

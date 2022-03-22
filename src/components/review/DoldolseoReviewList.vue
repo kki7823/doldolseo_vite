@@ -49,7 +49,8 @@
             </router-link>
           </td>
           <td>
-            <doldolseo-get-nickname :id="review.id"/>
+            <doldolseo-get-nickname :key="review.id"
+                                    :id="review.id"/>
           </td>
           <td>{{ review.wdate[0] + '-' + review.wdate[1] + '-' + review.wdate[2] }}</td>
           <td>{{ review.hit }}</td>
@@ -61,7 +62,7 @@
         <div class="reviewL-bottom__pagination">
           <doldolseo-pagenation
               v-if="totalPages > 1"
-              :page="page"
+              :set-page = "setPage"
               :start-block-page="startBlockPage"
               :end-block-page="endBlockPage"
               :total-pages="totalPages"
@@ -91,7 +92,7 @@
 
 <script>
 import DoldolseoReviewNav from "./DoldolseoReviewNav.vue";
-import {inject, ref, watchEffect} from "vue";
+import {inject, provide, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import {useRoute} from "vue-router";
 import DoldolseoPagenation from "../common/DoldolseoPagenation.vue";
@@ -110,52 +111,37 @@ export default {
     const areaNo = ref(route.params.areaNo)
     const reviewList = ref([])
     const page = ref(0)
+    const setPage = (pageNumber) => {
+      page.value = pageNumber
+    }
     const startBlockPage = ref(0)
     const endBlockPage = ref(0)
     const totalPages = ref(0)
 
     const URL_REVIEW = inject('doldolseoReview')
-    const URL_MEMBER = inject('doldolseoMember')
 
-    watchEffect(async () => {
+    watchEffect(() => {
           isLoading.value = true
-          const tempFunction = (respReview) => {
-            console.log(URL_REVIEW + " - 요청 성공 status : " + respReview.status)
-            reviewList.value = respReview.data.reviewList
-            startBlockPage.value = respReview.data.startBlockPage
-            endBlockPage.value = respReview.data.endBlockPage
-            totalPages.value = respReview.data.totalPages
-          }
 
-          const tempFunction2 = (reviewList) => {
-            for (let i = 0; i < reviewList.value.length; i++) {
-              const respMember = axios.get(URL_MEMBER + '/nickname/' + reviewList.value[i].id)
-              reviewList.value[i].add("nickName", respMember.data)
+          axios.get(URL_REVIEW, {
+            params: {
+              areaNo: areaNo.value,
+              page: page.value,
             }
-          }
-
-          try {
-            const respReview = await axios.get(URL_REVIEW, {
-              params: {
-                areaNo: areaNo.value,
-                page: page.value,
-              }
-            })
-
-            await tempFunction(respReview)
-            await tempFunction2(respReview)
-
+          }).then((resp) => {
+            console.log(URL_REVIEW + " - 요청 성공 status : " + resp.status)
+            reviewList.value = resp.data.reviewList
+            startBlockPage.value = resp.data.startBlockPage
+            endBlockPage.value = resp.data.endBlockPage
+            totalPages.value = resp.data.totalPages
             isLoading.value = false
-          } catch
-              (err) {
+          }).catch((err) => {
             console.log(URL_REVIEW + " - 요청 실패")
             isLoading.value = false
             onError.httpErrorException(err)
-          }
+          })
         }
     )
-
-    const nickName = ref('')
 
     return {
       isLoading,
@@ -164,6 +150,7 @@ export default {
       areaNo,
       reviewList,
       page,
+      setPage,
       startBlockPage,
       endBlockPage,
       totalPages,

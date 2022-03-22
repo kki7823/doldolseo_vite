@@ -28,9 +28,11 @@
 
     <!-- 크루활동 게시판 네비 바 : 전체/맛집/쇼핑/문화/자유 -->
     <div class="cBoard-nav">
-      <span @click="category=0">전체</span>
+      <span @click="category=0; writerId='';">
+        전체
+      </span>
       <span v-for="(categoryNo, idx) in categoryMenu"
-            @click="category=idx">
+            @click="category=idx; writerId='';">
         {{ categoryNo }}
       </span>
     </div>
@@ -38,11 +40,13 @@
     <!-- 상단 정렬버튼 -->
     <div class="crew-topContainer__sub">
       <div class="crew-topContainer__subBtnbox">
-        <button class="crew-button">
-          크루 전체
+        <button class="crew-button"
+                @click="writerId=''">
+          전체 보기
         </button>
-        <button class="crew-button">
-          내 크루만
+        <button class="crew-button"
+                @click="writerId = currentLoginId">
+          내가 쓴글
         </button>
       </div>
       <router-link :to="{name: 'crewPostInsert'}"
@@ -68,7 +72,9 @@
       <tr v-for="crewPost in crewPosts"
           class="list--item">
         <td style="width: 130px;">
-          <doldolseo-get-crew-name :crew-no="crewPost.crewNo"/>
+          <doldolseo-get-crew-name :key="crewPost.crewNo"
+                                   :crew-no="crewPost.crewNo"
+          />
         </td>
         <td style="width: 100px;">
           {{ categoryMenu[crewPost.category] }}
@@ -80,7 +86,9 @@
         </td>
         <td>
           <doldolseo-get-nickname
-              :id="crewPost.writerId"/>
+              :key="crewPost.writerId"
+              :id="crewPost.writerId"
+          />
         </td>
         <td>{{ crewPost.wdate[0] + '-' + crewPost.wdate[1] + '-' + crewPost.wdate[2] }}</td>
         <td>{{ crewPost.hit }}</td>
@@ -89,14 +97,16 @@
 
     <!-- 페이지네이션 및 검색창-->
     <div id="cBoardL-container--bottom">
-      <!-- 페이지네이션 -->
-      <doldolseo-pagenation
-          v-if="totalPages > 1"
-          :page="page"
-          :start-block-page="startBlockPage"
-          :end-block-page="endBlockPage"
-          :total-pages="totalPages"
-      />
+      <div class="reviewL-bottom__pagination">
+        <!-- 페이지네이션 -->
+        <doldolseo-pagenation
+            v-if="totalPages > 1"
+            :set-page="setPage"
+            :start-block-page="startBlockPage"
+            :end-block-page="endBlockPage"
+            :total-pages="totalPages"
+        />
+      </div>
 
       <!-- 검색창 -->
       <div id="cBoardL-bottom_search"
@@ -109,10 +119,15 @@
         </select>
         <input type="text"><!-- 검색어 입력 -->
         <button class="crew-button"><!-- 검색 버튼 -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white"
-               class="bi bi-search" viewBox="0 0 16 16">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="20"
+               height="20"
+               fill="white"
+               class="bi bi-search"
+               viewBox="0 0 16 16">
             <path
-                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+            />
           </svg>
         </button>
       </div>
@@ -124,6 +139,7 @@
 import DoldolseoCrewNav from "../crew/DoldolseoCrewNav.vue";
 import DoldolseoGetNickname from "../common/DoldolseoGetNickname.vue";
 import DoldolseoGetCrewName from "../common/DoldolseoGetCrewName.vue";
+import DoldolseoPagenation from "../common/DoldolseoPagenation.vue";
 import {inject, onMounted, ref, watchEffect} from "vue";
 import {axios} from "@bundled-es-modules/axios";
 import onError from "../../module/onError";
@@ -133,7 +149,7 @@ import {useCookies} from "vue3-cookies";
 
 export default {
   name: "DoldolseoCrewPostList",
-  components: {DoldolseoGetCrewName, DoldolseoGetNickname, DoldolseoCrewNav, Loading},
+  components: {DoldolseoGetCrewName, DoldolseoGetNickname, DoldolseoCrewNav, DoldolseoPagenation, Loading},
   setup() {
     const isLoading = ref(false)
     const {cookies} = useCookies()
@@ -141,12 +157,17 @@ export default {
     const URL_CREW_POST = inject('doldolseoCrewPost')
     const URL_CREW = inject('doldolseoCrew')
     const categoryMenu = inject('crew_categoryMenu')
+    const writerId = ref('')
+    const currentLoginId = localStorage.getItem('id')
 
     const crewNo = ref(0)
     const category = ref(0)
     const crewPosts = ref([])
 
     const page = ref(0)
+    const setPage = (pageNumber) => {
+      page.value = pageNumber
+    }
     const startBlockPage = ref(0)
     const endBlockPage = ref(0)
     const totalPages = ref(0)
@@ -183,6 +204,7 @@ export default {
           crewNo: crewNo.value,
           category: category.value,
           page: page.value,
+          writerId: writerId.value
         }
       }).then((resp) => {
         console.log(URL_CREW_POST + " - 요청 성공 status : " + resp.status)
@@ -199,15 +221,16 @@ export default {
       })
     })
 
-
     return {
       isLoading,
       categoryMenu,
       areYouJoinedAnyCrew,
-
       crewNo,
       category,
+      writerId,
+      currentLoginId,
       crewPosts,
+      setPage,
       startBlockPage,
       endBlockPage,
       totalPages,

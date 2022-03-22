@@ -60,7 +60,6 @@ export default {
 
     provide('getCrewName', getCrewName)
 
-
     const areaMenu = {
       1: '강남',
       2: '강북',

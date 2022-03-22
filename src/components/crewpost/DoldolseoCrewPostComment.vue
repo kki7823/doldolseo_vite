@@ -17,7 +17,9 @@
           </div>
           <div class="profilebox--container--sub">
             <div class="profilebox--nickname">
-              <doldolseo-get-nickname :id="comment.id"/>
+              <doldolseo-get-nickname :key="comment.id"
+                                      :id="comment.id"
+              />
             </div>
             <div class="profilebox--wdate">
               {{

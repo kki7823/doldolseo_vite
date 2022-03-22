@@ -1,20 +1,20 @@
 <template>
   <table class="pagination">
     <tr>
-      <td @click="page=0"> &lt;&lt;</td>
+      <td @click="setPage(0)"> &lt;&lt;</td>
       <td v-if="startBlockPage === 1"
-          @click="page = startBlockPage-2">
+          @click="setPage(startBlockPage-2)">
         &lt;
       </td>
-      <td v-for="idx in endBlockPage-startBlockPage+1"
-          @click="page = idx-1">
+      <td v-for="idx in endBlockPage-startBlockPage"
+          @click="setPage(idx-1)">
         {{ idx }}
       </td>
       <td v-if="endBlockPage !== totalPages"
-          @click="page = endBlockPage">
+          @click="setPage(endBlockPage)">
         &gt;
       </td>
-      <td @click="page=totalPages-1">
+      <td @click="setPage(totalPages-1)">
         &gt;&gt;
       </td>
     </tr>
@@ -22,13 +22,10 @@
 </template>
 
 <script>
-import {ref} from "vue";
-
 export default {
   name: "DoldolseoPagenation",
   props: {
-    page: {
-      type: Number,
+    setPage: {
       require: true
     },
     startBlockPage: {
@@ -45,16 +42,7 @@ export default {
     },
   },
   setup(props) {
-    const page = ref(props.page)
-    const startBlockPage = ref(props.startBlockPage)
-    const endBlockPage = ref(props.endBlockPage)
-    const totalPages = ref(props.totalPages)
-
     return {
-      page,
-      startBlockPage,
-      endBlockPage,
-      totalPages,
     }
   }
 }

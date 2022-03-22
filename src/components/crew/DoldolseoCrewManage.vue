@@ -203,7 +203,8 @@
                   />
                 </div>
                 <div class="crew-member--id">
-                  <doldolseo-get-nickname :id="member.memberId"/>
+                  <doldolseo-get-nickname :key="member.memberId"
+                                          :id="member.memberId"/>
                   <div v-if="member.memberRole !== 'CREWLEADER'"
                        class="crew-member--buttonbox">
                     <button type="button"
@@ -303,7 +304,8 @@
                   />
                 </div>
                 <div class="crew-member--id">
-                  <doldolseo-get-nickname :id="member.memberId"/>
+                  <doldolseo-get-nickname :key="member.memberId"
+                                          :id="member.memberId"/>
                 </div>
                 <span class="crewM-member--idbox__btnbox">
                   <doldolseo-crew-join-info v-if="idx === selectIdx && popupVal_JoinInfo"
